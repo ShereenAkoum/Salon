@@ -110,21 +110,27 @@ function setupBookingValidation() {
 
     // Intercept submit
     form.addEventListener("submit", function (e) {
-        e.preventDefault(); // stop redirect
+        e.preventDefault(); // stop default redirect
         bookButton.disabled = true;
         bookButton.textContent = "Booking...";
 
-        // Show popup
-        alert("Thanks! We will contact you soon.");
-
-        // Optionally clear form
-        form.reset();
-        validateForm();
-        bookButton.textContent = "Book now";
-
-        // Redirect back to index.html after alert is closed
-        window.location.href = "index.html";
-
+        fetch(form.action, {
+            method: form.method,
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                alert("Thanks! We will contact you soon.");
+                form.reset();
+                validateForm();
+            } else {
+                alert("Oops! Something went wrong.");
+            }
+            bookButton.textContent = "Book now";
+            bookButton.disabled = false;
+            // Redirect back to index.html after alert is closed
+            window.location.href = "index.html";
+        });
     });
 
     validateForm();
