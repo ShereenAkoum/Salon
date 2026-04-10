@@ -1,0 +1,32 @@
+.card-service-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.card-service-list li {
+  display: flex;
+  justify-content: space-between; /* name left, price button right */
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.card-service-price {
+  font-size: 13px;
+  padding: 4px 8px;
+
+  color: #014d55;          /* default text color */
+  background: #fff;        /* default background */
+  border: 1px solid #014d55;
+  padding: 4px 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease; /* smooth hover effect */
+}
+
+.card-service-price:hover {
+  color: #fff;             /* text turns white */
+  background: #014d55;     /* background changes */
+  border-color: #014d55;   /* border matches background */
+}

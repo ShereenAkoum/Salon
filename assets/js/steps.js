@@ -3,7 +3,6 @@ function getParams() {
 }
 function buildBackLink(currentStep) {
     const service = localStorage.getItem("service");
-    const barber = localStorage.getItem("barber");
     const date = localStorage.getItem("date");
 
     let targetStep = "";
@@ -13,27 +12,16 @@ function buildBackLink(currentStep) {
         // Going back to step-1: only keep service
         targetStep = "step-1.html";
         if (service) params.push(`service=${encodeURIComponent(service)}`);
-        // Clear barber + date
-        localStorage.removeItem("barber");
-        localStorage.removeItem("date");
-    }
-
-    if (currentStep === "step-3") {
-        // Going back to step-2: keep service + barber
-        targetStep = "step-2.html";
-        if (service) params.push(`service=${encodeURIComponent(service)}`);
-        if (barber) params.push(`barber=${encodeURIComponent(barber)}`);
         // Clear date
         localStorage.removeItem("date");
     }
 
-    if (currentStep === "step-4") {
-        // Going back to step-3: keep service + barber + date
-        targetStep = "step-3.html";
+    if (currentStep === "step-3") {
+        // Going back to step-2: keep service 
+        targetStep = "step-2.html";
         if (service) params.push(`service=${encodeURIComponent(service)}`);
-        if (barber) params.push(`barber=${encodeURIComponent(barber)}`);
-        if (date) params.push(`date=${encodeURIComponent(date)}`);
-        // Nothing cleared here, since step-3 still needs date
+        // Clear date
+        localStorage.removeItem("date");
     }
 
     // Build final URL
@@ -50,43 +38,29 @@ function chooseService(serviceName) {
 }
 
 // Step 2
-function chooseBarber(barberName) {
-    localStorage.setItem("barber", barberName);
-    const params = getParams();
-    const service = params.get("service") || localStorage.getItem("service");
-    window.location.href = `step-3.html?service=${encodeURIComponent(service)}&barber=${encodeURIComponent(barberName)}`;
-}
-
-// Step 3
 function chooseDate(dateValue) {
     localStorage.setItem("date", dateValue);
     const params = getParams();
     const service = params.get("service") || localStorage.getItem("service");
-    const barber = params.get("barber") || localStorage.getItem("barber");
-    window.location.href = `step-4.html?service=${encodeURIComponent(service)}&barber=${encodeURIComponent(barber)}&date=${encodeURIComponent(dateValue)}`;
+    window.location.href = `step-3.html?service=${encodeURIComponent(service)}&date=${encodeURIComponent(dateValue)}`;
 }
 
-// Step 4
+// Step 3
 function populateBookingForm() {
     const params = getParams();
     const service = params.get("service") || localStorage.getItem("service");
-    const barber = params.get("barber") || localStorage.getItem("barber");
     const date = params.get("date") || localStorage.getItem("date");
 
     const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
-    const barberBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
-    const dateBlock = document.querySelector(".box-contacts-block:nth-child(3) p");
+    const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
 
     if (serviceBlock) serviceBlock.textContent = service || "Not selected";
-    if (barberBlock) barberBlock.textContent = barber || "Not selected";
     if (dateBlock) dateBlock.textContent = date || "Not selected";
 
     const serviceField = document.querySelector("input[name='service']");
-    const barberField = document.querySelector("input[name='barber']");
     const dateField = document.querySelector("input[name='date']");
 
     if (serviceField) serviceField.value = service || "";
-    if (barberField) barberField.value = barber || "";
     if (dateField) dateField.value = date || "";
 }
 
@@ -142,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Reset on index.html
     if (path.endsWith("index.html") || path === "/") {
         localStorage.removeItem("service");
-        localStorage.removeItem("barber");
         localStorage.removeItem("date");
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -150,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Step 3: bind time slot clicks
-    if (path.endsWith("step-3.html") || path.endsWith("step-3")) {
+    if (path.endsWith("step-2.html") || path.endsWith("step-2")) {
         const timeLinks = document.querySelectorAll(".date-picker-list a:not(.disabled)");
         timeLinks.forEach(link => {
             link.addEventListener("click", function (e) {
@@ -167,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Step 4: populate booking form + validation
-    if (path.endsWith("step-4.html") || path.endsWith("step-4")) {
+    if (path.endsWith("step-3.html") || path.endsWith("step-3")) {
         populateBookingForm();
         setupBookingValidation();
     }
