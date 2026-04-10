@@ -11,8 +11,9 @@ function buildBackLink(currentStep) {
     if (currentStep === "step-2") {
         // Going back to step-1: only keep service
         targetStep = "step-1.html";
-        if (service) params.push(`service=${encodeURIComponent(service)}`);
+        
         // Clear date
+        localStorage.removeItem("service");
         localStorage.removeItem("date");
     }
 

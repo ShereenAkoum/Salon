@@ -12,7 +12,7 @@
   font-size: 14px;
 }
 
-.card-service-price {
+.card-service-price-list {
   font-size: 13px;
   padding: 4px 8px;
 
@@ -25,8 +25,28 @@
   transition: all 0.3s ease; /* smooth hover effect */
 }
 
-.card-service-price:hover {
+.card-service-price-list:hover {
   color: #fff;             /* text turns white */
   background: #014d55;     /* background changes */
   border-color: #014d55;   /* border matches background */
+}
+
+.card-service-list li .btn {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .twoitems {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .twoitems > [class*="cell-"] {
+    width: 50% !important;
+    max-width: 50% !important;
+    flex: 0 0 50% !important;
+    box-sizing: border-box;
+  }
 }
