@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Step 3: bind time slot clicks
-    if (path.endsWith("step-3.html")) {
+    if (path.endsWith("step-3.html") || path.endsWith("step-3.html")) {
         const timeLinks = document.querySelectorAll(".date-picker-list a:not(.disabled)");
         timeLinks.forEach(link => {
             link.addEventListener("click", function (e) {
