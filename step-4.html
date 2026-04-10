@@ -44,7 +44,9 @@
         </div>
         <div id="wrapper">
           <section class="section-xs bg-periglacial-blue one-screen-page-content text-center">
-            <div class="shell"><a class="link link-primary link-return" href="step-3.html">Back</a></div>
+            <div class="shell"><a class="link link-primary link-return" href="javascript:void(0);"
+                onclick="window.location.href = buildBackLink('step-4')">Back</a>
+            </div>
             <div class="shell">
               <h2>ONE MORE STEP!</h2>
               <div class="p text-width-medium">
@@ -56,21 +58,24 @@
                 <div class="box-contacts-col">
                   <div class="box-contacts-block">
                     <h3>Service:</h3>
-                    <p>Traditional Haircut</p>
+                    <p>-</p>
                   </div>
                   <div class="box-contacts-block">
                     <h3>Barber:</h3>
-                    <p>Matthew Phillips</p>
+                    <p>-</p>
                   </div>
                   <div class="box-contacts-block">
                     <h3>Date:</h3>
-                    <p>November 12 (12:00 - 13:00)</p>
+                    <p>-</p>
                   </div>
                 </div>
                 <div class="box-contacts-col box-contacts-right">
                   <div class="box-contacts-block">
                     <!-- <form action="finish.html"> -->
                     <form action="https://formspree.io/f/mwvwzrgy" method="POST">
+                      <input type="hidden" name="service">
+                      <input type="hidden" name="barber">
+                      <input type="hidden" name="date">
 
                       <div class="form-group">
                         <label class="form-label-outside" for="contact-full-name">Full Name</label>
@@ -82,7 +87,7 @@
                         <input class="form-control" id="contact-phone" type="text" name="phone"
                           data-constraints="@Required @Numeric">
                       </div>
-                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit">Book now</button>
+                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit" disabled>Book now</button>
                     </form>
                   </div>
                 </div>
@@ -306,6 +311,7 @@
   </div>
   <script src="assets/js/core.min.js"></script>
   <script src="assets/js/script.js"></script>
+  <script src="assets/js/steps.js"></script>
 </body>
 
 </html>
