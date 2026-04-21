@@ -39,9 +39,38 @@
             "height": 62,
             "services": [
                 {
-                    "sku": "HS-001",
-                    "name": "Straight",
+                    "sku": "HS-004",
                     "price": 25,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                }
+            ]
+        },
+        {
+            "name": "beard trim",
+            "src": "icon-service-3-70x62.png",
+            "width": 70,
+            "height": 62,
+            "services": [
+                {
+                    "sku": "HS-005",
+                    "price": 35,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                }
+            ]
+        },
+        {
+            "name": "Mustache trim",
+            "src": "icon-service-4-70x62.png",
+            "width": 70,
+            "height": 62,
+            "services": [
+                {
+                    "sku": "HS-005",
+                    "price": 32,
                     "currency": "$",
                     "discountedPrice": 0,
                     "active": true
