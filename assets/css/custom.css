@@ -13,6 +13,7 @@
 }
 
 .card-service-price-list {
+  width: 90px !important;
   font-size: 13px;
   padding: 4px 8px;
 
@@ -23,6 +24,7 @@
   text-decoration: none;
   border-radius: 4px;
   transition: all 0.3s ease; /* smooth hover effect */
+    text-transform:capitalize;
 }
 
 .card-service-price-list:hover {

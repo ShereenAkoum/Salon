@@ -1,0 +1,52 @@
+{
+    "services": [
+        {
+            "sku": "HS-001",
+            "title": "Long Layers Cut",
+            "description": "Grey",
+            "price": 25,
+            "currency": "$",
+            "discountedPrice": 0,
+            "src": "longlayers.png",
+            "width": 100,
+            "height": 120,
+            "active": true
+        },
+        {
+            "sku": "HS-002",
+            "title": "Blunt Cut",
+            "description": "Grey",
+            "price": 20,
+            "currency": "$",
+            "discountedPrice": 0,
+            "src": "bluntCut.png",
+            "width": 100,
+            "height": 120,
+            "active": true
+        },
+        {
+            "sku": "HS-003",
+            "title": "BOB Cut",
+            "description": "Grey",
+            "price": 32,
+            "currency": "$",
+            "discountedPrice": 0,
+            "src": "bob.png",
+            "width": 100,
+            "height": 120,
+            "active": true
+        },
+        {
+            "sku": "HS-004",
+            "title": "Pixie Cut",
+            "description": "Grey",
+            "price": 32,
+            "currency": "$",
+            "discountedPrice": 0,
+            "src": "pixieCut.png",
+            "width": 100,
+            "height": 120,
+            "active": true
+        }
+    ]
+}

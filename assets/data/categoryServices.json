@@ -1,0 +1,52 @@
+{
+    "categories": [
+        {
+            "name": "Hair Styles",
+            "src": "hairStyles.png",
+            "width": 150,
+            "height": 62,
+            "services": [
+                {
+                    "sku": "HS-001",
+                    "name": "Straight",
+                    "price": 25,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                },
+                {
+                    "sku": "HS-002",
+                    "name": "Curly",
+                    "price": 20,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                },
+                {
+                    "sku": "HS-003",
+                    "name": "Wavy",
+                    "price": 20,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                }
+            ]
+        },
+        {
+            "name": "Traditional Haircuts",
+            "src": "icon-service-1-70x62.png",
+            "width": 70,
+            "height": 62,
+            "services": [
+                {
+                    "sku": "HS-001",
+                    "name": "Straight",
+                    "price": 25,
+                    "currency": "$",
+                    "discountedPrice": 0,
+                    "active": true
+                }
+            ]
+        }
+    ]
+}

@@ -10,7 +10,7 @@ function buildBackLink(currentStep) {
 
     if (currentStep === "step-2") {
         // Going back to step-1: only keep service
-        targetStep = "step-1.html";
+        targetStep = "services.html";
         
         // Clear date
         localStorage.removeItem("service");
