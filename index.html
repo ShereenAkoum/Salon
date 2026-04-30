@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="wide wow-animation" lang="en">
+<html class="wide wow-animation" lang="en" dir="ltr">
 
 <head>
   <!-- Site Title-->
@@ -14,6 +14,7 @@
   <link rel="stylesheet" type="text/css"
     href="//fonts.googleapis.com/css?family=Roboto+Mono:300,300italic,400,700%7CArvo:400,700">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 
 <body>
@@ -29,11 +30,15 @@
             <div class="rd-navbar-panel">
               <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
               <div class="rd-navbar-brand"><a class="brand-name" href="index.html">
-                  <div class="brand-mobile"><img src="assets/images/logo-default-dark-200x36.png" alt="" width="200"
-                      height="36" />
+                  <div class="brand-mobile">
+                    <div class="logo-name">
+                      <span class="logo-glow">Glow</span>
+                      <span class="logo-and">&</span>
+                      <span class="logo-glam">Glam</span>
+                      <span class="logo-by">by Sara</span>
+                    </div>
                   </div>
-                  <div class="brand-desktop"><img src="assets/images/logo-big-dark-125x125.png" alt="" width="125"
-                      height="125" />
+                  <div class="brand-desktop"><img src="assets/images/logo.jpeg" alt="" width="125" height="100" />
                   </div>
                 </a></div>
             </div>
@@ -41,22 +46,25 @@
               <div class="rd-navbar-nav-inner">
                 <ul class="rd-navbar-nav">
                   <li class="active">
-                    <a href="index.html">Home</a>
+                    <a href="index.html" data-i18n="nav.home">Home</a>
                   </li>
                   <li>
-                    <a href="services.html">Services</a>
+                    <a href="services.html" data-i18n="nav.services">Services</a>
                   </li>
                   <li>
-                    <a href="about.html">About</a>
+                    <a href="about.html" data-i18n="nav.about">About</a>
                   </li>
                   <li>
-                    <a href="faq.html">FAQ</a>
+                    <a href="faq.html" data-i18n="nav.faq">FAQ</a>
                   </li>
                   <li>
-                    <a href="#contacts">Contacts</a>
+                    <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
                   </li>
-                  <li>
-                    <a href="#contacts">Opening Hours</a>
+                  <li class="lang-item" id="langToggle">
+                    <a href="javascript:void(0)" class="lang-switcher" aria-label="Switch language">
+                      <span class="lang-icon">文A</span>
+                      <span class="lang-label">العربية</span>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -65,16 +73,18 @@
         </nav>
       </div>
     </header>
+
     <section class="jumbotron-custom jumbotron-custom-3 bg-white bg-image bg-image-custom bg-image-center"
       style="background-image: url(assets/images/home-three-1-1920x800.jpg);">
       <div class="jumbotron-custom-content text-center">
         <div class="shell">
           <div class="range range-sm-center">
             <div class="cell-sm-9 cell-md-8 cell-lg-7">
-              <h1>Enjoy our barber services</h1>
-              <p class="large"> Establish your new amazing look with Barbershop services! From haircuts to hot shaves,
-                you can experience the best level of barbering in the area.</p><a class="btn btn-style-1 btn-primary"
-                href="services.html">BOOK NOW</a>
+              <h1 style="line-height: 80px;" data-i18n="mainSection.title">Enjoy our barber services</h1>
+              <p class="large"><span data-i18n="mainSection.description">Establish your new amazing look with Barbershop
+                  services! From haircuts to hot shaves, you can experience the best level of barbering in the
+                  area.</span></p><a class="btn btn-style-1 btn-primary" href="services.html"
+                data-i18n="mainSection.button">BOOK NOW</a>
             </div>
           </div>
         </div>
@@ -86,11 +96,13 @@
         <div class="range range-md-reverse range-xs-middle range-md-right range-50">
           <div class="cell-md-5 cell-lg-4">
             <div class="inset-1">
-              <h2>WHO WE ARE</h2>
+              <h2 data-i18n="whoWeAre.title">WHO WE ARE</h2>
               <div class="p text-width-smallest">
-                <p class="big">Barbershop is a team of highly qualified barbers dedicated to offering the best value. We
-                  do this by providing high quality salon services for men and boys, in a warm, friendly atmosphere.</p>
-              </div><a class="btn btn-sm btn-style-1 btn-primary" href="about.html">Read more</a>
+                <p class="big"><span data-i18n="whoWeAre.description">Barbershop is a team of highly qualified barbers
+                    dedicated to offering the best value. We do this by providing high quality salon services for men
+                    and boys, in a warm, friendly atmosphere.</span></p>
+              </div><a class="btn btn-sm btn-style-1 btn-primary" href="about.html" data-i18n="whoWeAre.button">Read
+                more</a>
             </div>
           </div>
           <div class="cell-md-7 cell-lg-6">
@@ -122,10 +134,10 @@
           <div class="cell-md-6 cell-md-6-mod-1 image-wrap-left bg-white bg-image"
             style="background-image: url(assets/images/home-three-2-910x800.jpg);">
             <div class="image-wrap-inner">
-              <h2>OUR<br>SERVICES</h2>
-              <p class="big">Barbershop offers world-class men's haircuts, beard grooming, and hot razor shaves. Here
-                are just some of the services we are famous for.</p><a class="btn btn-style-1 btn-primary"
-                href="services.html">read more</a>
+              <h2 data-i18n="ourServices.title">OUR<br>SERVICES</h2>
+              <p class="big"><span data-i18n="ourServices.description">Barbershop offers world-class men\'s haircuts,
+                  beard grooming, and hot razor shaves. Here are just some of the services we are famous for.</span></p>
+              <a class="btn btn-style-1 btn-primary" href="services.html" data-i18n="ourServices.button">read more</a>
             </div>
           </div>
           <div class="cell-md-6 cell-md-6-mod-2 image-wrap-right bg-gray-dark bg-image"
@@ -137,8 +149,10 @@
                     <figure class="box-icon-image"><img src="assets/images/icon-service-light-3-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
-                    <p class="box-icon-header"><a class="link-underlined" href="services.html">BEARD trim</a></p>
-                    <p class="box-icon-text">Well-trimmed beard is a must-have element of every men’s image</p>
+                    <p class="box-icon-header"><a class="link-underlined" href="services.html"
+                        data-i18n="ourServices.items.beard.title">BEARD trim</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.beard.description">Well-trimmed beard is a
+                      must-have element of every men’s image</p>
                   </article>
                 </div>
                 <div class="cell-xs-6">
@@ -146,8 +160,10 @@
                     <figure class="box-icon-image"><img src="assets/images/icon-service-light-4-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
-                    <p class="box-icon-header"><a class="link-underlined" href="services.html">Mustache TRIM</a></p>
-                    <p class="box-icon-text">Mustaches also need to be trimmed regularly</p>
+                    <p class="box-icon-header"><a class="link-underlined" href="services.html"
+                        data-i18n="ourServices.items.mustache.title">Mustache TRIM</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.mustache.description">Mustaches also need to
+                      be trimmed regularly</p>
                   </article>
                 </div>
                 <div class="cell-xs-6">
@@ -155,9 +171,11 @@
                     <figure class="box-icon-image"><img src="assets/images/icon-service-light-1-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
-                    <p class="box-icon-header"><a class="link-underlined" href="services.html">TRADITIONAL HAIRCUTS</a>
+                    <p class="box-icon-header"><a class="link-underlined" href="services.html"
+                        data-i18n="ourServices.items.haircuts.title">TRADITIONAL HAIRCUTS</a>
                     </p>
-                    <p class="box-icon-text">One of the most popular services our barbers provide</p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.haircuts.description">One of the most popular
+                      services our barbers provide</p>
                   </article>
                 </div>
                 <div class="cell-xs-6">
@@ -165,8 +183,10 @@
                     <figure class="box-icon-image"><img src="assets/images/icon-service-light-2-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
-                    <p class="box-icon-header"><a class="link-underlined" href="services.html">SHAVES</a></p>
-                    <p class="box-icon-text">Our shaving services will make you look really handsome</p>
+                    <p class="box-icon-header"><a class="link-underlined" href="services.html"
+                        data-i18n="ourServices.items.shaves.title">SHAVES</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.shaves.description">Our shaving services will
+                      make you look really handsome</p>
                   </article>
                 </div>
               </div>
@@ -185,31 +205,35 @@
               <div class="box-contacts box-contacts-horizontal box-wrap-content-interactive block-auto">
                 <div class="box-contacts-col">
                   <div class="box-contacts-block">
-                    <h3>Get In Touch</h3>
-                    <p>Leave your name and phone number, and we’ll contact you.</p>
+                    <h3 data-i18n="contactSection.title">Get In Touch</h3>
+                    <p data-i18n="contactSection.description">Leave your name and phone number, and we’ll contact you.
+                    </p>
                     <form class="rd-mailform" action="https://formspree.io/f/xdaylqjz" method="POST">
                       <div class="form-group">
-                        <label class="form-label-outside" for="contact-full-name">Full Name</label>
+                        <label class="form-label-outside" for="contact-full-name"
+                          data-i18n="contactSection.namePlaceholder">Full Name</label>
                         <input class="form-control" id="contact-full-name" type="text" name="name"
                           data-constraints="@Required">
                       </div>
                       <div class="form-group">
-                        <label class="form-label-outside" for="contact-phone">Telephone</label>
+                        <label class="form-label-outside" for="contact-phone"
+                          data-i18n="contactSection.phonePlaceholder">Telephone</label>
                         <input class="form-control" id="contact-phone" type="text" name="phone"
                           data-constraints="@Required @Numeric">
                       </div>
-                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit">SEND REQUEST</button>
+                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit"
+                        data-i18n="contactSection.submitButton">SEND REQUEST</button>
                     </form>
                   </div>
                 </div>
                 <div class="box-contacts-col box-contacts-right">
                   <div class="box-contacts-block">
-                    <h3>Opening Hours</h3>
+                    <h3 data-i18n="openingHours.title">Opening Hours</h3>
                     <dl class="box-contacts-terms-list">
-                      <dt>Monday – Friday</dt>
-                      <dd>9am - 6pm</dd>
-                      <dt>Saturday and Sunday</dt>
-                      <dd>10am - 4pm</dd>
+                      <dt data-i18n="openingHours.days.label-1">Monday – Friday</dt>
+                      <dd data-i18n="openingHours.days.hours-1">9am - 6pm</dd>
+                      <dt data-i18n="openingHours.days.label-2">Saturday and Sunday</dt>
+                      <dd data-i18n="openingHours.days.hours-2">10am - 4pm</dd>
                     </dl>
                   </div>
                 </div>
@@ -224,15 +248,15 @@
       <div class="shell">
         <div class="range range-50">
           <div class="cell-sm-6 cell-md-9">
-            <h3>Description</h3>
+            <h3 data-i18n="common.descriptionTitle">Description</h3>
             <div class="divider divider-conch"></div>
             <div class="text-highlighted-wrap">
-              <p class="text-highlighted">Barbershop is a No.1 place to have a men’s haircut in San Francisco. Here you
-                can get luxury barber experience at a reasonable price.</p>
+              <p class="text-highlighted" data-i18n="common.footerDescription">Barbershop is a No.1 place to have a men's
+                haircut in San Francisco. Here you can get luxury barber experience at a reasonable price.</p>
             </div>
           </div>
           <div class="cell-sm-6 cell-md-3">
-            <h3>Follow Us</h3>
+            <h3 data-i18n="common.followTitle">Follow Us</h3>
             <div class="divider divider-conch"></div>
             <ul class="inline-list inline-list-xs">
               <li><a class="icon icon-xs-outline icon-wild-sand-filled icon-circle fa-facebook" href="#"></a></li>
@@ -244,45 +268,11 @@
     </footer>
   </div>
 
-  <div class="snackbars" id="form-output-global"></div>
-  <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="pswp__bg"></div>
-    <div class="pswp__scroll-wrap">
-      <div class="pswp__container">
-        <div class="pswp__item"></div>
-        <div class="pswp__item"></div>
-        <div class="pswp__item"></div>
-      </div>
-      <div class="pswp__ui pswp__ui--hidden">
-        <div class="pswp__top-bar">
-          <div class="pswp__counter"></div>
-          <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-          <button class="pswp__button pswp__button--share" title="Share"></button>
-          <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-          <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-          <div class="pswp__preloader">
-            <div class="pswp__preloader__icn">
-              <div class="pswp__preloader__cut">
-                <div class="pswp__preloader__donut"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-          <div class="pswp__share-tooltip"></div>
-        </div>
-        <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
-        <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
-        <div class="pswp__caption">
-          <div class="pswp__caption__cent"></div>
-        </div>
-      </div>
-    </div>
-  </div>
   <script src="assets/js/core.min.js"></script>
   <script src="assets/js/script.js"></script>
   <script src="assets/js/steps.js"></script>
   <script src="assets/js/contacts.js"></script>
+  <script src="assets/js/translation.js"></script>
 </body>
 
 </html>

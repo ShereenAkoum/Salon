@@ -1,125 +1,109 @@
+(function () {
+  var categoryData = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("assets/data/categoryServices.json")
-    .then(response => response.json())
-    .then(data => {
-      const container = document.getElementById("services-container");
-      container.innerHTML = "";
+  // ── Render categories in the given language ────────────────────────────
+  function renderServices(lang) {
+    if (!categoryData) return;
 
-      data.categories.forEach(category => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "cell-xs-6 cell-md-3";
+    var container = document.getElementById("services-container");
+    if (!container) return;
+    container.innerHTML = "";
 
-        const article = document.createElement("article");
-        article.className = "card-service";
+    categoryData.categories.forEach(function (category) {
+      var categoryName = category['name-' + lang] || category['name-en'];
 
-        // Image
-        const img = document.createElement("img");
-        img.className = "card-service-image";
-        img.src = "assets/images/" + category.src;
-        img.alt = category.name;
-        img.width = category.width || 70;
-        img.height = category.height || 62;
+      var wrapper = document.createElement("div");
+      wrapper.className = "cell-xs-6 cell-md-3";
 
-        // Title
-        const title = document.createElement("p");
-        title.className = "card-service-title";
-        title.textContent = category.name;
+      var article = document.createElement("article");
+      article.className = "card-service";
 
-        article.appendChild(img);
-        article.appendChild(title);
+      // Image
+      var img = document.createElement("img");
+      img.className = "card-service-image";
+      img.src = "assets/images/" + category.src;
+      img.alt = categoryName;
+      img.width = category.width || 70;
+      img.height = category.height || 62;
 
-        if (category.services.length === 1) {
-          // Single service → price + Book Now
-          const service = category.services[0];
+      // Category title
+      var titleEl = document.createElement("p");
+      titleEl.className = "card-service-title";
+      titleEl.textContent = categoryName;
 
-          const price = document.createElement("p");
-          price.className = "card-service-price";
-          price.innerHTML = `<small>${service.currency}</small>${service.price}.<small>00</small>`;
+      article.appendChild(img);
+      article.appendChild(titleEl);
 
-          const btn = document.createElement("a");
-          btn.className = "btn btn-sm card-service-control";
-          btn.href = "javascript:void(0);";
-          btn.textContent = "Book Now";
-          btn.onclick = () => chooseService(service.name);
+      var activeServices = category.services.filter(function (s) { return s.active; });
 
-          article.appendChild(price);
-          article.appendChild(btn);
-        } else {
-          // Multiple services → list
-          const ul = document.createElement("ul");
-          ul.className = "card-service-list";
+      if (activeServices.length === 1) {
+        // Single service → price + Book Now button
+        var service = activeServices[0];
+        var bookLabel = lang === 'ar' ? 'احجز الآن' : 'Book Now';
 
-          category.services.forEach(service => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-              ${service.name}
-              <a class="btn btn-xs card-service-price-list" href="javascript:void(0);" onclick="chooseService('${service.name}')">
-                Book ${service.currency}${service.price}
-              </a>
-            `;
-            ul.appendChild(li);
-          });
+        var priceEl = document.createElement("p");
+        priceEl.className = "card-service-price";
+        priceEl.innerHTML = "<small>" + service.currency + "</small>" + service.price + ".<small>00</small>";
 
-          article.appendChild(ul);
-        }
-
-        wrapper.appendChild(article);
-        container.appendChild(wrapper);
-      });
-    })
-    .catch(error => console.error("Error loading services:", error));
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("assets/data/services.json")
-    .then(response => response.json())
-    .then(data => {
-      const container = document.getElementById("services2-container");
-      container.innerHTML = "";
-
-      data.services.forEach(service => {
-        // Wrapper div
-        const wrapper = document.createElement("div");
-        wrapper.className = "cell-xs-6 cell-md-3";
-
-        // Article
-        const article = document.createElement("article");
-        article.className = "card-service";
-
-        // Image
-        const img = document.createElement("img");
-        img.className = "card-service-image";
-        img.src = "assets/images/" + service.src;
-        img.alt = service.title;
-        img.width = service.width || 100;
-        img.height = service.height || 120;
-
-        // Title
-        const title = document.createElement("p");
-        title.className = "card-service-title";
-        title.textContent = service.title;
-
-        // Price
-        const price = document.createElement("p");
-        price.className = "card-service-price";
-        price.innerHTML = `<small>${service.currency}</small>${service.price}.<small>00</small>`;
-
-        // Book button
-        const btn = document.createElement("a");
+        var btn = document.createElement("a");
         btn.className = "btn btn-sm card-service-control";
         btn.href = "javascript:void(0);";
-        btn.textContent = "Book Now";
-        btn.onclick = () => chooseService(service.title);
+        btn.textContent = bookLabel;
+        btn.onclick = (function (s) {
+          return function () { if (typeof chooseService === 'function') chooseService(s['name-en']); };
+        })(service);
 
-        // Assemble
-        article.appendChild(img);
-        article.appendChild(title);
-        article.appendChild(price);
+        article.appendChild(priceEl);
         article.appendChild(btn);
-        wrapper.appendChild(article);
-        container.appendChild(wrapper);
-      });
-    })
-    .catch(error => console.error("Error loading services:", error));
-});
+
+      } else {
+        // Multiple services → list with individual Book buttons
+        var ul = document.createElement("ul");
+        ul.className = "card-service-list";
+
+        activeServices.forEach(function (service) {
+          var serviceName = service['name-' + lang] || service['name-en'];
+          var bookLabel = lang === 'ar'
+            ? ('احجز ' + service.currency + service.price)
+            : ('Book ' + service.currency + service.price);
+
+          var li = document.createElement("li");
+          li.textContent = serviceName;
+
+          var bookBtn = document.createElement("a");
+          bookBtn.className = "btn btn-xs card-service-price-list";
+          bookBtn.href = "javascript:void(0);";
+          bookBtn.textContent = bookLabel;
+          bookBtn.onclick = (function (s) {
+            return function () { if (typeof chooseService === 'function') chooseService(s['name-en']); };
+          })(service);
+
+          li.appendChild(bookBtn);
+          ul.appendChild(li);
+        });
+
+        article.appendChild(ul);
+      }
+
+      wrapper.appendChild(article);
+      container.appendChild(wrapper);
+    });
+  }
+
+  // ── Load data on DOM ready, initial render ─────────────────────────────
+  document.addEventListener("DOMContentLoaded", function () {
+    fetch("assets/data/categoryServices.json")
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        categoryData = data;
+        var lang = document.documentElement.getAttribute('lang') || localStorage.getItem('siteLang') || 'en';
+        renderServices(lang);
+      })
+      .catch(function (err) { console.error("Error loading categoryServices:", err); });
+  });
+
+  // Re-render whenever translation.js broadcasts a language change
+  document.addEventListener('langChanged', function (e) {
+    renderServices(e.detail.lang);
+  });
+})();

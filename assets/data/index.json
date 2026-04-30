@@ -1,0 +1,94 @@
+{
+    "mainSection": {
+        "title-en": "Enjoy our barber services",
+        "title-ar": "استمتع بخدمات حلاقتنا",
+        "description-en": "Establish your new amazing look with Barbershop services! From haircuts to hot shaves, you can experience the best level of barbering in the area.",
+        "description-ar": "أنشئ إطلالتك الجديدة الرائعة مع خدمات الحلاقة! من قصات الشعر إلى الحلاقة الساخنة، استمتع بأعلى مستوى من الحرفية في المنطقة.",
+        "button-en": "BOOK NOW",
+        "button-ar": "احجز الآن"
+    },
+    "whoWeAre": {
+        "title-en": "WHO WE ARE",
+        "title-ar": "من نحن",
+        "description-en": "Barbershop is a team of highly qualified barbers dedicated to offering the best value. We do this by providing high quality salon services for men and boys, in a warm, friendly atmosphere.",
+        "description-ar": "صالون الحلاقة هو فريق من الحلاقين المؤهلين تأهيلاً عالياً، ملتزمون بتقديم أفضل قيمة. نحقق ذلك من خلال تقديم خدمات صالون عالية الجودة للرجال والأولاد في أجواء دافئة وودية.",
+        "button-en": "Read more",
+        "button-ar": "اقرأ المزيد"
+    },
+    "ourServices": {
+        "title-en": "OUR SERVICES",
+        "title-ar": "خدماتنا",
+        "description-en": "Barbershop offers world-class men's haircuts, beard grooming, and hot razor shaves. Here are just some of the services we are famous for.",
+        "description-ar": "يقدم صالون الحلاقة قصات شعر رجالية عالمية المستوى، وتهذيب اللحية، والحلاقة بالموس الساخن. إليك بعض الخدمات التي نشتهر بها.",
+        "button-en": "read more",
+        "button-ar": "اقرأ المزيد",
+        "items": [
+            {
+                "key": "beard",
+                "title-en": "BEARD trim",
+                "title-ar": "تهذيب اللحية",
+                "description-en": "Well-trimmed beard is a must-have element of every men's image",
+                "description-ar": "اللحية المهذبة عنصر أساسي في مظهر كل رجل"
+            },
+            {
+                "key": "mustache",
+                "title-en": "Mustache TRIM",
+                "title-ar": "تهذيب الشارب",
+                "description-en": "Mustaches also need to be trimmed regularly",
+                "description-ar": "الشوارب تحتاج أيضاً إلى تهذيب منتظم"
+            },
+            {
+                "key": "haircuts",
+                "title-en": "TRADITIONAL HAIRCUTS",
+                "title-ar": "قصات الشعر التقليدية",
+                "description-en": "One of the most popular services our barbers provide",
+                "description-ar": "من أكثر الخدمات شعبية التي يقدمها حلاقونا"
+            },
+            {
+                "key": "shaves",
+                "title-en": "SHAVES",
+                "title-ar": "الحلاقة",
+                "description-en": "Our shaving services will make you look really handsome",
+                "description-ar": "خدمات الحلاقة لدينا ستجعلك تبدو أنيقاً حقاً"
+            }
+        ]
+    },
+    "contactSection": {
+        "title-en": "Get In Touch",
+        "title-ar": "تواصل معنا",
+        "description-en": "Leave your name and phone number, and we'll contact you.",
+        "description-ar": "اترك اسمك ورقم هاتفك وسنتصل بك.",
+        "namePlaceholder-en": "Full Name",
+        "namePlaceholder-ar": "الاسم الكامل",
+        "phonePlaceholder-en": "Telephone",
+        "phonePlaceholder-ar": "رقم الهاتف",
+        "submitButton-en": "SEND REQUEST",
+        "submitButton-ar": "إرسال الطلب"
+    },
+    "openingHours": {
+        "title-en": "Opening Hours",
+        "title-ar": "ساعات العمل",
+        "days": {
+            "label-1-en": "Monday – Friday",
+            "label-1-ar": "الاثنين – الجمعة",
+            "hours-1-en": "9am - 6pm",
+            "hours-1-ar": "9am - 6pm",
+            "label-2-en": "Saturday and Sunday",
+            "label-2-ar": "السبت والأحد",
+            "hours-2-en": "10am - 4pm",
+            "hours-2-ar": "10am - 4pm"
+        }
+    },
+    "common": {
+        "descriptionTitle-en": "Description",
+        "descriptionTitle-ar": "الوصف",
+        "followTitle-en": "Follow Us",
+        "followTitle-ar": "تابعنا",
+        "bookNow-en": "BOOK NOW",
+        "bookNow-ar": "احجز الآن",
+        "menu-en": "Menu",
+        "menu-ar": "القائمة",
+        "footerDescription-en": "Barbershop is a No.1 place to have a men's haircut in San Francisco. Here you can get luxury barber experience at a reasonable price.",
+        "footerDescription-ar": "صالون الحلاقة هو المكان الأول لقصات الشعر الرجالية في سان فرانسيسكو. هنا يمكنك الحصول على تجربة حلاقة فاخرة بسعر مناسب."
+    }
+}

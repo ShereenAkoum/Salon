@@ -1,0 +1,20 @@
+{
+  "en": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "faq": "FAQ",
+    "contacts": "Contacts",
+    "hours": "Opening Hours",
+    "langSwitcherLabel": "العربية"
+  },
+  "ar": {
+    "home": "الرئيسية",
+    "services": "الخدمات",
+    "about": "من نحن",
+    "faq": "الأسئلة الشائعة",
+    "contacts": "اتصل بنا",
+    "hours": "ساعات العمل",
+    "langSwitcherLabel": "English"
+  }
+}
