@@ -113,6 +113,10 @@ html[lang="ar"] dd {
   font-family: 'Cairo', sans-serif !important;
 }
 
+html[lang="ar"] .logo-name {
+  font-family: 'Brush Script MT', cursive !important;
+}
+
 html[lang="ar"] .rd-navbar-nav {
   flex-direction: row-reverse;
 }
@@ -181,34 +185,26 @@ html[lang="ar"] .box-contacts {
   text-align: right;
 }
 
-
+.logo-name {
+  font-family: 'Brush Script MT', cursive;
+}
 
 .logo-glow {
-  font-family: 'Brush Script MT', cursive;
-  /* pick a red cursive font */
   color: #d32f2f;
-  /* red */
   font-size: 28px;
 }
 
 .logo-and {
-  font-family: 'Brush Script MT', cursive;
-  /* pick a red cursive font */
-
   font-weight: bold;
   font-size: 18px;
 }
 
 .logo-glam {
-  font-family: 'Brush Script MT', cursive;
-  /* blue cursive font */
   color: #1976d2;
-  /* blue */
   font-size: 28px;
 }
 
 .logo-by {
-  font-family: 'Brush Script MT', cursive;
   color: #1976d2;
   font-size: 18px;
 }
