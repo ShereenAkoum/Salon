@@ -1,0 +1,18 @@
+{
+  "title": "FAQ",
+  "description": "If you have any questions regarding the services our barbershop offers, feel free to browse this section of frequently asked questions.",
+  "faq": [
+    {
+      "question": "Is it OK if I am a few minutes late for my appointment?",
+      "answer": "We schedule clients on the half-hour and we make full use of those 30 minutes with each client. If someone is 5 minutes late for their appointment, it affects every client after them, as well as the barber who is trying to stay on schedule..."
+    },
+    {
+      "question": "What is your appointment policy?",
+      "answer": "If you need to cancel your appointment, please do so as far in advance as possible, preferably at least one hour. Our appointment policy is listed on the appointment page."
+    },
+    {
+      "question": "When do you take your last walk-in?",
+      "answer": "Our walk-in list closes when there are as many customers waiting as we can serve before closing time. It may reopen if customers leave the line..."
+    }
+  ]
+}
