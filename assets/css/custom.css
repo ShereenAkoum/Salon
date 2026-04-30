@@ -113,8 +113,18 @@ html[lang="ar"] dd {
   font-family: 'Cairo', sans-serif !important;
 }
 
-html[lang="ar"] .logo-name {
- font-family: 'Dancing Script', 'Brush Script MT', cursive !important;
+/* ── Logo font: immune to the broad Cairo override above ── */
+html[lang="ar"] .logo-name,
+html[lang="ar"] .logo-name .logo-glow,
+html[lang="ar"] .logo-name .logo-and,
+html[lang="ar"] .logo-name .logo-glam,
+html[lang="ar"] .logo-name .logo-by,
+html[lang="ar"] a .logo-name,
+html[lang="ar"] a .logo-glow,
+html[lang="ar"] a .logo-and,
+html[lang="ar"] a .logo-glam,
+html[lang="ar"] a .logo-by {
+  font-family: 'Dancing Script', 'Brush Script MT', cursive !important;
 }
 
 html[lang="ar"] .rd-navbar-nav {
@@ -185,8 +195,12 @@ html[lang="ar"] .box-contacts {
   text-align: right;
 }
 
-.logo-name {
-  font-family: 'Brush Script MT', cursive;
+.logo-name,
+.logo-glow,
+.logo-and,
+.logo-glam,
+.logo-by {
+  font-family: 'Dancing Script', 'Brush Script MT', cursive;
 }
 
 .logo-glow {
