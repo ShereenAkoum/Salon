@@ -48,13 +48,11 @@
 
 .brand-name {
   font-size: 24px;
-  /* adjust size */
   font-weight: bold;
-  /* make it stand out */
   color: #333;
-  /* set your brand color */
-  font-family: 'Arial', sans-serif;
-  /* or your custom font */
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* ── Language Switcher Button ── */
@@ -111,6 +109,7 @@ html[lang="ar"] input,
 html[lang="ar"] dt,
 html[lang="ar"] dd {
   font-family: 'Cairo', sans-serif !important;
+  line-height: 1.8
 }
 
 /* ── Logo font: immune to the broad Cairo override above ── */
