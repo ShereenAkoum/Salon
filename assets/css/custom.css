@@ -109,7 +109,6 @@ html[lang="ar"] input,
 html[lang="ar"] dt,
 html[lang="ar"] dd {
   font-family: 'Cairo', sans-serif !important;
-  line-height: 1.8
 }
 
 /* ── Logo font: immune to the broad Cairo override above ── */
@@ -279,4 +278,9 @@ html[lang="ar"] .perspective-menu-text {
     flex: 0 0 50% !important;
     box-sizing: border-box;
   }
+}
+
+li#langToggle {
+  width: fit-content;
+  margin: auto;
 }
