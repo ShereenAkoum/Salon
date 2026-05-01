@@ -125,12 +125,12 @@
       if (!isInitial) {
         document.body.classList.add('lang-transitioning');
       }
- 
+
       function doApply() {
         // Direction + lang attribute
         html.setAttribute('lang', lang);
         html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
- 
+
         // Translate every keyed element
         var els = document.querySelectorAll('[data-i18n]');
         els.forEach(function (el) {
@@ -144,33 +144,33 @@
             el.textContent = text;
           }
         });
- 
+
         // Update ALL lang switcher labels (original + sticky clone)
         if (translations['nav.langSwitcherLabel']) {
           getLangLabels().forEach(function (el) {
             el.textContent = translations['nav.langSwitcherLabel'][lang] || '';
           });
         }
- 
+
         localStorage.setItem('siteLang', lang);
         currentLang = lang;
         document.body.classList.remove('lang-transitioning');
- 
+
         // Remove the anti-flash style so the page becomes visible
         var antiFlash = document.getElementById('anti-flash');
         if (antiFlash) antiFlash.parentNode.removeChild(antiFlash);
- 
+
         // Notify dynamic renderers (e.g. services.js) about the language change
         document.dispatchEvent(new CustomEvent('langChanged', { detail: { lang: lang } }));
       }
- 
+
       if (isInitial) {
         doApply();
       } else {
         setTimeout(doApply, 150);
       }
     }
- 
+
     // Initial render — synchronous, no flash
     applyLang(currentLang, true);
 
@@ -181,22 +181,13 @@
       if (!anchor) return;
       e.preventDefault();
 
-      // Close mobile menu if open
-      document.querySelectorAll('.rd-navbar-nav-wrap.active').forEach(function (wrap) {
-        wrap.classList.remove('active');
-      });
-      document.querySelectorAll('.rd-navbar-toggle.active').forEach(function (btn) {
-        btn.classList.remove('active');
-      });
-      document.querySelectorAll('.rd-navbar-wrap.active').forEach(function (btn) {
-        btn.classList.remove('active');
-      });
+      var newLang = currentLang === 'en' ? 'ar' : 'en';
+      // ✅ Save selected language
+      localStorage.setItem('siteLang', newLang);
 
-      document.querySelectorAll('.page-content.active.modalView').forEach(function (btn) {
-        btn.classList.remove('active', 'modalView');
-      });
-
-      applyLang(currentLang === 'en' ? 'ar' : 'en');
+      // ✅ Reload page instead of live switching
+      location.reload();
+      // applyLang(currentLang === 'en' ? 'ar' : 'en');
 
     });
 
