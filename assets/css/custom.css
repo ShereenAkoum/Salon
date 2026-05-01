@@ -124,7 +124,7 @@ html[lang="ar"] a .logo-glow,
 html[lang="ar"] a .logo-and,
 html[lang="ar"] a .logo-glam,
 html[lang="ar"] a .logo-by {
-  font-family: 'Dancing Script', 'Brush Script MT', cursive !important;
+  font-family: 'Telma-Medium' !important;
 }
 
 html[lang="ar"] .rd-navbar-nav {
@@ -200,7 +200,7 @@ html[lang="ar"] .box-contacts {
 .logo-and,
 .logo-glam,
 .logo-by {
-  font-family: 'Dancing Script', 'Brush Script MT', cursive;
+  font-family: 'Telma-Bold';
 }
 
 .logo-glow {
@@ -239,8 +239,8 @@ html[lang="ar"] .rd-navbar-fixed .rd-navbar-nav-wrap.active {
   transform: translateX(0) !important;
 }
 
-html[lang="ar"] .perspective-menu-text  {
-    margin-left: 15px;
+html[lang="ar"] .perspective-menu-text {
+  margin-left: 15px;
 }
 
 @media (min-width: 480px) {
