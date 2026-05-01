@@ -180,7 +180,7 @@
       var anchor = e.target.closest('.lang-switcher');
       if (!anchor) return;
       e.preventDefault();
-      applyLang(currentLang === 'en' ? 'ar' : 'en');
+
       // Close mobile menu if open
       document.querySelectorAll('.rd-navbar-nav-wrap.active').forEach(function (wrap) {
         wrap.classList.remove('active');
@@ -196,6 +196,7 @@
         btn.classList.remove('active', 'modalView');
       });
 
+      applyLang(currentLang === 'en' ? 'ar' : 'en');
 
     });
 
