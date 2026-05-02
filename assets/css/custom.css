@@ -292,7 +292,8 @@ li#langToggle {
 
 .phone-number {
   font-weight: bold;
-  direction: ltr;   /* keep numbers left-to-right */
+  direction: ltr;
+  /* keep numbers left-to-right */
   unicode-bidi: embed;
 }
 
@@ -318,5 +319,13 @@ li#langToggle {
   .page-header-perspective .lang-switcher {
     font-size: 13px;
     padding: 4px 10px;
+  }
+}
+
+@media (min-width: 768px) {
+
+  html[lang="ar"] .range-inner-bordered>.cell-xs-6:nth-child(odd) .box-icon,
+  .range-inner-bordered>.cell-sm-6:nth-child(odd) .box-icon {
+    padding: 30px 0px 30px 30px;
   }
 }

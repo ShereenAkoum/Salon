@@ -37,7 +37,7 @@
                 "title-ar": "علاجات الشعر",
                 "description-en": "Professional treatments to nourish and repair hair",
                 "description-ar": "علاجات احترافية لتغذية الشعر وإصلاحه",
-                  "src": "hairTreatment-light.png",
+                "src": "hairTreatment-light.png",
                 "width": 100,
                 "height": 90
             },
@@ -45,13 +45,19 @@
                 "title-en": "TRADITIONAL HAIRCUTS",
                 "title-ar": "قصات الشعر التقليدية",
                 "description-en": "One of the most popular services our barbers provide",
-                "description-ar": "من أكثر الخدمات شعبية التي يقدمها حلاقونا"
+                "description-ar": "من أكثر الخدمات شعبية التي يقدمها حلاقونا",
+                "src": "",
+                "width": 250,
+                "height": 90
             },
             {
                 "title-en": "SHAVES",
                 "title-ar": "الحلاقة",
                 "description-en": "Our shaving services will make you look really handsome",
-                "description-ar": "خدمات الحلاقة لدينا ستجعلك تبدو أنيقاً حقاً"
+                "description-ar": "خدمات الحلاقة لدينا ستجعلك تبدو أنيقاً حقاً",
+                "src": "",
+                "width": 250,
+                "height": 90
             }
         ]
     },
