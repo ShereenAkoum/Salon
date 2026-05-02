@@ -25,18 +25,21 @@
         "items": [
             {
                 "title-en": "Hair Styles",
-                "title-ar": "تهذيب اللحية",
-                "description-en": "Well-trimmed beard is a must-have element of every men's image",
-                "description-ar": "اللحية المهذبة عنصر أساسي في مظهر كل رجل",
+                "title-ar": "تسريحات الشعر",
+                "description-en": "Modern cuts and styling tailored for women",
+                "description-ar": "قصات وتسريحات عصرية مخصصة للسيدات",
                 "src": "hairStyles-light.png",
-                "width": 150,
-                "height": 62
+                "width": 250,
+                "height": 90
             },
             {
-                "title-en": "Mustache TRIM",
-                "title-ar": "تهذيب الشارب",
-                "description-en": "Mustaches also need to be trimmed regularly",
-                "description-ar": "الشوارب تحتاج أيضاً إلى تهذيب منتظم"
+                "title-en": "Hair Treatments",
+                "title-ar": "علاجات الشعر",
+                "description-en": "Professional treatments to nourish and repair hair",
+                "description-ar": "علاجات احترافية لتغذية الشعر وإصلاحه",
+                  "src": "hairTreatment-light.png",
+                "width": 100,
+                "height": 90
             },
             {
                 "title-en": "TRADITIONAL HAIRCUTS",

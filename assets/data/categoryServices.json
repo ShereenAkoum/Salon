@@ -42,17 +42,25 @@
       ]
     },
     {
-      "name-en": "Traditional Haircuts",
-      "name-ar": "قصات الشعر التقليدية",
-      "src": "icon-service-1-70x62.png",
+      "name-en": "Hair Treatments",
+      "name-ar": "علاجات الشعر",
+      "src": "hairTreatment.png",
       "width": 70,
       "height": 62,
       "services": [
         {
-          "sku": "HS-004",
-          "name-en": "Traditional Haircuts",
-          "name-ar": "قصات الشعر التقليدية",
-          "price": 25,
+          "sku": "HT-001",
+          "name-en": "Keratin",
+          "name-ar": "علاج الكيراتين",
+          "price": 125,
+          "currency": "$",
+          "active": true
+        },
+        {
+          "sku": "T-002",
+          "name-en": "Botox",
+          "name-ar": "علاج البوتوكس",
+          "price": 100,
           "currency": "$",
           "active": true
         }

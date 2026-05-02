@@ -22,9 +22,8 @@
       .then(data => {
         document.getElementById("page-header").innerHTML = data;
 
-      });
-    }
-    fetch("rdNavBar.html")
+        return fetch("rdNavBar.html");
+      })
       .then(response => response.text())
       .then(data => {
         document.getElementById("rdNavBar").innerHTML = data;
@@ -65,4 +64,5 @@
         document.dispatchEvent(new CustomEvent('navbarLoaded'));
       })
       .catch(error => console.error("Error loading header/navbar:", error));
+  }
 })();
