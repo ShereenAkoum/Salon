@@ -100,13 +100,11 @@
           <div class="cell-md-5 cell-lg-4">
             <div class="inset-1">
               <h1 data-i18n="whoWeAre.title">WHO WE ARE</h1>
-              <div class="p text-width-smallest">
-                <p class="big"><span data-i18n="whoWeAre.description">Barbershop is a team of highly qualified barbers
-                    dedicated to offering the best value. We do this by providing high quality salon services for men
-                    and boys, in a warm, friendly atmosphere.</span></p>
-              </div><a class="btn btn-sm btn-style-1 btn-primary" href="about.html" data-i18n="whoWeAre.button">Read
-                more</a>
-            </div>
+              <p class="large"><span data-i18n="whoWeAre.description">Barbershop is a team of highly qualified barbers
+                  dedicated to offering the best value. We do this by providing high quality salon services for men
+                  and boys, in a warm, friendly atmosphere.</span></p>
+            </div><a class="btn btn-sm btn-style-1 btn-primary" href="about.html" data-i18n="whoWeAre.button">Read
+              more</a>
           </div>
           <div class="cell-md-7 cell-lg-6">
             <div class="row row-gutter-custom range-15">
@@ -146,26 +144,27 @@
           <div class="cell-md-6 cell-md-6-mod-2 image-wrap-right bg-gray-dark bg-image"
             style="background-image: url(assets/images/home-three-3-1011x800.jpg);">
             <div class="image-wrap-inner">
-              <div class="range range-condensed range-inner-bordered">
+              <div class="range range-condensed range-inner-bordered" id="services-grid">
                 <div class="cell-xs-6">
                   <article class="box-icon">
                     <figure class="box-icon-image"><img src="assets/images/icon-service-light-3-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
                     <p class="box-icon-header"><a class="link-underlined" href="services.html"
-                        data-i18n="ourServices.items.beard.title">BEARD trim</a></p>
-                    <p class="box-icon-text" data-i18n="ourServices.items.beard.description">Well-trimmed beard is a
+                        data-i18n="ourServices.items.0.title">BEARD trim</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.0.description">Well-trimmed beard is a
                       must-have element of every men’s image</p>
                   </article>
                 </div>
                 <div class="cell-xs-6">
                   <article class="box-icon">
-                    <figure class="box-icon-image"><img src="assets/images/icon-service-light-4-70x62.png" alt=""
+                    <figure class="box-icon-image">
+                      <img data-i18n="ourServices.items.1.src" src="assets/images/icon-service-light-4-70x62.png" alt=""
                         width="70" height="62" />
                     </figure>
                     <p class="box-icon-header"><a class="link-underlined" href="services.html"
-                        data-i18n="ourServices.items.mustache.title">Mustache TRIM</a></p>
-                    <p class="box-icon-text" data-i18n="ourServices.items.mustache.description">Mustaches also need to
+                        data-i18n="ourServices.items.1.title">Mustache TRIM</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.1.description">Mustaches also need to
                       be trimmed regularly</p>
                   </article>
                 </div>
@@ -175,9 +174,9 @@
                         width="70" height="62" />
                     </figure>
                     <p class="box-icon-header"><a class="link-underlined" href="services.html"
-                        data-i18n="ourServices.items.haircuts.title">TRADITIONAL HAIRCUTS</a>
+                        data-i18n="ourServices.items.2.title">TRADITIONAL HAIRCUTS</a>
                     </p>
-                    <p class="box-icon-text" data-i18n="ourServices.items.haircuts.description">One of the most popular
+                    <p class="box-icon-text" data-i18n="ourServices.items.2.description">One of the most popular
                       services our barbers provide</p>
                   </article>
                 </div>
@@ -187,8 +186,8 @@
                         width="70" height="62" />
                     </figure>
                     <p class="box-icon-header"><a class="link-underlined" href="services.html"
-                        data-i18n="ourServices.items.shaves.title">SHAVES</a></p>
-                    <p class="box-icon-text" data-i18n="ourServices.items.shaves.description">Our shaving services will
+                        data-i18n="ourServices.items.3.title">SHAVES</a></p>
+                    <p class="box-icon-text" data-i18n="ourServices.items.3.description">Our shaving services will
                       make you look really handsome</p>
                   </article>
                 </div>
@@ -210,6 +209,9 @@
                   <div class="box-contacts-block">
                     <h3 data-i18n="contactSection.title">Get In Touch</h3>
                     <p data-i18n="contactSection.description">Leave your name and phone number, and we’ll contact you.
+                    </p>
+                    <p class="phone-number">
+                      <a href="tel:+1234567890" data-i18n="contactSection.phone">+1 234 567 890</a>
                     </p>
                     <form class="rd-mailform" action="https://formspree.io/f/xdaylqjz" method="POST">
                       <div class="form-group">
@@ -247,28 +249,8 @@
       </div>
     </section>
 
-    <footer class="page-footer page-footer-variant-3">
-      <div class="shell">
-        <div class="range range-50">
-          <div class="cell-sm-6 cell-md-9">
-            <h3 data-i18n="common.descriptionTitle">Description</h3>
-            <div class="divider divider-conch"></div>
-            <div class="text-highlighted-wrap">
-              <p class="text-highlighted" data-i18n="common.footerDescription">Barbershop is a No.1 place to have a men's
-                haircut in San Francisco. Here you can get luxury barber experience at a reasonable price.</p>
-            </div>
-          </div>
-          <div class="cell-sm-6 cell-md-3">
-            <h3 data-i18n="common.followTitle">Follow Us</h3>
-            <div class="divider divider-conch"></div>
-            <ul class="inline-list inline-list-xs">
-              <li><a class="icon icon-xs-outline icon-wild-sand-filled icon-circle fa-facebook" href="#"></a></li>
-              <li><a class="icon icon-xs-outline icon-wild-sand-filled icon-circle fa-instagram" href="#"></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <div id="footer-placeholder"></div>
+
   </div>
 
   <script src="assets/js/core.min.js"></script>

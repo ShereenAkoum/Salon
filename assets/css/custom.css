@@ -179,7 +179,7 @@ html[lang="ar"] .rd-navbar-fullwidth .rd-navbar-nav>li:nth-child(1) {
 }
 
 html[lang="ar"] .rd-navbar-fullwidth.rd-navbar--is-clone .rd-navbar-nav>li+li,
-.rd-navbar-fullwidth.rd-navbar--is-stuck .rd-navbar-nav>li+li {
+html[lang="ar"] .rd-navbar-fullwidth.rd-navbar--is-stuck .rd-navbar-nav>li+li {
   margin-right: 50px;
   margin-left: 0px;
 }
@@ -282,5 +282,13 @@ html[lang="ar"] .perspective-menu-text {
 
 li#langToggle {
   width: fit-content;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.phone-number {
+  font-weight: bold;
+}
+.phone-number a {
+  color: #014d55 !important;
 }

@@ -36,17 +36,19 @@
 
         // Arrays (ourServices.items, openingHours.days)
         if (Array.isArray(val)) {
-          val.forEach(function (item) {
-            var itemKey = item.key;
-            if (!itemKey) return;
+          val.forEach(function (item, index) {
             Object.keys(item).forEach(function (ik) {
-              if (ik === 'key') return;
               var im = ik.match(/^(.+)-(en|ar)$/);
               if (im) {
-                // Include the rawKey (e.g. "items", "days") in the path
-                var fk = prefix + '.' + rawKey + '.' + itemKey + '.' + im[1];
+                var fk = prefix + '.' + rawKey + '.' + index + '.' + im[1];
                 if (!translations[fk]) translations[fk] = {};
                 translations[fk][im[2]] = item[ik];
+              } else {
+                // Plain key (no language suffix) — shared across both languages
+                var fk = prefix + '.' + rawKey + '.' + index + '.' + ik;
+                if (!translations[fk]) translations[fk] = {};
+                translations[fk]['en'] = item[ik];
+                translations[fk]['ar'] = item[ik];
               }
             });
           });
@@ -118,6 +120,36 @@
       });
     }
 
+    function renderServiceItems(lang) {
+      var grid = document.getElementById('services-grid');
+      if (!grid || !pageData.ourServices || !pageData.ourServices.items) return;
+
+      grid.innerHTML = pageData.ourServices.items.map(function (item, index) {
+        var title = item['title-' + lang] || item['title-en'] || '';
+        var description = item['description-' + lang] || item['description-en'] || '';
+        // src supports both "src" (plain) and "src-en"/"src-ar"
+        var filePath = "assets/images/";
+        var src = item['src-' + lang] || item['src'];
+
+        if (src) {
+          filePath += src;
+        } 
+
+        var width = item['width'] || '150';
+        var height = item['height'] || '62';
+        var imgHtml = src
+          ? '<figure class="box-icon-image"><img src="' + filePath + '" alt="' + title + '" width="' + width + '" height="' + height + '" /></figure>'
+          : '';
+
+        return '<div class="cell-xs-6">'
+          + '<article class="box-icon">'
+          + imgHtml
+          + '<p class="box-icon-header"><a class="link-underlined" href="services.html">' + title + '</a></p>'
+          + '<p class="box-icon-text">' + description + '</p>'
+          + '</article>'
+          + '</div>';
+      }).join('');
+    }
     // ── Core apply function ───────────────────────────────────────────
     function applyLang(lang, isInitial) {
       // On manual switch: brief fade for smooth UX
@@ -138,6 +170,11 @@
           var data = translations[key];
           if (!data || !data[lang]) return;
           var text = data[lang];
+          if (el.tagName === 'IMG') {
+            el.setAttribute('src', text);
+            return; // ← must return here
+          }
+
           if (text.indexOf('<') !== -1) {
             el.innerHTML = text;
           } else {
@@ -166,6 +203,7 @@
 
       if (isInitial) {
         doApply();
+        renderServiceItems(lang);
       } else {
         setTimeout(doApply, 150);
       }

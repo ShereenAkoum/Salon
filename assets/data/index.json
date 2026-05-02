@@ -24,28 +24,27 @@
         "button-ar": "اقرأ المزيد",
         "items": [
             {
-                "key": "beard",
-                "title-en": "BEARD trim",
+                "title-en": "Hair Styles",
                 "title-ar": "تهذيب اللحية",
                 "description-en": "Well-trimmed beard is a must-have element of every men's image",
-                "description-ar": "اللحية المهذبة عنصر أساسي في مظهر كل رجل"
+                "description-ar": "اللحية المهذبة عنصر أساسي في مظهر كل رجل",
+                "src": "hairStyles-light.png",
+                "width": 150,
+                "height": 62
             },
             {
-                "key": "mustache",
                 "title-en": "Mustache TRIM",
                 "title-ar": "تهذيب الشارب",
                 "description-en": "Mustaches also need to be trimmed regularly",
                 "description-ar": "الشوارب تحتاج أيضاً إلى تهذيب منتظم"
             },
             {
-                "key": "haircuts",
                 "title-en": "TRADITIONAL HAIRCUTS",
                 "title-ar": "قصات الشعر التقليدية",
                 "description-en": "One of the most popular services our barbers provide",
                 "description-ar": "من أكثر الخدمات شعبية التي يقدمها حلاقونا"
             },
             {
-                "key": "shaves",
                 "title-en": "SHAVES",
                 "title-ar": "الحلاقة",
                 "description-en": "Our shaving services will make you look really handsome",
@@ -56,6 +55,7 @@
     "contactSection": {
         "title-en": "Get In Touch",
         "title-ar": "تواصل معنا",
+        "phone": "+1 234 567 890",
         "description-en": "Leave your name and phone number, and we'll contact you.",
         "description-ar": "اترك اسمك ورقم هاتفك وسنتصل بك.",
         "namePlaceholder-en": "Full Name",
