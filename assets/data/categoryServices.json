@@ -51,7 +51,7 @@
         {
           "sku": "HT-001",
           "name-en": "Keratin",
-          "name-ar": "علاج الكيراتين",
+          "name-ar": "كيراتين",
           "price": 125,
           "currency": "$",
           "active": true
@@ -59,7 +59,7 @@
         {
           "sku": "T-002",
           "name-en": "Botox",
-          "name-ar": "علاج البوتوكس",
+          "name-ar": "بوتوكس",
           "price": 100,
           "currency": "$",
           "active": true
