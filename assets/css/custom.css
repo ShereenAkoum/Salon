@@ -299,3 +299,24 @@ li#langToggle {
 .phone-number a {
   color: #014d55 !important;
 }
+
+/* Hide lang switcher from header on mobile — it's already in the navbar */
+@media (max-width: 767px) {
+  .page-header-perspective .lang-switcher {
+    display: none !important;
+  }
+}
+
+/* Desktop: make it fit neatly beside the menu button */
+@media (min-width: 768px) {
+  .page-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-header-perspective .lang-switcher {
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+}
