@@ -241,6 +241,10 @@ html[lang="ar"] .perspective-menu-text {
   margin-left: 15px;
 }
 
+html[lang="ar"] .rd-navbar-sidebar .rd-navbar-nav-inner {
+  align-items: flex-start;
+}
+
 @media (min-width: 480px) {
   html[lang="ar"] .box-contacts-horizontal .box-contacts-col+.box-contacts-col {
     border-right: 1px solid #d0dbd7;
@@ -288,7 +292,10 @@ li#langToggle {
 
 .phone-number {
   font-weight: bold;
+  direction: ltr;   /* keep numbers left-to-right */
+  unicode-bidi: embed;
 }
+
 .phone-number a {
   color: #014d55 !important;
 }
