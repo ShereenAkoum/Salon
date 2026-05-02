@@ -26438,6 +26438,7 @@ section {
 
 .page-footer {
 	background: #fff;
+	direction: ltr;   /* keep numbers left-to-right */
 }
 
 .page-footer-default {
