@@ -7,6 +7,7 @@
 
   const currentPage = window.location.pathname.split("/").pop() || 'index.html';
 
+<<<<<<< HEAD
   fetch("head.html")
     .then(response => response.text())
     .then(data => {
@@ -14,6 +15,8 @@
     })
     .catch(error => console.error("Error loading head:", error));
 
+=======
+>>>>>>> parent of 68db28b (removed unsed images and fixed head)
   fetch("footer.html")
     .then(response => response.text())
     .then(data => {
