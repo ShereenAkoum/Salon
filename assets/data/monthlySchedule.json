@@ -1,73 +1,75 @@
 {
     "monthlySchedule": {
         "January": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {
                 "1":  { "fullyClose": true },
                 "15": { "closedTime": [0, 1, 2, 3] }
             }
         },
         "February": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {}
         },
         "March": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {}
         },
         "April": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {}
         },
         "May": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {
                 "5":  { "fullyClose": true },
-                "20": { "closedTime": [0, 1, 2] }
+                "20": { "closedTime": [0, 1, 2] },
+                "7": { "closedTime": [ 1, 4] }
             }
         },
         "June": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {}
         },
         "July": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {}
         },
         "August": {
-            "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedDays": [],
+            "closedTime": [],
             "closedDates": {}
         },
         "September": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {}
         },
         "October": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {}
         },
         "November": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {}
         },
         "December": {
             "closedDays": [5, 6],
-            "closedTime": [0, 1],
+            "closedTime": [],
             "closedDates": {
                 "25": { "fullyClose": true },
                 "31": { "fullyClose": true }
             }
+            
         }
     }
 }

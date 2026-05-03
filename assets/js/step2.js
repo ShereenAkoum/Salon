@@ -1,5 +1,11 @@
 (function () {
   var config = null;
+  var schedule = null;
+
+  var MONTH_NAMES_EN = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
 
   function getLang() {
     return document.documentElement.getAttribute('lang') || localStorage.getItem('siteLang') || 'en';
@@ -27,8 +33,48 @@
     return { groups: groups, order: order };
   }
 
+  function getMonthSchedule(date) {
+    if (!schedule || !schedule.monthlySchedule) return null;
+    return schedule.monthlySchedule[MONTH_NAMES_EN[date.getMonth()]] || null;
+  }
+
+  function getDateOverride(date) {
+    var ms = getMonthSchedule(date);
+    if (!ms || !ms.closedDates) return null;
+    return ms.closedDates[String(date.getDate())] || null;
+  }
+
+  /** True if the entire date is closed (weekday rule or fullyClose override) */
   function isClosed(date) {
-    return (config.closedDays || []).indexOf(date.getDay()) !== -1;
+    var ms = getMonthSchedule(date);
+    var override = getDateOverride(date);
+    if (override && override.fullyClose === true) return true;
+    var closedDays = (ms && ms.closedDays) || [];
+    return closedDays.indexOf(date.getDay()) !== -1;
+  }
+
+  /**
+   * True if this specific slot is unavailable because:
+   *   1. The whole date is closed, OR
+   *   2. Per-date closedTime includes this slot index, OR
+   *   3. Month-level closedTime includes this slot index, OR
+   */
+  function isSlotDisabled(date, slotIndex, slotText) {
+    if (isClosed(date)) return true;
+
+    var ms = getMonthSchedule(date);
+    var override = getDateOverride(date);
+    var isoKey = date.toISOString().split('T')[0];
+
+    // Per-date closedTime overrides month-level closedTime
+    if (override && Array.isArray(override.closedTime)) {
+      if (override.closedTime.indexOf(slotIndex) !== -1) return true;
+    } else {
+      var closedTime = (ms && ms.closedTime) || [];
+      if (closedTime.indexOf(slotIndex) !== -1) return true;
+    }
+
+    return false;
   }
 
   function isToday(date) {
@@ -38,22 +84,13 @@
       date.getFullYear() === now.getFullYear();
   }
 
-  /**
-   * Deterministic availability: uses the date's day-of-year + slot index as a
-   * pseudo-random seed so availability never changes between renders.
-   */
-  function isSlotAvailable(date, slotIndex) {
-    var seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate() + slotIndex * 37;
-    return (seed % 10) >= 4; // ~60% available, stable per date+slot
-  }
-
   // ── Render ───────────────────────────────────────────────────────────────
   function render(lang) {
     if (!config) return;
 
     var months = config.months[lang] || config.months['en'];
-    var days = config.days[lang] || config.days['en'];
-    var slots = config.timeSlots;
+    var days   = config.days[lang]   || config.days['en'];
+    var slots  = config.timeSlots;
 
     var backEl = document.getElementById('step2-back');
     if (backEl) backEl.textContent = config['back-' + lang] || config['back-en'];
@@ -65,35 +102,35 @@
     if (descEl) descEl.textContent = config['description-' + lang] || config['description-en'];
 
     var dateRange = getDateRange();
-    var grouped = groupByMonth(dateRange);
+    var grouped   = groupByMonth(dateRange);
 
     var container = document.getElementById('date-picker-container');
     if (!container) return;
-    container.innerHTML = ''; // full wipe — no stale handlers
+    container.innerHTML = '';
 
     grouped.order.forEach(function (monthKey) {
       var monthDates = grouped.groups[monthKey];
-      var sample = monthDates[0];
-      var monthName = months[sample.getMonth()];
-      var year = sample.getFullYear();
+      var sample     = monthDates[0];
+      var monthName  = months[sample.getMonth()];
+      var year       = sample.getFullYear();
       var monthLabel = monthName + ' ' + year;
 
       var heading = document.createElement('h3');
-      heading.className = 'date-picker-month-heading';
+      heading.className   = 'date-picker-month-heading';
       heading.textContent = monthLabel;
       container.appendChild(heading);
 
       var tabsWrap = document.createElement('div');
       tabsWrap.className = 'rd-material-tabs date-picker';
-      tabsWrap.setAttribute('data-items', '2');
-      tabsWrap.setAttribute('data-xs-items', '3');
-      tabsWrap.setAttribute('data-sm-items', '4');
-      tabsWrap.setAttribute('data-md-items', '5');
-      tabsWrap.setAttribute('data-margin', '15');
-      tabsWrap.setAttribute('data-stage-padding', '0');
+      tabsWrap.setAttribute('data-items',            '2');
+      tabsWrap.setAttribute('data-xs-items',         '3');
+      tabsWrap.setAttribute('data-sm-items',         '4');
+      tabsWrap.setAttribute('data-md-items',         '5');
+      tabsWrap.setAttribute('data-margin',           '15');
+      tabsWrap.setAttribute('data-stage-padding',    '0');
       tabsWrap.setAttribute('data-sm-stage-padding', '30');
 
-      var tabList = document.createElement('div');
+      var tabList   = document.createElement('div');
       tabList.className = 'rd-material-tabs__list';
       var ul = document.createElement('ul');
 
@@ -101,26 +138,24 @@
       tabContent.className = 'rd-material-tabs__container';
 
       monthDates.forEach(function (date) {
-        var closed = isClosed(date);
-        var today = isToday(date);
-
-        // Use ISO date string (YYYY-MM-DD) as the canonical key — never ambiguous
-        var isoKey = date.toISOString().split('T')[0];
-        var dayNum = String(date.getDate());
+        var closed  = isClosed(date);
+        var today   = isToday(date);
+        var isoKey  = date.toISOString().split('T')[0];
+        var dayNum  = String(date.getDate());
         var dayName = days[date.getDay()];
 
-        // Date tab
+        // ── Date tab ──────────────────────────────────────────────────────
         var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.className = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
-        a.href = '#';
-        a.dataset.isoKey = isoKey; // stamp tab too for refreshUI
+        var a  = document.createElement('a');
+        a.className      = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
+        a.href           = '#';
+        a.dataset.isoKey = isoKey;
 
-        var numDiv = document.createElement('div');
+        var numDiv       = document.createElement('div');
         numDiv.className = 'date-picker-date-number';
         numDiv.textContent = dayNum;
 
-        var dayDiv = document.createElement('div');
+        var dayDiv       = document.createElement('div');
         dayDiv.className = 'date-picker-date-text';
         dayDiv.textContent = dayName;
 
@@ -129,41 +164,38 @@
         li.appendChild(a);
         ul.appendChild(li);
 
-        // Time panel — keyed by ISO date, not reconstructed string
+        // ── Time panel ────────────────────────────────────────────────────
         var panel = document.createElement('div');
-        panel.dataset.isoKey = isoKey;
+        panel.dataset.isoKey    = isoKey;
         panel.dataset.monthLabel = monthLabel;
-        panel.dataset.dayNum = dayNum;
-        panel.dataset.dayName = dayName;
+        panel.dataset.dayNum    = dayNum;
+        panel.dataset.dayName   = dayName;
 
         var slotUl = document.createElement('ul');
         slotUl.className = 'date-picker-list animated fadeIn';
 
         slots.forEach(function (slot, slotIndex) {
           var slotLi = document.createElement('li');
-          var slotA = document.createElement('a');
+          var slotA  = document.createElement('a');
           slotA.textContent = slot;
 
-          var available = !closed && isSlotAvailable(date, slotIndex);
-          if (!available) {
+          var disabled = isSlotDisabled(date, slotIndex, slot);
+
+          if (disabled) {
             slotLi.className = 'disabled';
           } else {
-            // Capture isoKey, slot, monthLabel, dayNum, dayName in closure
             (function (capturedIso, capturedSlot, capturedMonth, capturedDayNum, capturedDayName, capturedSlotLi, capturedSlotUl) {
               slotA.addEventListener('click', function (e) {
                 e.preventDefault();
 
-                // Clear active in this panel only
                 capturedSlotUl.querySelectorAll('li').forEach(function (el) {
                   el.classList.remove('active');
                 });
 
                 if (typeof toggleDateSlot === 'function') {
-                  // Pass ISO key as the unique date identifier
                   toggleDateSlot(capturedSlot, capturedIso, capturedDayNum, capturedDayName, capturedMonth);
                 }
 
-                // Re-check selection and mark active
                 var selections = typeof getSelections === 'function' ? getSelections() : [];
                 var isSelected = selections.some(function (s) {
                   return s.isoKey === capturedIso && s.time === capturedSlot;
@@ -196,11 +228,18 @@
     }
   }
 
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
-    fetch('assets/data/step2.json')
-      .then(function (r) { return r.json(); })
-      .then(function (data) { config = data; render(getLang()); })
-      .catch(function (err) { console.error('Error loading step2.json:', err); });
+    Promise.all([
+      fetch('assets/data/step2.json').then(function (r) { return r.json(); }),
+      fetch('assets/data/monthlySchedule.json').then(function (r) { return r.json(); })
+    ])
+      .then(function (results) {
+        config   = results[0];
+        schedule = results[1];
+        render(getLang());
+      })
+      .catch(function (err) { console.error('Error loading step2 data:', err); });
   });
 
   document.addEventListener('langChanged', function (e) {
