@@ -33,7 +33,14 @@
           translations[cleanKey][lang] = val;
           return;
         }
-
+        // ✅ ADD THIS BLOCK
+        if (typeof val !== 'object') {
+          var fk = prefix + '.' + rawKey;
+          if (!translations[fk]) translations[fk] = {};
+          translations[fk]['en'] = val;
+          translations[fk]['ar'] = val;
+          return;
+        }
         // Arrays (ourServices.items, openingHours.days)
         if (Array.isArray(val)) {
           val.forEach(function (item, index) {
@@ -133,7 +140,7 @@
 
         if (src) {
           filePath += src;
-        } 
+        }
 
         var width = item['width'] || '150';
         var height = item['height'] || '62';
@@ -168,13 +175,26 @@
         els.forEach(function (el) {
           var key = el.getAttribute('data-i18n');
           var data = translations[key];
-          if (!data || !data[lang]) return;
-          var text = data[lang];
-          if (el.tagName === 'IMG') {
-            el.setAttribute('src', text);
-            return; // ← must return here
-          }
+          var data = translations[key];
+          if (!data) return;
 
+          // ✅ fallback to English if selected lang is missing
+          var text = data[lang] || data['en'];
+          if (!text) return;
+
+          // Handle attribute translations (like href, src, etc.)
+          var attrConfig = el.getAttribute('data-i18n-attr');
+          if (attrConfig) {
+            // Example: "href:tel:"
+            var parts = attrConfig.split('-');
+            var attrName = parts[0];
+            var prefix = parts[1] || '';
+
+            el.setAttribute(attrName, prefix + text);
+
+            // ✅ IMPORTANT: don't apply text content for elements using attributes only
+            return;
+          }
           if (text.indexOf('<') !== -1) {
             el.innerHTML = text;
           } else {

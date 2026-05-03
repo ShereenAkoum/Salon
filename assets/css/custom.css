@@ -1,3 +1,10 @@
+:root {
+  --color-primary: #1976d2;
+  --color-secondary: #d32f2f;
+  --color-tertiary: #014d55;
+}
+
+
 .card-service-list {
   list-style: none;
   padding: 0;
@@ -7,7 +14,6 @@
 .card-service-list li {
   display: flex;
   justify-content: space-between;
-  /* name left, price button right */
   align-items: center;
   margin-bottom: 8px;
   font-size: 14px;
@@ -17,27 +23,20 @@
   width: 90px !important;
   font-size: 13px;
   padding: 4px 8px;
-
   color: #014d55;
-  /* default text color */
   background: #fff;
-  /* default background */
   border: 1px solid #014d55;
   padding: 4px 8px;
   text-decoration: none;
   border-radius: 4px;
   transition: all 0.3s ease;
-  /* smooth hover effect */
   text-transform: capitalize;
 }
 
 .card-service-price-list:hover {
   color: #fff;
-  /* text turns white */
   background: #014d55;
-  /* background changes */
   border-color: #014d55;
-  /* border matches background */
 }
 
 .card-service-list li .btn {
@@ -170,6 +169,11 @@ html[lang="ar"] .rd-navbar-fullwidth .rd-navbar-nav>li+li {
   margin-left: 0px;
 }
 
+html[lang="ar"] .rd-navbar-fullwidth .rd-navbar-nav>li:nth-child(5) {
+  margin-right: 36px;
+  margin-left: 10px;
+}
+
 html[lang="ar"] .rd-navbar-fullwidth .rd-navbar-nav>li:nth-child(4) {
   margin-right: 275px;
 }
@@ -245,10 +249,70 @@ html[lang="ar"] .rd-navbar-sidebar .rd-navbar-nav-inner {
   align-items: flex-start;
 }
 
+li#langToggle {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.phone-number {
+  font-weight: bold;
+  direction: ltr;
+  /* keep numbers left-to-right */
+  unicode-bidi: embed;
+}
+
+.phone-number a {
+  color: #014d55 !important;
+}
+
+
+html[lang="ar"].rd-navbar-sidebar-linked .page-header-left>*+*,
+html[lang="ar"].rd-navbar-sidebar-linked .page-header-center>*+*,
+html[lang="ar"].rd-navbar-sidebar-linked .page-header-right>*+* {
+  margin-right: 30px;
+  margin-left: 0px;
+}
+
 @media (min-width: 480px) {
   html[lang="ar"] .box-contacts-horizontal .box-contacts-col+.box-contacts-col {
     border-right: 1px solid #d0dbd7;
     border-left: none;
+  }
+}
+
+/* Hide lang switcher from header on mobile — it's already in the navbar */
+@media (max-width: 768px) {
+  .twoitems {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .twoitems>[class*="cell-"] {
+    width: 50% !important;
+    max-width: 50% !important;
+    flex: 0 0 50% !important;
+    box-sizing: border-box;
+  }
+
+  .page-header-perspective .lang-switcher {
+    display: none !important;
+  }
+
+  .page-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-header-perspective .lang-switcher {
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+
+  html[lang="ar"] .range-inner-bordered>.cell-xs-6:nth-child(odd) .box-icon,
+  html[lang="ar"] .range-inner-bordered>.cell-sm-6:nth-child(odd) .box-icon {
+    padding: 30px 0px 30px 30px;
   }
 }
 
@@ -267,65 +331,5 @@ html[lang="ar"] .rd-navbar-sidebar .rd-navbar-nav-inner {
   html[lang="ar"] .range-inner-bordered>.cell-xs-6:nth-child(2n + 3),
   .range-inner-bordered>.cell-sm-6:nth-child(2n + 3) {
     border-width: 1px 0 0 1px;
-  }
-}
-
-@media (max-width: 767px) {
-  .twoitems {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .twoitems>[class*="cell-"] {
-    width: 50% !important;
-    max-width: 50% !important;
-    flex: 0 0 50% !important;
-    box-sizing: border-box;
-  }
-}
-
-li#langToggle {
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.phone-number {
-  font-weight: bold;
-  direction: ltr;
-  /* keep numbers left-to-right */
-  unicode-bidi: embed;
-}
-
-.phone-number a {
-  color: #014d55 !important;
-}
-
-/* Hide lang switcher from header on mobile — it's already in the navbar */
-@media (max-width: 767px) {
-  .page-header-perspective .lang-switcher {
-    display: none !important;
-  }
-}
-
-/* Desktop: make it fit neatly beside the menu button */
-@media (min-width: 768px) {
-  .page-header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .page-header-perspective .lang-switcher {
-    font-size: 13px;
-    padding: 4px 10px;
-  }
-}
-
-@media (min-width: 768px) {
-
-  html[lang="ar"] .range-inner-bordered>.cell-xs-6:nth-child(odd) .box-icon,
-  .range-inner-bordered>.cell-sm-6:nth-child(odd) .box-icon {
-    padding: 30px 0px 30px 30px;
   }
 }
