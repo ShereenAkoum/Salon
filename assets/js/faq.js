@@ -1,23 +1,44 @@
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("assets/data/faq.json")
-        .then(response => response.json())
-        .then(data => {
-            document.querySelectorAll(".faq-title").forEach(el => {
-                el.textContent = data.title;
-            });
-            document.getElementById("faq-description").textContent = data.description;
+(function () {
+    var faqData = null;
 
-            const faqList = document.getElementById("faq-list");
-            data.faq.forEach(item => {
-                const dt = document.createElement("dt");
-                dt.textContent = item.question;
+    function renderFaq(lang) {
+        if (!faqData) return;
 
-                const dd = document.createElement("dd");
-                dd.textContent = item.answer;
+        // Title & description
+        var descEl = document.getElementById('faq-description');
+        if (descEl) descEl.textContent = faqData['description-' + lang] || faqData['description-en'];
 
-                faqList.appendChild(dt);
-                faqList.appendChild(dd);
-            });
-        })
-        .catch(error => console.error("Error loading FAQ:", error));
-});
+        // FAQ list
+        var faqList = document.getElementById('faq-list');
+        if (!faqList) return;
+        faqList.innerHTML = '';
+
+        faqData.faq.forEach(function (item) {
+            var dt = document.createElement('dt');
+            dt.textContent = item['question-' + lang] || item['question-en'];
+
+            var dd = document.createElement('dd');
+            dd.textContent = item['answer-' + lang] || item['answer-en'];
+
+            faqList.appendChild(dt);
+            faqList.appendChild(dd);
+        });
+    }
+
+    // Load data once, then render in current language
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('assets/data/faq.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                faqData = data;
+                var lang = document.documentElement.getAttribute('lang') || localStorage.getItem('siteLang') || 'en';
+                renderFaq(lang);
+            })
+            .catch(function (err) { console.error('Error loading FAQ:', err); });
+    });
+
+    // Re-render whenever translation.js switches language
+    document.addEventListener('langChanged', function (e) {
+        renderFaq(e.detail.lang);
+    });
+})();

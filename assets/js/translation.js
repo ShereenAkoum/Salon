@@ -10,11 +10,13 @@
   Promise.all([
     fetch('assets/data/index.json').then(function (r) { return r.json(); }),
     fetch('assets/data/nav.json').then(function (r) { return r.json(); }),
-    fetch('assets/data/categoryServices.json').then(function (r) { return r.json(); })
+    fetch('assets/data/categoryServices.json').then(function (r) { return r.json(); }),
+    fetch('assets/data/faq.json').then(function (r) { return r.json(); }).catch(function () { return null; })
   ]).then(function (results) {
     var pageData = results[0];
     var navData = results[1];
     var categoryServData = results[2];
+    var faqData = results[3];
 
     // Flatten pageData into a dot-notation lookup map
     // e.g. { "mainSection.title": {en:"...", ar:"..."}, ... }
@@ -120,6 +122,21 @@
           var val = categoryServData[field + '-' + lang];
           if (val) {
             var fk = 'categoryServices.' + field;
+            if (!translations[fk]) translations[fk] = {};
+            translations[fk][lang] = val;
+          }
+        });
+      });
+    }
+
+    // Process faq.json top-level title & description into translations map
+    // so data-i18n="faq.title" / "faq.description" work on static elements
+    if (faqData) {
+      ['title', 'description'].forEach(function (field) {
+        ['en', 'ar'].forEach(function (lang) {
+          var val = faqData[field + '-' + lang];
+          if (val) {
+            var fk = 'faq.' + field;
             if (!translations[fk]) translations[fk] = {};
             translations[fk][lang] = val;
           }
