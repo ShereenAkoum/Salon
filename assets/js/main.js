@@ -7,16 +7,17 @@
 
   const currentPage = window.location.pathname.split("/").pop() || 'index.html';
 
-<<<<<<< HEAD
-  fetch("head.html")
+  fetch("metaHead.html")
     .then(response => response.text())
     .then(data => {
-      document.getElementById("head-placeholder").innerHTML += data;
+      var temp = document.createElement('div');
+      temp.innerHTML = data;
+      Array.from(temp.childNodes).forEach(function (node) {
+        document.head.appendChild(node.cloneNode(true));
+      });
     })
-    .catch(error => console.error("Error loading head:", error));
+    .catch(error => console.error("Error loading metaHead:", error));
 
-=======
->>>>>>> parent of 68db28b (removed unsed images and fixed head)
   fetch("footer.html")
     .then(response => response.text())
     .then(data => {
