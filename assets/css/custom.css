@@ -341,48 +341,59 @@ div#date-picker-container {
 
 /* RTL fix for RD Material Tabs time slots */
 [dir="rtl"] .rd-material-tabs__container .rd-material-tab {
-    float: right;
+  float: right;
 }
 
 [dir="rtl"] .rd-material-tabs__stage {
-    direction: ltr; /* keep the slider's internal transform math correct */
+  direction: ltr;
+  /* keep the slider's internal transform math correct */
 }
 
 [dir="rtl"] .rd-material-tabs__list .rd-material-tab {
-    float: right;
+  float: right;
 }
 
 
 /* ── Step 2: Selected time slot highlight ─────────────────────────── */
 .date-picker-list a.selected-slot {
-    background-color: var(--color-primary, #1a3a6b);
-    color: #fff !important;
-    border-radius: 4px;
-    font-weight: bold;
+  background-color: var(--color-primary, #1a3a6b);
+  color: #fff !important;
+  border-radius: 4px;
+  font-weight: bold;
 }
 
 /* ── Step 2: Date tab indicator — dot on tabs that have a selection ── */
 .rd-material-tab.has-selection .date-picker-date-number::after {
-    content: '';
-    display: block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--color-primary, #1a3a6b);
-    margin: 4px auto 0;
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary, #1a3a6b);
+  margin: 4px auto 0;
 }
 
 /* If the tab itself is the active+selected one, use white dot */
 .rd-material-tab-active.has-selection .date-picker-date-number::after {
-    background: #fff;
+  background: #fff;
 }
 
 /* ── Step 3: Date list in booking summary ─────────────────────────── */
 .box-contacts-block ul li {
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.07);
-    font-size: 13px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  font-size: 13px;
 }
+
 .box-contacts-block ul li:last-child {
-    border-bottom: none;
+  border-bottom: none;
+}
+
+[dir="rtl"] .page .link-return {
+  padding-left: 5px;
+  padding-right: 0px;
+}
+
+[dir="rtl"] #selection-summary {
+  text-align: right !important;
 }

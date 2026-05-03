@@ -7,9 +7,9 @@
 
   function getDateRange() {
     var dates = [];
-    var now   = new Date();
-    var end   = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
-    var cur   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var now = new Date();
+    var end = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
+    var cur = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     while (cur <= end) {
       dates.push(new Date(cur));
       cur.setDate(cur.getDate() + 1);
@@ -34,8 +34,8 @@
   function isToday(date) {
     var now = new Date();
     return date.getDate() === now.getDate() &&
-           date.getMonth() === now.getMonth() &&
-           date.getFullYear() === now.getFullYear();
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
   }
 
   /**
@@ -52,8 +52,8 @@
     if (!config) return;
 
     var months = config.months[lang] || config.months['en'];
-    var days   = config.days[lang]   || config.days['en'];
-    var slots  = config.timeSlots;
+    var days = config.days[lang] || config.days['en'];
+    var slots = config.timeSlots;
 
     var backEl = document.getElementById('step2-back');
     if (backEl) backEl.textContent = config['back-' + lang] || config['back-en'];
@@ -65,7 +65,7 @@
     if (descEl) descEl.textContent = config['description-' + lang] || config['description-en'];
 
     var dateRange = getDateRange();
-    var grouped   = groupByMonth(dateRange);
+    var grouped = groupByMonth(dateRange);
 
     var container = document.getElementById('date-picker-container');
     if (!container) return;
@@ -73,13 +73,13 @@
 
     grouped.order.forEach(function (monthKey) {
       var monthDates = grouped.groups[monthKey];
-      var sample     = monthDates[0];
-      var monthName  = months[sample.getMonth()];
-      var year       = sample.getFullYear();
+      var sample = monthDates[0];
+      var monthName = months[sample.getMonth()];
+      var year = sample.getFullYear();
       var monthLabel = monthName + ' ' + year;
 
       var heading = document.createElement('h3');
-      heading.className   = 'date-picker-month-heading';
+      heading.className = 'date-picker-month-heading';
       heading.textContent = monthLabel;
       container.appendChild(heading);
 
@@ -93,35 +93,35 @@
       tabsWrap.setAttribute('data-stage-padding', '0');
       tabsWrap.setAttribute('data-sm-stage-padding', '30');
 
-      var tabList    = document.createElement('div');
+      var tabList = document.createElement('div');
       tabList.className = 'rd-material-tabs__list';
-      var ul         = document.createElement('ul');
+      var ul = document.createElement('ul');
 
       var tabContent = document.createElement('div');
       tabContent.className = 'rd-material-tabs__container';
 
       monthDates.forEach(function (date) {
-        var closed  = isClosed(date);
-        var today   = isToday(date);
+        var closed = isClosed(date);
+        var today = isToday(date);
 
         // Use ISO date string (YYYY-MM-DD) as the canonical key — never ambiguous
-        var isoKey  = date.toISOString().split('T')[0];
-        var dayNum  = String(date.getDate());
+        var isoKey = date.toISOString().split('T')[0];
+        var dayNum = String(date.getDate());
         var dayName = days[date.getDay()];
 
         // Date tab
         var li = document.createElement('li');
-        var a  = document.createElement('a');
-        a.className   = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
-        a.href        = '#';
+        var a = document.createElement('a');
+        a.className = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
+        a.href = '#';
         a.dataset.isoKey = isoKey; // stamp tab too for refreshUI
 
-        var numDiv         = document.createElement('div');
-        numDiv.className   = 'date-picker-date-number';
+        var numDiv = document.createElement('div');
+        numDiv.className = 'date-picker-date-number';
         numDiv.textContent = dayNum;
 
-        var dayDiv         = document.createElement('div');
-        dayDiv.className   = 'date-picker-date-text';
+        var dayDiv = document.createElement('div');
+        dayDiv.className = 'date-picker-date-text';
         dayDiv.textContent = dayName;
 
         a.appendChild(numDiv);
@@ -130,18 +130,18 @@
         ul.appendChild(li);
 
         // Time panel — keyed by ISO date, not reconstructed string
-        var panel           = document.createElement('div');
-        panel.dataset.isoKey    = isoKey;
+        var panel = document.createElement('div');
+        panel.dataset.isoKey = isoKey;
         panel.dataset.monthLabel = monthLabel;
-        panel.dataset.dayNum    = dayNum;
-        panel.dataset.dayName   = dayName;
+        panel.dataset.dayNum = dayNum;
+        panel.dataset.dayName = dayName;
 
-        var slotUl       = document.createElement('ul');
+        var slotUl = document.createElement('ul');
         slotUl.className = 'date-picker-list animated fadeIn';
 
         slots.forEach(function (slot, slotIndex) {
           var slotLi = document.createElement('li');
-          var slotA  = document.createElement('a');
+          var slotA = document.createElement('a');
           slotA.textContent = slot;
 
           var available = !closed && isSlotAvailable(date, slotIndex);
@@ -192,7 +192,7 @@
     }
 
     if (typeof onDatePickerReady === 'function') {
-      onDatePickerReady();
+      onDatePickerReady(config);
     }
   }
 

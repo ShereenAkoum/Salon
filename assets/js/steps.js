@@ -52,24 +52,21 @@ function saveSelections(sel) {
  * @param {string} monthLabel e.g. "June 2026"
  */
 function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
-    const label = `${monthLabel} ${dayNum}, ${dayName}`;
     let selections = getSelections();
     const idx = selections.findIndex(s => s.isoKey === isoKey);
 
     if (idx !== -1 && selections[idx].time === timeSlot) {
-        // Same slot clicked again → deselect
         selections.splice(idx, 1);
     } else if (idx !== -1) {
-        // Different slot on same date → replace
-        selections[idx].time  = timeSlot;
-        selections[idx].label = label;
+        selections[idx].time = timeSlot;
     } else {
-        // New date
-        selections.push({ isoKey, time: timeSlot, label });
+        // Store only isoKey + time — label is always rebuilt at render time
+        selections.push({ isoKey, time: timeSlot });
     }
 
     saveSelections(selections);
     refreshTimeSlotUI();
+    renderSummary(window._step2Config);
     updateContinueButton();
 }
 
@@ -108,7 +105,101 @@ function refreshTimeSlotUI() {
     });
 }
 
-// ─── Continue button ──────────────────────────────────────────────────────────
+// ─── Summary panel + Continue button ─────────────────────────────────────────
+
+function removeSelection(isoKey) {
+    let selections = getSelections();
+    selections = selections.filter(s => s.isoKey !== isoKey);
+    saveSelections(selections);
+    refreshTimeSlotUI();
+    renderSummary(window._step2Config);
+    updateContinueButton();
+}
+
+/**
+ * Builds a localized date label from an ISO key (YYYY-MM-DD).
+ * Month and day names come from step2.json for the current language.
+ * Time is always kept in English (digits only, language-neutral).
+ */
+function buildLocalizedLabel(isoKey, step2Config) {
+    const lang = document.documentElement.getAttribute('lang') || 'en';
+    const date = new Date(isoKey + 'T12:00:00'); // noon avoids DST edge cases
+    const months = (step2Config && step2Config.months && step2Config.months[lang])
+        || (step2Config && step2Config.months && step2Config.months['en'])
+        || [];
+    const days = (step2Config && step2Config.days && step2Config.days[lang])
+        || (step2Config && step2Config.days && step2Config.days['en'])
+        || [];
+    const monthName = months[date.getMonth()] || '';
+    const dayName = days[date.getDay()] || '';
+    const dayNum = date.getDate();
+    const year = date.getFullYear();
+    // return `${monthName} ${year} ${dayNum}, ${dayName}`;
+    if (lang != 'en')
+        return `${dayName} ${dayNum} ${monthName} ${year}`;
+
+    return `${dayName} ${monthName} ${dayNum} ${year}`;
+}
+
+// Heading strings per language
+var _summaryHeadings = {
+    en: { one: 'appointment selected for', many: 'appointments selected for' },
+    ar: { one: 'موعد محدد لخدمة', many: 'مواعيد محددة لخدمة' }
+};
+
+function renderSummary(step2Config) {
+    const panel = document.getElementById("selection-summary");
+    if (!panel) return;
+    const selections = getSelections();
+
+    if (selections.length === 0) {
+        panel.style.display = "none";
+        panel.innerHTML = "";
+        return;
+    }
+
+    // If no config passed, try to use cached one
+    if (!step2Config && window._step2Config) step2Config = window._step2Config;
+
+    panel.style.display = "block";
+    panel.innerHTML = "";
+
+    const lang = document.documentElement.getAttribute('lang') || 'en';
+    const service = getParams().get("service") || localStorage.getItem("service") || "";
+    const h = _summaryHeadings[lang] || _summaryHeadings['en'];
+
+    const heading = document.createElement("p");
+    heading.textContent = selections.length === 1
+        ? `1 ${h.one} ${service}`
+        : `${selections.length} ${h.many} ${service}`;
+    heading.style.cssText = "font-weight:600; margin:0 0 12px; color:#1a3a6b; font-size:13px; text-transform:uppercase; letter-spacing:.05em;";
+    panel.appendChild(heading);
+
+    const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
+    sorted.forEach(sel => {
+        const label = buildLocalizedLabel(sel.isoKey, step2Config);
+
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dde3f0; border-radius:6px; padding:10px 14px; margin-bottom:8px;";
+
+        const text = document.createElement("span");
+        text.style.cssText = "font-size:13px; color:#333;";
+        // Date label in current language · time always in English (digits)
+        text.innerHTML = `<strong>${label}</strong> &nbsp;·&nbsp; <span dir="ltr">${sel.time}</span>`;
+
+        const del = document.createElement("button");
+        del.innerHTML = "&#10005;";
+        del.title = lang === 'ar' ? 'حذف' : 'Remove';
+        del.style.cssText = "background:none; border:none; cursor:pointer; color:#999; font-size:16px; line-height:1; padding:0 0 0 12px; flex-shrink:0; transition:color .2s;";
+        del.addEventListener("mouseenter", () => del.style.color = "#c0392b");
+        del.addEventListener("mouseleave", () => del.style.color = "#999");
+        del.addEventListener("click", () => removeSelection(sel.isoKey));
+
+        row.appendChild(text);
+        row.appendChild(del);
+        panel.appendChild(row);
+    });
+}
 
 function updateContinueButton() {
     const btn = document.getElementById("continue-btn");
@@ -119,18 +210,35 @@ function updateContinueButton() {
     if (label) label.textContent = count > 0 ? ` (${count})` : "";
 }
 
-function injectContinueButton() {
+function injectSummaryAndContinue() {
     const container = document.getElementById("date-picker-container");
-    if (!container || document.getElementById("continue-btn")) return;
+    if (!container || document.getElementById("selection-summary")) return;
 
     const wrapper = document.createElement("div");
-    wrapper.style.cssText = "margin-top: 30px; text-align: center; padding-bottom: 20px;";
+    wrapper.style.cssText = "margin-top: 30px; padding-bottom: 20px;";
 
+    // Summary panel
+    const summary = document.createElement("div");
+    summary.id = "selection-summary";
+    summary.style.cssText = [
+        "display:none",
+        "background:#f4f6fb",
+        "border-radius:10px",
+        "padding:18px 20px",
+        "margin-bottom:16px",
+        "text-align:left",
+        "max-width:600px",
+        "margin-left:auto",
+        "margin-right:auto",
+    ].join(";");
+
+    // Continue button
     const btn = document.createElement("button");
-    btn.id        = "continue-btn";
+    btn.id = "continue-btn";
     btn.className = "btn btn-sm btn-primary btn-circle";
-    btn.disabled  = true;
+    btn.disabled = true;
     btn.innerHTML = 'Continue<span class="continue-count"></span>';
+    btn.style.cssText = "display:block; margin:0 auto;";
 
     btn.addEventListener("click", function () {
         if (getSelections().length === 0) return;
@@ -138,40 +246,47 @@ function injectContinueButton() {
         window.location.href = `step-3.html?service=${encodeURIComponent(service)}`;
     });
 
+    wrapper.appendChild(summary);
     wrapper.appendChild(btn);
     container.after(wrapper);
 }
 
-/** Called by step2.js after render completes. */
-function onDatePickerReady() {
-    injectContinueButton();
+/** Called by step2.js after render completes. Receives the loaded config. */
+function onDatePickerReady(step2Config) {
+    if (step2Config) window._step2Config = step2Config;
+    injectSummaryAndContinue();
     refreshTimeSlotUI();
+    renderSummary(window._step2Config);
     updateContinueButton();
 }
 
 // ─── Step 3 ───────────────────────────────────────────────────────────────────
 
 function populateBookingForm() {
-    const params     = getParams();
-    const service    = params.get("service") || localStorage.getItem("service");
+    const params = getParams();
+    const service = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
+    const cfg = window._step2Config;
 
     const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
     if (serviceBlock) serviceBlock.textContent = service || "Not selected";
 
     const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
     if (dateBlock) {
-        if (selections.length === 0) {
+        const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
+        if (sorted.length === 0) {
             dateBlock.textContent = "Not selected";
-        } else if (selections.length === 1) {
-            dateBlock.textContent = `${selections[0].label} at ${selections[0].time}`;
+        } else if (sorted.length === 1) {
+            const lbl = buildLocalizedLabel(sorted[0].isoKey, cfg);
+            dateBlock.textContent = `${lbl} at ${sorted[0].time}`;
         } else {
             dateBlock.innerHTML = "";
             const ul = document.createElement("ul");
             ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: left;";
-            selections.forEach(sel => {
+            sorted.forEach(sel => {
                 const li = document.createElement("li");
-                li.textContent = `${sel.label} at ${sel.time}`;
+                const lbl = buildLocalizedLabel(sel.isoKey, cfg);
+                li.textContent = `${lbl} at ${sel.time}`;
                 ul.appendChild(li);
             });
             dateBlock.appendChild(ul);
@@ -184,20 +299,21 @@ function populateBookingForm() {
     const dateField = document.querySelector("input[name='date']");
     if (dateField) {
         dateField.value = selections
-            .map(s => `${s.label} at ${s.time}`)
+            .sort((a, b) => a.isoKey.localeCompare(b.isoKey))
+            .map(s => `${buildLocalizedLabel(s.isoKey, cfg)} at ${s.time}`)
             .join(" | ");
     }
 }
 
 function setupBookingValidation() {
-    const nameInput  = document.getElementById("contact-full-name");
+    const nameInput = document.getElementById("contact-full-name");
     const phoneInput = document.getElementById("contact-phone");
     const bookButton = document.querySelector("button[type='submit']");
-    const form       = document.querySelector("form");
+    const form = document.querySelector("form");
     if (!nameInput || !phoneInput || !bookButton || !form) return;
 
     function validateForm() {
-        const nameValid  = nameInput.value.trim().length > 0;
+        const nameValid = nameInput.value.trim().length > 0;
         const phoneValid = /^[0-9]+$/.test(phoneInput.value.trim()) && phoneInput.value.trim().length > 0;
         bookButton.disabled = !(nameValid && phoneValid);
     }
@@ -207,7 +323,7 @@ function setupBookingValidation() {
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        bookButton.disabled    = true;
+        bookButton.disabled = true;
         bookButton.textContent = "Booking...";
 
         fetch(form.action, {
@@ -224,8 +340,8 @@ function setupBookingValidation() {
                 alert("Oops! Something went wrong.");
             }
             bookButton.textContent = "Book now";
-            bookButton.disabled    = false;
-            window.location.href   = "index.html";
+            bookButton.disabled = false;
+            window.location.href = "index.html";
         });
     });
 
