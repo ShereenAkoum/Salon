@@ -7,6 +7,13 @@
 
   const currentPage = window.location.pathname.split("/").pop() || 'index.html';
 
+  fetch("head.html")
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("head-placeholder").innerHTML = data;
+    })
+    .catch(error => console.error("Error loading head:", error));
+
   fetch("footer.html")
     .then(response => response.text())
     .then(data => {

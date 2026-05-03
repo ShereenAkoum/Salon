@@ -23,7 +23,6 @@ var userAgent = navigator.userAgent.toLowerCase(),
 		bootstrapTabs: $(".tabs"),
 		rdNavbar: $(".rd-navbar"),
 		rdParallax: $(".rd-parallax"),
-		rdGoogleMaps: $(".rd-google-map"),
     captcha: $('.recaptcha'),
 		rdInputLabel: $(".form-label"),
 		regula: $("[data-constraints]"),
@@ -32,12 +31,10 @@ var userAgent = navigator.userAgent.toLowerCase(),
 		isotope: $(".isotope"),
 		popover: $('[data-toggle="popover"]'),
 		viewAnimate: $('.view-animate'),
-		photoSwipeGallery: $("[data-photo-swipe-item]"),
 		radio: $("input[type='radio']"),
 		checkbox: $("input[type='checkbox']"),
 		customToggle: $("[data-custom-toggle]"),
 		counter: $(".counter"),
-		progressBar: $(".progress-bar-js"),
 		selectFilter: $("select"),
 		slick: $('.slick-slider'),
 		stepper: $("input[type='number']"),
@@ -324,85 +321,6 @@ $document.ready(function () {
 	}
 
 	/**
-	 * RD Google Maps
-	 * @description Enables RD Google Maps plugin
-	 */
-	if (plugins.rdGoogleMaps.length) {
-		var i;
-
-		$.getScript("//maps.google.com/maps/api/js?key=AIzaSyAFeB0kVA6ouyJ_gEvFbMaefLy3cBCyRwo&sensor=false&libraries=geometry,places&v=3.7", function () {
-			var head = document.getElementsByTagName('head')[0],
-				insertBefore = head.insertBefore;
-
-			head.insertBefore = function (newElement, referenceElement) {
-				if (newElement.href && newElement.href.indexOf('//fonts.googleapis.com/css?family=Roboto') != -1 || newElement.innerHTML.indexOf('gm-style') != -1) {
-					return;
-				}
-				insertBefore.call(head, newElement, referenceElement);
-			};
-
-			function initGoogleMap() {
-				var $this = $(this),
-					styles = $this.attr("data-styles");
-
-				$this.googleMap({
-					styles: styles ? JSON.parse(styles) : [],
-					onInit: function (map) {
-						var inputAddress = $('#rd-google-map-address');
-
-						if (inputAddress.length) {
-							var input = inputAddress;
-							var geocoder = new google.maps.Geocoder();
-							var marker = new google.maps.Marker({
-								map: map,
-								icon: "images/gmap_marker.png",
-							});
-							var autocomplete = new google.maps.places.Autocomplete(inputAddress[0]);
-							autocomplete.bindTo('bounds', map);
-							inputAddress.attr('placeholder', '');
-							inputAddress.on('change', function () {
-								$("#rd-google-map-address-submit").trigger('click');
-							});
-							inputAddress.on('keydown', function (e) {
-								if (e.keyCode == 13) {
-									$("#rd-google-map-address-submit").trigger('click');
-								}
-							});
-
-
-							$("#rd-google-map-address-submit").on('click', function (e) {
-								e.preventDefault();
-								var address = input.val();
-								geocoder.geocode({
-									'address': address
-								}, function (results, status) {
-									if (status == google.maps.GeocoderStatus.OK) {
-										var latitude = results[0].geometry.location.lat();
-										var longitude = results[0].geometry.location.lng();
-
-										map.setCenter(new google.maps.LatLng(
-											parseFloat(latitude),
-											parseFloat(longitude)
-										));
-										marker.setPosition(new google.maps.LatLng(
-											parseFloat(latitude),
-											parseFloat(longitude)
-										))
-									}
-								});
-							});
-						}
-					}
-				});
-			}
-
-			for (i = 0; i < plugins.rdGoogleMaps.length; i++) {
-				initGoogleMap.bind(plugins.rdGoogleMaps[i])();
-			}
-		});
-	}
-
-	/**
 	 * Radio
 	 * @description Add custom styling options for input[type="radio"]
 	 */
@@ -653,90 +571,6 @@ $document.ready(function () {
 		attachFormValidator(plugins.regula);
 	}
 
-  /**
-   * Google ReCaptcha
-   * @description Enables Google ReCaptcha
-   */
-  if (plugins.captcha.length) {
-    $.getScript("//www.google.com/recaptcha/api.js?onload=onloadCaptchaCallback&render=explicit&hl=en");
-  }
-
-	/**
-	 * PhotoSwipe Gallery
-	 * @description Enables PhotoSwipe Gallery plugin
-	 */
-	if (plugins.photoSwipeGallery.length) {
-
-		// init image click event
-		$document.delegate("[data-photo-swipe-item]", "click", function (event) {
-			event.preventDefault();
-
-			var $el = $(this),
-				$galleryItems = $el.parents("[data-photo-swipe-gallery]").find("a[data-photo-swipe-item]"),
-				pswpElement = document.querySelectorAll('.pswp')[0],
-				encounteredItems = {},
-				pswpItems = [],
-				options,
-				pswpIndex = 0,
-				pswp;
-
-			if ($galleryItems.length == 0) {
-				$galleryItems = $el;
-			}
-
-			// loop over the gallery to build up the photoswipe items
-			$galleryItems.each(function () {
-				var $item = $(this),
-					src = $item.attr('href'),
-					size = $item.attr('data-size').split('x'),
-					pswdItem;
-
-				if ($item.is(':visible')) {
-
-					// if we have this image the first time
-					if (!encounteredItems[src]) {
-						// build the photoswipe item
-						pswdItem = {
-							src: src,
-							w: parseInt(size[0], 10),
-							h: parseInt(size[1], 10),
-							el: $item // save link to element for getThumbBoundsFn
-						};
-
-						// store that we already had this item
-						encounteredItems[src] = {
-							item: pswdItem,
-							index: pswpIndex
-						};
-
-						// push the item to the photoswipe list
-						pswpItems.push(pswdItem);
-						pswpIndex++;
-					}
-				}
-			});
-
-			options = {
-				index: encounteredItems[$el.attr('href')].index,
-
-				getThumbBoundsFn: function (index) {
-					var $el = pswpItems[index].el,
-						offset = $el.offset();
-
-					return {
-						x: offset.left,
-						y: offset.top,
-						w: $el.width()
-					};
-				}
-			};
-
-			// open the photoswipe gallery
-			pswp = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
-			pswp.init();
-		});
-	}
-
 	/**
 	 * Custom Toggles
 	 */
@@ -822,86 +656,6 @@ $document.ready(function () {
 					}
 				}, $counterNotAnimated))
 				.trigger("scroll");
-		}
-	}
-
-	/**
-	 * Progress bar
-	 * @description  Enable progress bar
-	 */
-	if (plugins.progressBar.length) {
-		var i,
-			bar,
-			type;
-
-		for (i = 0; i < plugins.progressBar.length; i++) {
-			var progressItem = plugins.progressBar[i];
-			bar = null;
-
-			if (progressItem.className.indexOf("progress-bar-horizontal") > -1) {
-				type = 'Line';
-			}
-
-			if (progressItem.className.indexOf("progress-bar-radial") > -1) {
-				type = 'Circle';
-			}
-
-			if (progressItem.getAttribute("data-stroke") && progressItem.getAttribute("data-value") && type) {
-				bar = new ProgressBar[type](progressItem, {
-					strokeWidth: Math.round(parseFloat(progressItem.getAttribute("data-stroke")) / progressItem.offsetWidth * 100),
-					trailWidth: progressItem.getAttribute("data-trail") ? Math.round(parseFloat(progressItem.getAttribute("data-trail")) / progressItem.offsetWidth * 100) : 0,
-					text: {
-						value: progressItem.getAttribute("data-counter") === "true" ? '0' : null,
-						className: 'progress-bar__body',
-						style: null
-					}
-				});
-				bar.svg.setAttribute('preserveAspectRatio', "none meet");
-				if (type === 'Line') {
-					bar.svg.setAttribute(null, "height", progressItem.getAttribute("data-stroke"));
-				}
-
-				bar.path.removeAttribute("stroke");
-				bar.path.className.baseVal = "progress-bar__stroke";
-				if (bar.trail) {
-					bar.trail.removeAttribute("stroke");
-					bar.trail.className.baseVal = "progress-bar__trail";
-				}
-
-				if (progressItem.getAttribute("data-easing") && !isIE) {
-					$(document)
-						.on("scroll", {"barItem": bar}, $.proxy(function (event) {
-							var bar = event.data.barItem;
-							var $this = $(this);
-
-							if (this.className.indexOf("progress-bar--animated") === -1) {
-								this.className += " progress-bar--animated";
-								bar.animate(parseInt($this.attr("data-value")) / 100.0, {
-									easing: $this.attr("data-easing"),
-									duration: $this.attr("data-duration") ? parseInt($this.attr("data-duration")) : 800,
-									step: function (state, b) {
-										if (!b) {
-											if (b._container.className.indexOf("progress-bar-horizontal") > -1 ||
-												b._container.className.indexOf("progress-bar-vertical") > -1) {
-												b.text.style.width = Math.abs(b.value() * 100).toFixed(0) + "%"
-											}
-											b.setText(Math.abs(b.value() * 100).toFixed(0));
-										}
-									}
-								});
-							}
-						}, progressItem))
-						.trigger("scroll");
-				} else {
-					bar.set(parseInt($(progressItem).attr("data-value")) / 100.0);
-					bar.setText($(progressItem).attr("data-value"));
-					if (type === 'Line') {
-						bar.text.style.width = parseInt($(progressItem).attr("data-value")) + "%";
-					}
-				}
-			} else {
-				console.error(progressItem.className + ": progress bar type is not defined");
-			}
 		}
 	}
 
