@@ -32,24 +32,26 @@
         </div>
         <div id="wrapper">
           <section class="section-xs bg-periglacial-blue one-screen-page-content text-center">
-            <div class="shell"><a class="link link-primary link-return" href="javascript:void(0);"
-                onclick="window.location.href = buildBackLink('step-3')">Back</a>
+            <div class="shell">
+              <a class="link link-primary link-return" href="javascript:void(0);"
+                onclick="window.location.href = buildBackLink('step-3')" data-i18n="step3.back">Back</a>
             </div>
             <div class="shell">
-              <h2>ONE MORE STEP!</h2>
+              <h2 data-i18n="step3.title">ONE MORE STEP!</h2>
               <div class="p text-width-medium">
-                <p class="big">To complete your appointment, please review all details described below. Don’t forget to
-                  provide your name and phone and telephone so that we could contact you.</p>
+                <p class="big" data-i18n="step3.description">To complete your appointment, please review all details
+                  described below. Don't forget to provide your name and phone and telephone so that we could contact
+                  you.</p>
               </div>
               <div
                 class="box-contacts box-contacts-vertical box-contacts-vertical-small box-wrap-content-interactive block-centered">
                 <div class="box-contacts-col">
                   <div class="box-contacts-block">
-                    <h3>Service:</h3>
+                    <h3 data-i18n="step3.serviceLabel">Service:</h3>
                     <p>-</p>
                   </div>
                   <div class="box-contacts-block">
-                    <h3>Date:</h3>
+                    <h3 data-i18n="step3.dateLabel">Date:</h3>
                     <p>-</p>
                   </div>
                 </div>
@@ -60,17 +62,20 @@
                       <input type="hidden" name="date">
 
                       <div class="form-group">
-                        <label class="form-label-outside" for="contact-full-name">Full Name</label>
+                        <label class="form-label-outside" for="contact-full-name" data-i18n="step3.namePlaceholder">Full
+                          Name</label>
                         <input class="form-control" id="contact-full-name" type="text" name="name"
-                          data-constraints="@Required">
+                          data-constraints="@Required" data-i18n="step3.namePlaceholder" data-i18n-attr="placeholder">
                       </div>
                       <div class="form-group">
-                        <label class="form-label-outside" for="contact-phone">Telephone</label>
+                        <label class="form-label-outside" for="contact-phone"
+                          data-i18n="step3.phonePlaceholder">Telephone</label>
                         <input class="form-control" id="contact-phone" type="text" name="phone"
-                          data-constraints="@Required @Numeric">
+                          data-constraints="@Required @Numeric" data-i18n="step3.phonePlaceholder"
+                          data-i18n-attr="placeholder">
                       </div>
-                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit" disabled>Book
-                        now</button>
+                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit" disabled
+                        data-i18n="step3.submitButton">Book now</button>
                     </form>
                   </div>
                 </div>

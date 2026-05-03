@@ -12,6 +12,7 @@ function buildBackLink(currentStep) {
     if (currentStep === "step-2") {
         targetStep = "services.html";
         localStorage.removeItem("service");
+        localStorage.removeItem("serviceDisplay");
         localStorage.removeItem("selectedDates");
     }
     if (currentStep === "step-3") {
@@ -23,8 +24,15 @@ function buildBackLink(currentStep) {
     return targetStep;
 }
 
-function chooseService(serviceName) {
+/**
+ * Called by services.html when a service is selected.
+ * @param {string} serviceName    English name — used as the form submission value
+ * @param {string} displayName    Localized name — shown in the UI on step-3
+ *                                Pass the same as serviceName if no translation available.
+ */
+function chooseService(serviceName, displayName) {
     localStorage.setItem("service", serviceName);
+    localStorage.setItem("serviceDisplay", displayName || serviceName);
     window.location.href = `step-2.html?service=${encodeURIComponent(serviceName)}`;
 }
 
@@ -275,8 +283,11 @@ function populateBookingForm() {
     const service    = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
 
+    // Use localized display name for UI, fall back to English service name
+    const serviceDisplay = localStorage.getItem("serviceDisplay") || service || "Not selected";
+
     const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
-    if (serviceBlock) serviceBlock.textContent = service || "Not selected";
+    if (serviceBlock) serviceBlock.textContent = serviceDisplay;
 
     const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
     if (dateBlock) {
@@ -338,7 +349,14 @@ function setupBookingValidation() {
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         bookButton.disabled = true;
-        bookButton.textContent = "Booking...";
+
+        // Use translated strings from data-i18n if available, fallback to English
+        const lang = document.documentElement.getAttribute("lang") || "en";
+        const getI18n = (key, fallback) => {
+            const el = document.querySelector(`[data-i18n="${key}"]`);
+            return (el && el.textContent.trim()) || fallback;
+        };
+        bookButton.textContent = getI18n("step3.submitting", "Booking...");
 
         fetch(form.action, {
             method: form.method,
@@ -346,14 +364,15 @@ function setupBookingValidation() {
             headers: { 'Accept': 'application/json' }
         }).then(response => {
             if (response.ok) {
-                alert("Thanks! We will contact you soon.");
+                alert(getI18n("step3.successMessage", "Thanks! We will contact you soon."));
                 form.reset();
                 localStorage.removeItem("selectedDates");
                 localStorage.removeItem("service");
+                localStorage.removeItem("serviceDisplay");
             } else {
-                alert("Oops! Something went wrong.");
+                alert(getI18n("step3.errorMessage", "Oops! Something went wrong."));
             }
-            bookButton.textContent = "Book now";
+            bookButton.textContent = getI18n("step3.submitButton", "Book now");
             bookButton.disabled = false;
             window.location.href = "index.html";
         });

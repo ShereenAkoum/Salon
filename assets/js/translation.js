@@ -12,13 +12,15 @@
     fetch('assets/data/nav.json').then(function (r) { return r.json(); }),
     fetch('assets/data/categoryServices.json').then(function (r) { return r.json(); }),
     fetch('assets/data/faq.json').then(function (r) { return r.json(); }).catch(function () { return null; }),
-    fetch('assets/data/step2.json').then(function (r) { return r.json(); }).catch(function () { return null; })
+    fetch('assets/data/step2.json').then(function (r) { return r.json(); }).catch(function () { return null; }),
+    fetch('assets/data/step3.json').then(function (r) { return r.json(); }).catch(function () { return null; })
   ]).then(function (results) {
     var pageData = results[0];
     var navData = results[1];
     var categoryServData = results[2];
     var faqData = results[3];
     var step2Data = results[4];
+    var step3Data = results[5];
 
     // Flatten pageData into a dot-notation lookup map
     // e.g. { "mainSection.title": {en:"...", ar:"..."}, ... }
@@ -152,6 +154,27 @@
           var val = step2Data[field + '-' + lang];
           if (val) {
             var fk = 'step2.' + field;
+            if (!translations[fk]) translations[fk] = {};
+            translations[fk][lang] = val;
+          }
+        });
+      });
+    }
+
+    // Process step3.json
+    if (step3Data && step3Data.step3) {
+      var step3Fields = [
+        'back', 'title', 'description',
+        'serviceLabel', 'dateLabel',
+        'namePlaceholder', 'phonePlaceholder',
+        'submitButton', 'submitting',
+        'successMessage', 'errorMessage'
+      ];
+      step3Fields.forEach(function (field) {
+        ['en', 'ar'].forEach(function (lang) {
+          var val = step3Data.step3[field + '-' + lang];
+          if (val) {
+            var fk = 'step3.' + field;
             if (!translations[fk]) translations[fk] = {};
             translations[fk][lang] = val;
           }
