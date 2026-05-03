@@ -31,8 +31,13 @@ function chooseService(serviceName) {
 // ─── Step 2: Selection state ──────────────────────────────────────────────────
 
 /**
- * Each entry: { isoKey: "2026-06-03", time: "10:00 - 11:00", label: "June 2026 3, Sunday" }
- * isoKey is the unique identifier — never reconstructed from display text.
+ * Each entry: {
+ *   isoKey:      "2026-06-03",
+ *   time:        "10:00 - 11:00",
+ *   displayHTML: "<strong>Sunday June 3 2026</strong> &nbsp;·&nbsp; <span dir=\"ltr\">10:00 - 11:00</span>"
+ * }
+ * displayHTML is built once at selection time in the current language and stored as-is.
+ * Step 3 renders it directly — no rebuild needed.
  */
 function getSelections() {
     try { return JSON.parse(localStorage.getItem("selectedDates")) || []; }
@@ -44,35 +49,65 @@ function saveSelections(sel) {
 }
 
 /**
+ * Builds the localized label string from config at the moment of selection.
+ * Only called inside toggleDateSlot — never called again after that.
+ */
+function buildLocalizedLabel(isoKey, step2Config) {
+    const lang = document.documentElement.getAttribute('lang') || 'en';
+    const date = new Date(isoKey + 'T12:00:00');
+    const months = (step2Config && step2Config.months && step2Config.months[lang])
+        || (step2Config && step2Config.months && step2Config.months['en'])
+        || [];
+    const days = (step2Config && step2Config.days && step2Config.days[lang])
+        || (step2Config && step2Config.days && step2Config.days['en'])
+        || [];
+    const monthName = months[date.getMonth()] || '';
+    const dayName   = days[date.getDay()] || '';
+    const dayNum    = date.getDate();
+    const year      = date.getFullYear();
+    if (lang !== 'en')
+        return `${dayName} ${dayNum} ${monthName} ${year}`;
+    return `${dayName} ${monthName} ${dayNum} ${year}`;
+}
+
+/**
  * Called by step2.js on slot click.
- * @param {string} timeSlot  e.g. "10:00 - 11:00"
- * @param {string} isoKey    e.g. "2026-06-03"  ← canonical unique key
- * @param {string} dayNum    e.g. "3"
- * @param {string} dayName   e.g. "Sunday"
+ * Builds and stores displayHTML at selection time so it never needs rebuilding.
+ *
+ * @param {string} timeSlot   e.g. "10:00 - 11:00"
+ * @param {string} isoKey     e.g. "2026-06-03"
+ * @param {string} dayNum     e.g. "3"
+ * @param {string} dayName    e.g. "Sunday"
  * @param {string} monthLabel e.g. "June 2026"
  */
 function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
     let selections = getSelections();
     const idx = selections.findIndex(s => s.isoKey === isoKey);
 
+    // Build the display string right now, in the current language
+    const label       = buildLocalizedLabel(isoKey, window._step2Config);
+    const displayHTML = `<strong>${label}</strong> &nbsp;·&nbsp; <span dir="ltr">${timeSlot}</span>`;
+
     if (idx !== -1 && selections[idx].time === timeSlot) {
+        // Clicking the same slot again → deselect
         selections.splice(idx, 1);
     } else if (idx !== -1) {
-        selections[idx].time = timeSlot;
+        // Different slot on same date → update time + rebuild display
+        selections[idx].time        = timeSlot;
+        selections[idx].displayHTML = displayHTML;
     } else {
-        // Store only isoKey + time — label is always rebuilt at render time
-        selections.push({ isoKey, time: timeSlot });
+        // New date → add entry with pre-built display
+        selections.push({ isoKey, time: timeSlot, displayHTML });
     }
 
     saveSelections(selections);
     refreshTimeSlotUI();
-    renderSummary(window._step2Config);
+    renderSummary();
     updateContinueButton();
 }
 
 /**
- * Scoped entirely by isoKey — finds the exact panel using data-iso-key,
- * so "13:00-14:00 in June" and "13:00-14:00 in July" are completely isolated.
+ * Scoped entirely by isoKey — finds the exact panel using data-iso-key.
  */
 function refreshTimeSlotUI() {
     const selections = getSelections();
@@ -81,20 +116,17 @@ function refreshTimeSlotUI() {
     document.querySelectorAll(".date-picker-date").forEach(el => el.classList.remove("has-selection"));
 
     selections.forEach(sel => {
-        // Find the time panel for this exact date
         const panel = document.querySelector(
             `.rd-material-tabs__container > div[data-iso-key="${sel.isoKey}"]`
         );
         if (!panel) return;
 
-        // Highlight the matching time slot link inside this panel only
         panel.querySelectorAll(".date-picker-list a").forEach(a => {
             if (a.textContent.trim() === sel.time) {
                 a.classList.add("selected-slot");
             }
         });
 
-        // Add dot indicator to the matching date tab in the same widget
         const tabsWidget = panel.closest(".rd-material-tabs");
         if (!tabsWidget) return;
         tabsWidget.querySelectorAll(".date-picker-date[data-iso-key]").forEach(tab => {
@@ -112,42 +144,21 @@ function removeSelection(isoKey) {
     selections = selections.filter(s => s.isoKey !== isoKey);
     saveSelections(selections);
     refreshTimeSlotUI();
-    renderSummary(window._step2Config);
+    renderSummary();
     updateContinueButton();
-}
-
-/**
- * Builds a localized date label from an ISO key (YYYY-MM-DD).
- * Month and day names come from step2.json for the current language.
- * Time is always kept in English (digits only, language-neutral).
- */
-function buildLocalizedLabel(isoKey, step2Config) {
-    const lang = document.documentElement.getAttribute('lang') || 'en';
-    const date = new Date(isoKey + 'T12:00:00'); // noon avoids DST edge cases
-    const months = (step2Config && step2Config.months && step2Config.months[lang])
-        || (step2Config && step2Config.months && step2Config.months['en'])
-        || [];
-    const days = (step2Config && step2Config.days && step2Config.days[lang])
-        || (step2Config && step2Config.days && step2Config.days['en'])
-        || [];
-    const monthName = months[date.getMonth()] || '';
-    const dayName = days[date.getDay()] || '';
-    const dayNum = date.getDate();
-    const year = date.getFullYear();
-    // return `${monthName} ${year} ${dayNum}, ${dayName}`;
-    if (lang != 'en')
-        return `${dayName} ${dayNum} ${monthName} ${year}`;
-
-    return `${dayName} ${monthName} ${dayNum} ${year}`;
 }
 
 // Heading strings per language
 var _summaryHeadings = {
     en: { one: 'appointment selected for', many: 'appointments selected for' },
-    ar: { one: 'موعد محدد لخدمة', many: 'مواعيد محددة لخدمة' }
+    ar: { one: 'موعد محدد لخدمة',          many: 'مواعيد محددة لخدمة' }
 };
 
-function renderSummary(step2Config) {
+/**
+ * Renders the summary panel using the pre-built displayHTML stored in each selection.
+ * No config or label rebuilding needed.
+ */
+function renderSummary() {
     const panel = document.getElementById("selection-summary");
     if (!panel) return;
     const selections = getSelections();
@@ -158,15 +169,12 @@ function renderSummary(step2Config) {
         return;
     }
 
-    // If no config passed, try to use cached one
-    if (!step2Config && window._step2Config) step2Config = window._step2Config;
-
     panel.style.display = "block";
     panel.innerHTML = "";
 
-    const lang = document.documentElement.getAttribute('lang') || 'en';
+    const lang    = document.documentElement.getAttribute('lang') || 'en';
     const service = getParams().get("service") || localStorage.getItem("service") || "";
-    const h = _summaryHeadings[lang] || _summaryHeadings['en'];
+    const h       = _summaryHeadings[lang] || _summaryHeadings['en'];
 
     const heading = document.createElement("p");
     heading.textContent = selections.length === 1
@@ -177,15 +185,13 @@ function renderSummary(step2Config) {
 
     const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
     sorted.forEach(sel => {
-        const label = buildLocalizedLabel(sel.isoKey, step2Config);
-
         const row = document.createElement("div");
         row.style.cssText = "display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dde3f0; border-radius:6px; padding:10px 14px; margin-bottom:8px;";
 
         const text = document.createElement("span");
         text.style.cssText = "font-size:13px; color:#333;";
-        // Date label in current language · time always in English (digits)
-        text.innerHTML = `<strong>${label}</strong> &nbsp;·&nbsp; <span dir="ltr">${sel.time}</span>`;
+        // Use the pre-built HTML string stored at selection time — no rebuild
+        text.innerHTML = sel.displayHTML;
 
         const del = document.createElement("button");
         del.innerHTML = "&#10005;";
@@ -217,7 +223,6 @@ function injectSummaryAndContinue() {
     const wrapper = document.createElement("div");
     wrapper.style.cssText = "margin-top: 30px; padding-bottom: 20px;";
 
-    // Summary panel
     const summary = document.createElement("div");
     summary.id = "selection-summary";
     summary.style.cssText = [
@@ -232,7 +237,6 @@ function injectSummaryAndContinue() {
         "margin-right:auto",
     ].join(";");
 
-    // Continue button
     const btn = document.createElement("button");
     btn.id = "continue-btn";
     btn.className = "btn btn-sm btn-primary btn-circle";
@@ -251,22 +255,25 @@ function injectSummaryAndContinue() {
     container.after(wrapper);
 }
 
-/** Called by step2.js after render completes. Receives the loaded config. */
+/** Called by step2.js after render completes. */
 function onDatePickerReady(step2Config) {
     if (step2Config) window._step2Config = step2Config;
     injectSummaryAndContinue();
     refreshTimeSlotUI();
-    renderSummary(window._step2Config);
+    renderSummary();
     updateContinueButton();
 }
 
 // ─── Step 3 ───────────────────────────────────────────────────────────────────
 
+/**
+ * Populates step 3 entirely from stored selections.
+ * Uses sel.displayHTML directly — no buildLocalizedLabel calls.
+ */
 function populateBookingForm() {
-    const params = getParams();
-    const service = params.get("service") || localStorage.getItem("service");
+    const params     = getParams();
+    const service    = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
-    const cfg = window._step2Config;
 
     const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
     if (serviceBlock) serviceBlock.textContent = service || "Not selected";
@@ -277,16 +284,17 @@ function populateBookingForm() {
         if (sorted.length === 0) {
             dateBlock.textContent = "Not selected";
         } else if (sorted.length === 1) {
-            const lbl = buildLocalizedLabel(sorted[0].isoKey, cfg);
-            dateBlock.textContent = `${lbl} at ${sorted[0].time}`;
+            // Render the stored HTML string directly
+            dateBlock.innerHTML = sorted[0].displayHTML;
         } else {
             dateBlock.innerHTML = "";
             const ul = document.createElement("ul");
             ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: left;";
             sorted.forEach(sel => {
                 const li = document.createElement("li");
-                const lbl = buildLocalizedLabel(sel.isoKey, cfg);
-                li.textContent = `${lbl} at ${sel.time}`;
+                li.style.cssText = "margin-bottom: 6px;";
+                // Render the stored HTML string directly
+                li.innerHTML = sel.displayHTML;
                 ul.appendChild(li);
             });
             dateBlock.appendChild(ul);
@@ -296,24 +304,30 @@ function populateBookingForm() {
     const serviceField = document.querySelector("input[name='service']");
     if (serviceField) serviceField.value = service || "";
 
+    // For the hidden date field (sent to Formspree), use plain text stripped from displayHTML
     const dateField = document.querySelector("input[name='date']");
     if (dateField) {
-        dateField.value = selections
-            .sort((a, b) => a.isoKey.localeCompare(b.isoKey))
-            .map(s => `${buildLocalizedLabel(s.isoKey, cfg)} at ${s.time}`)
+        const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
+        dateField.value = sorted
+            .map(s => {
+                // Strip HTML tags to get plain text for the form submission
+                const tmp = document.createElement("span");
+                tmp.innerHTML = s.displayHTML;
+                return tmp.textContent || tmp.innerText || "";
+            })
             .join(" | ");
     }
 }
 
 function setupBookingValidation() {
-    const nameInput = document.getElementById("contact-full-name");
+    const nameInput  = document.getElementById("contact-full-name");
     const phoneInput = document.getElementById("contact-phone");
     const bookButton = document.querySelector("button[type='submit']");
-    const form = document.querySelector("form");
+    const form       = document.querySelector("form");
     if (!nameInput || !phoneInput || !bookButton || !form) return;
 
     function validateForm() {
-        const nameValid = nameInput.value.trim().length > 0;
+        const nameValid  = nameInput.value.trim().length > 0;
         const phoneValid = /^[0-9]+$/.test(phoneInput.value.trim()) && phoneInput.value.trim().length > 0;
         bookButton.disabled = !(nameValid && phoneValid);
     }
