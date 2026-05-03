@@ -220,8 +220,10 @@ function updateContinueButton() {
     if (!btn) return;
     const count = getSelections().length;
     btn.disabled = count === 0;
-    const label = btn.querySelector(".continue-count");
-    if (label) label.textContent = count > 0 ? ` (${count})` : "";
+    const lang = document.documentElement.getAttribute("lang") || "en";
+    const _continueLabels = { en: "Continue", ar: "متابعة" };
+    const label = _continueLabels[lang] || _continueLabels["en"];
+    btn.innerHTML = `${label}<span class="continue-count">${count > 0 ? " (" + count + ")" : ""}</span>`;
 }
 
 function injectSummaryAndContinue() {
@@ -249,8 +251,17 @@ function injectSummaryAndContinue() {
     btn.id = "continue-btn";
     btn.className = "btn btn-sm btn-primary btn-circle";
     btn.disabled = true;
-    btn.innerHTML = 'Continue<span class="continue-count"></span>';
     btn.style.cssText = "display:block; margin:0 auto;";
+
+    const _continueLabels = { en: "Continue", ar: "متابعة" };
+    function _updateContinueLabel() {
+        const lang = document.documentElement.getAttribute("lang") || "en";
+        const count = getSelections().length;
+        const label = _continueLabels[lang] || _continueLabels["en"];
+        btn.innerHTML = `${label}<span class="continue-count">${count > 0 ? " (" + count + ")" : ""}</span>`;
+    }
+    _updateContinueLabel();
+    document.addEventListener("langChanged", _updateContinueLabel);
 
     btn.addEventListener("click", function () {
         if (getSelections().length === 0) return;
