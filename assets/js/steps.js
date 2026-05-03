@@ -375,7 +375,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    if (path.endsWith("step-2.html") || path.endsWith("step-2")) {
+        // Guard: service must have been set by chooseService() in services.html.
+        // Covers both the URL param and localStorage — either is enough.
+        const service = getParams().get("service") || localStorage.getItem("service");
+
+        if (!service) {
+            localStorage.removeItem("selectedDates");
+            window.location.replace("services.html");
+            return;
+        }
+
+        // Keep localStorage in sync with URL param (in case only param is present)
+        localStorage.setItem("service", service);
+    }
+
     if (path.endsWith("step-3.html") || path.endsWith("step-3")) {
+        // Guard: must have a service and at least one valid selection.
+        // A user typing the URL directly will have neither, so redirect them.
+        const service    = getParams().get("service") || localStorage.getItem("service");
+        const selections = getSelections();
+        const valid      = service && selections.length > 0 && selections.every(s => s.isoKey && s.time && s.displayHTML);
+
+        if (!valid) {
+            // Clear any partial state and send them back to the start
+            localStorage.removeItem("service");
+            localStorage.removeItem("selectedDates");
+            window.location.replace("services.html");
+            return;
+        }
+
         populateBookingForm();
         setupBookingValidation();
     }
