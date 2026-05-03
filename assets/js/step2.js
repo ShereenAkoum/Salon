@@ -1,14 +1,10 @@
 (function () {
   var config = null;
-  var selectedDate = null;
-  var selectedTime = null;
 
-  // ── Helpers ─────────────────────────────────────────────────────────────
   function getLang() {
     return document.documentElement.getAttribute('lang') || localStorage.getItem('siteLang') || 'en';
   }
 
-  // Returns array of Date objects: today + next 3 months worth of days
   function getDateRange() {
     var dates = [];
     var now   = new Date();
@@ -21,10 +17,8 @@
     return dates;
   }
 
-  // Group dates by month → { "2026-5": [Date, Date, ...], ... }
   function groupByMonth(dates) {
-    var groups = {};
-    var order  = [];
+    var groups = {}, order = [];
     dates.forEach(function (d) {
       var key = d.getFullYear() + '-' + d.getMonth();
       if (!groups[key]) { groups[key] = []; order.push(key); }
@@ -39,20 +33,28 @@
 
   function isToday(date) {
     var now = new Date();
-    return date.getDate()  === now.getDate()  &&
+    return date.getDate() === now.getDate() &&
            date.getMonth() === now.getMonth() &&
            date.getFullYear() === now.getFullYear();
+  }
+
+  /**
+   * Deterministic availability: uses the date's day-of-year + slot index as a
+   * pseudo-random seed so availability never changes between renders.
+   */
+  function isSlotAvailable(date, slotIndex) {
+    var seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate() + slotIndex * 37;
+    return (seed % 10) >= 4; // ~60% available, stable per date+slot
   }
 
   // ── Render ───────────────────────────────────────────────────────────────
   function render(lang) {
     if (!config) return;
 
-    var months   = config.months[lang]   || config.months['en'];
-    var days     = config.days[lang]     || config.days['en'];
-    var slots    = config.timeSlots;
+    var months = config.months[lang] || config.months['en'];
+    var days   = config.days[lang]   || config.days['en'];
+    var slots  = config.timeSlots;
 
-    // Static text
     var backEl = document.getElementById('step2-back');
     if (backEl) backEl.textContent = config['back-' + lang] || config['back-en'];
 
@@ -62,27 +64,25 @@
     var descEl = document.getElementById('step2-desc');
     if (descEl) descEl.textContent = config['description-' + lang] || config['description-en'];
 
-    // Build date range
     var dateRange = getDateRange();
     var grouped   = groupByMonth(dateRange);
 
     var container = document.getElementById('date-picker-container');
     if (!container) return;
-    container.innerHTML = '';
+    container.innerHTML = ''; // full wipe — no stale handlers
 
     grouped.order.forEach(function (monthKey) {
       var monthDates = grouped.groups[monthKey];
       var sample     = monthDates[0];
       var monthName  = months[sample.getMonth()];
       var year       = sample.getFullYear();
+      var monthLabel = monthName + ' ' + year;
 
-      // Month heading
       var heading = document.createElement('h3');
       heading.className   = 'date-picker-month-heading';
-      heading.textContent = monthName + ' ' + year;
+      heading.textContent = monthLabel;
       container.appendChild(heading);
 
-      // Tabs wrapper
       var tabsWrap = document.createElement('div');
       tabsWrap.className = 'rd-material-tabs date-picker';
       tabsWrap.setAttribute('data-items', '2');
@@ -93,72 +93,84 @@
       tabsWrap.setAttribute('data-stage-padding', '0');
       tabsWrap.setAttribute('data-sm-stage-padding', '30');
 
-      // ── Date list ──
-      var tabList = document.createElement('div');
+      var tabList    = document.createElement('div');
       tabList.className = 'rd-material-tabs__list';
-      var ul = document.createElement('ul');
+      var ul         = document.createElement('ul');
 
-      // ── Time panels ──
       var tabContent = document.createElement('div');
       tabContent.className = 'rd-material-tabs__container';
 
-      monthDates.forEach(function (date, idx) {
-        var closed = isClosed(date);
-        var today  = isToday(date);
+      monthDates.forEach(function (date) {
+        var closed  = isClosed(date);
+        var today   = isToday(date);
+
+        // Use ISO date string (YYYY-MM-DD) as the canonical key — never ambiguous
+        var isoKey  = date.toISOString().split('T')[0];
+        var dayNum  = String(date.getDate());
+        var dayName = days[date.getDay()];
 
         // Date tab
         var li = document.createElement('li');
         var a  = document.createElement('a');
-        a.className = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
-        a.href      = '#';
+        a.className   = 'date-picker-date' + (closed ? ' disabled' : '') + (today ? ' today' : '');
+        a.href        = '#';
+        a.dataset.isoKey = isoKey; // stamp tab too for refreshUI
 
-        var numDiv  = document.createElement('div');
+        var numDiv         = document.createElement('div');
         numDiv.className   = 'date-picker-date-number';
-        numDiv.textContent = date.getDate();
+        numDiv.textContent = dayNum;
 
-        var dayDiv  = document.createElement('div');
+        var dayDiv         = document.createElement('div');
         dayDiv.className   = 'date-picker-date-text';
-        dayDiv.textContent = days[date.getDay()];
+        dayDiv.textContent = dayName;
 
         a.appendChild(numDiv);
         a.appendChild(dayDiv);
         li.appendChild(a);
         ul.appendChild(li);
 
-        // Time panel for this date
-        var panel = document.createElement('div');
-        var slotUl = document.createElement('ul');
+        // Time panel — keyed by ISO date, not reconstructed string
+        var panel           = document.createElement('div');
+        panel.dataset.isoKey    = isoKey;
+        panel.dataset.monthLabel = monthLabel;
+        panel.dataset.dayNum    = dayNum;
+        panel.dataset.dayName   = dayName;
+
+        var slotUl       = document.createElement('ul');
         slotUl.className = 'date-picker-list animated fadeIn';
 
-        slots.forEach(function (slot) {
+        slots.forEach(function (slot, slotIndex) {
           var slotLi = document.createElement('li');
-          // Randomly disable ~40% of slots to simulate availability
-          // In production replace with real availability data
-          if (closed || Math.random() < 0.4) slotLi.className = 'disabled';
-
-          var slotA = document.createElement('a');
+          var slotA  = document.createElement('a');
           slotA.textContent = slot;
 
-          if (!slotLi.className.includes('disabled')) {
-            slotA.addEventListener('click', function (e) {
-              e.preventDefault();
-              // Deselect previous
-              slotUl.querySelectorAll('li').forEach(function (el) {
-                el.classList.remove('active');
+          var available = !closed && isSlotAvailable(date, slotIndex);
+          if (!available) {
+            slotLi.className = 'disabled';
+          } else {
+            // Capture isoKey, slot, monthLabel, dayNum, dayName in closure
+            (function (capturedIso, capturedSlot, capturedMonth, capturedDayNum, capturedDayName, capturedSlotLi, capturedSlotUl) {
+              slotA.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear active in this panel only
+                capturedSlotUl.querySelectorAll('li').forEach(function (el) {
+                  el.classList.remove('active');
+                });
+
+                if (typeof toggleDateSlot === 'function') {
+                  // Pass ISO key as the unique date identifier
+                  toggleDateSlot(capturedSlot, capturedIso, capturedDayNum, capturedDayName, capturedMonth);
+                }
+
+                // Re-check selection and mark active
+                var selections = typeof getSelections === 'function' ? getSelections() : [];
+                var isSelected = selections.some(function (s) {
+                  return s.isoKey === capturedIso && s.time === capturedSlot;
+                });
+                if (isSelected) capturedSlotLi.classList.add('active');
               });
-              slotLi.classList.add('active');
-              selectedTime = slot;
-              selectedDate = date.toISOString().split('T')[0];
-
-              // Persist for step-3
-              localStorage.setItem('selectedDate', selectedDate);
-              localStorage.setItem('selectedTime', selectedTime);
-
-              // Navigate to next step after short delay
-              setTimeout(function () {
-                window.location.href = 'step-3.html';
-              }, 300);
-            });
+            })(isoKey, slot, monthLabel, dayNum, dayName, slotLi, slotUl);
           }
 
           slotLi.appendChild(slotA);
@@ -175,24 +187,22 @@
       container.appendChild(tabsWrap);
     });
 
-    // Re-init the RD Material Tabs plugin if available
     if (window.jQuery && jQuery.fn.RDMaterialTabs) {
       jQuery('.rd-material-tabs').RDMaterialTabs();
     }
+
+    if (typeof onDatePickerReady === 'function') {
+      onDatePickerReady();
+    }
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
     fetch('assets/data/step2.json')
       .then(function (r) { return r.json(); })
-      .then(function (data) {
-        config = data;
-        render(getLang());
-      })
+      .then(function (data) { config = data; render(getLang()); })
       .catch(function (err) { console.error('Error loading step2.json:', err); });
   });
 
-  // Re-render on language change
   document.addEventListener('langChanged', function (e) {
     render(e.detail.lang);
   });
