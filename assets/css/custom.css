@@ -1,6 +1,6 @@
 :root {
-  --color-primary: #1976d2;
-  --color-secondary: #d32f2f;
+  --color-primary: #16377c;
+  --color-secondary: #d01820;
   --color-tertiary: #014d55;
 }
 
@@ -23,9 +23,9 @@
   width: 90px !important;
   font-size: 13px;
   padding: 4px 8px;
-  color: #014d55;
+  color: var(--color-primary);
   background: #fff;
-  border: 1px solid #014d55;
+  border: 1px solid var(--color-primary);
   padding: 4px 8px;
   text-decoration: none;
   border-radius: 4px;
@@ -35,8 +35,8 @@
 
 .card-service-price-list:hover {
   color: #fff;
-  background: #014d55;
-  border-color: #014d55;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .card-service-list li .btn {
@@ -77,7 +77,7 @@
 }
 
 .lang-switcher :hover {
-  color: #014d55;
+  color: var(--color-primary);
 }
 
 .rd-navbar-fixed .rd-navbar-nav li .lang-switcher {
@@ -206,7 +206,7 @@ html[lang="ar"] .box-contacts {
 }
 
 .logo-glow {
-  color: #d32f2f;
+  color: var(--color-secondary);
   font-size: 28px;
 }
 
@@ -216,12 +216,12 @@ html[lang="ar"] .box-contacts {
 }
 
 .logo-glam {
-  color: #1976d2;
+  color: var(--color-primary);
   font-size: 28px;
 }
 
 .logo-by {
-  color: #1976d2;
+  color: var(--color-primary);
   font-size: 18px;
 }
 
@@ -263,7 +263,7 @@ li#langToggle {
 }
 
 .phone-number a {
-  color: #014d55 !important;
+  color: var(--color-primary) !important;
 }
 
 
