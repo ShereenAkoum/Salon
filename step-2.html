@@ -10,6 +10,15 @@
   <link rel="stylesheet" href="assets/fonts/telma/css/telma.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap">
+  <script>
+    (function () {
+      var lang = localStorage.getItem('siteLang') || 'en';
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      document.write('<style id="anti-flash">body{opacity:0!important;}</style>');
+    })();
+  </script>
 </head>
 
 <body class="one-screen-page">
@@ -22,136 +31,17 @@
         </div>
         <div id="wrapper">
           <section class="section-xs bg-periglacial-blue one-screen-page-content text-center">
-            <div class="shell"><a class="link link-primary link-return" href="javascript:void(0);"
-                onclick="window.location.href = buildBackLink('step-2')">Back</a></div>
             <div class="shell">
-              <h2>Choose a Date</h2>
+              <a id="step2-back" class="link link-primary link-return" href="javascript:void(0);"
+                onclick="window.location.href = buildBackLink('step-2')">Back</a>
+            </div>
+            <div class="shell">
+              <h2 id="step2-title">Choose a Date</h2>
               <div class="p text-width-medium">
-                <p class="big">To complete your booking, please choose the date and time that fit you best. We will be
-                  glad to offer you top-notch barber services on the selected day.</p>
+                <p class="big" id="step2-desc"></p>
               </div>
-              <h3>September</h3>
-              <div class="rd-material-tabs date-picker" data-items="2" data-xs-items="3" data-sm-items="4"
-                data-md-items="5" data-margin="15" data-stage-padding="0" data-sm-stage-padding="30">
-                <div class="rd-material-tabs__list">
-                  <ul>
-                    <li><a class="date-picker-date disabled" href="#">
-                        <div class="date-picker-date-number">9</div>
-                        <div class="date-picker-date-text">Friday</div>
-                      </a></li>
-                    <li><a class="date-picker-date disabled" href="#">
-                        <div class="date-picker-date-number">10</div>
-                        <div class="date-picker-date-text">saturday</div>
-                      </a></li>
-                    <li><a class="date-picker-date" href="#">
-                        <div class="date-picker-date-number">11</div>
-                        <div class="date-picker-date-text">Sunday</div>
-                      </a></li>
-                    <li><a class="date-picker-date" href="#">
-                        <div class="date-picker-date-number">12</div>
-                        <div class="date-picker-date-text">monday</div>
-                      </a></li>
-                    <li><a class="date-picker-date" href="#">
-                        <div class="date-picker-date-number">13</div>
-                        <div class="date-picker-date-text">tuesday</div>
-                      </a></li>
-                    <li><a class="date-picker-date" href="#">
-                        <div class="date-picker-date-number">14</div>
-                        <div class="date-picker-date-text"> Wednesday</div>
-                      </a></li>
-                    <li><a class="date-picker-date" href="#">
-                        <div class="date-picker-date-number">15</div>
-                        <div class="date-picker-date-text"> Thursday</div>
-                      </a></li>
-                  </ul>
-                </div>
-                <div class="rd-material-tabs__container">
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li class="disabled"><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li class="disabled"><a>15:00 - 16:00</a></li>
-                      <li class="disabled"><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li class="disabled"><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li class="disabled"><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li class="disabled"><a>15:00 - 16:00</a></li>
-                      <li class="disabled"><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li><a>15:00 - 16:00</a></li>
-                      <li><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li><a>15:00 - 16:00</a></li>
-                      <li><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li><a>15:00 - 16:00</a></li>
-                      <li><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li><a>15:00 - 16:00</a></li>
-                      <li><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <ul class="date-picker-list animated fadeIn">
-                      <li><a>10:00 - 11:00</a></li>
-                      <li class="disabled"><a>11:00 - 12:00</a></li>
-                      <li><a>12:00 - 13:00</a></li>
-                      <li class="disabled"><a>13:00 - 14:00</a></li>
-                      <li class="disabled"><a>14:00 - 15:00</a></li>
-                      <li><a>15:00 - 16:00</a></li>
-                      <li><a>16:00 - 17:00</a></li>
-                      <li class="disabled"><a>17:00 - 18:00</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <!-- Dynamically generated by step2.js -->
+              <div id="date-picker-container"></div>
             </div>
           </section>
 
@@ -205,6 +95,7 @@
   <script src="assets/js/core.min.js"></script>
   <script src="assets/js/script.js"></script>
   <script src="assets/js/steps.js"></script>
+  <script src="assets/js/step2.js"></script>
   <script src="assets/js/translation.js"></script>
 
 </body>

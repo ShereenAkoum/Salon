@@ -333,3 +333,21 @@ html[lang="ar"].rd-navbar-sidebar-linked .page-header-right>*+* {
     border-width: 1px 0 0 1px;
   }
 }
+
+
+div#date-picker-container {
+  margin-top: 20px;
+}
+
+/* RTL fix for RD Material Tabs time slots */
+[dir="rtl"] .rd-material-tabs__container .rd-material-tab {
+    float: right;
+}
+
+[dir="rtl"] .rd-material-tabs__stage {
+    direction: ltr; /* keep the slider's internal transform math correct */
+}
+
+[dir="rtl"] .rd-material-tabs__list .rd-material-tab {
+    float: right;
+}
