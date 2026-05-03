@@ -10,7 +10,7 @@
   fetch("head.html")
     .then(response => response.text())
     .then(data => {
-      document.getElementById("head-placeholder").innerHTML = data;
+      document.getElementById("head-placeholder").innerHTML += data;
     })
     .catch(error => console.error("Error loading head:", error));
 
