@@ -287,6 +287,12 @@
     // Initial render — synchronous, no flash
     applyLang(currentLang, true);
 
+    // Navbar is injected asynchronously by main.js — re-apply translations
+    // to the navbar's data-i18n elements once it signals it is ready.
+    document.addEventListener('navbarLoaded', function () {
+      applyLang(currentLang, true);
+    });
+
     // Use event delegation on document so both the original navbar
     // and the sticky cloned navbar are covered by a single listener.
     document.addEventListener('click', function (e) {
