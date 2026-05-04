@@ -70,9 +70,9 @@ function buildLocalizedLabel(isoKey, step2Config) {
         || (step2Config && step2Config.days && step2Config.days['en'])
         || [];
     const monthName = months[date.getMonth()] || '';
-    const dayName   = days[date.getDay()] || '';
-    const dayNum    = date.getDate();
-    const year      = date.getFullYear();
+    const dayName = days[date.getDay()] || '';
+    const dayNum = date.getDate();
+    const year = date.getFullYear();
     if (lang !== 'en')
         return `${dayName} ${dayNum} ${monthName} ${year}`;
     return `${dayName} ${monthName} ${dayNum} ${year}`;
@@ -93,7 +93,7 @@ function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
     const idx = selections.findIndex(s => s.isoKey === isoKey);
 
     // Build the display string right now, in the current language
-    const label       = buildLocalizedLabel(isoKey, window._step2Config);
+    const label = buildLocalizedLabel(isoKey, window._step2Config);
     const displayHTML = `<strong>${label}</strong> &nbsp;·&nbsp; <span dir="ltr">${timeSlot}</span>`;
 
     if (idx !== -1 && selections[idx].time === timeSlot) {
@@ -101,7 +101,7 @@ function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
         selections.splice(idx, 1);
     } else if (idx !== -1) {
         // Different slot on same date → update time + rebuild display
-        selections[idx].time        = timeSlot;
+        selections[idx].time = timeSlot;
         selections[idx].displayHTML = displayHTML;
     } else {
         // New date → add entry with pre-built display
@@ -159,7 +159,7 @@ function removeSelection(isoKey) {
 // Heading strings per language
 var _summaryHeadings = {
     en: { one: 'appointment selected for', many: 'appointments selected for' },
-    ar: { one: 'موعد محدد لخدمة',          many: 'مواعيد محددة لخدمة' }
+    ar: { one: 'موعد محدد لخدمة', many: 'مواعيد محددة لخدمة' }
 };
 
 /**
@@ -180,9 +180,14 @@ function renderSummary() {
     panel.style.display = "block";
     panel.innerHTML = "";
 
-    const lang    = document.documentElement.getAttribute('lang') || 'en';
+    const lang = localStorage.getItem('siteLang') || 'en';
     const service = getParams().get("service") || localStorage.getItem("service") || "";
-    const h       = _summaryHeadings[lang] || _summaryHeadings['en'];
+    const h = _summaryHeadings[lang] || _summaryHeadings['en'];
+
+    if (lang === 'ar') {
+        panel.style.setProperty("direction", "rtl", "important");
+        panel.style.setProperty("text-align", "right", "important");
+    }
 
     const heading = document.createElement("p");
     heading.textContent = selections.length === 1
@@ -290,8 +295,8 @@ function onDatePickerReady(step2Config) {
  * Uses sel.displayHTML directly — no buildLocalizedLabel calls.
  */
 function populateBookingForm() {
-    const params     = getParams();
-    const service    = params.get("service") || localStorage.getItem("service");
+    const params = getParams();
+    const service = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
 
     // Use localized display name for UI, fall back to English service name
@@ -342,14 +347,14 @@ function populateBookingForm() {
 }
 
 function setupBookingValidation() {
-    const nameInput  = document.getElementById("contact-full-name");
+    const nameInput = document.getElementById("contact-full-name");
     const phoneInput = document.getElementById("contact-phone");
     const bookButton = document.querySelector("button[type='submit']");
-    const form       = document.querySelector("form");
+    const form = document.querySelector("form");
     if (!nameInput || !phoneInput || !bookButton || !form) return;
 
     function validateForm() {
-        const nameValid  = nameInput.value.trim().length > 0;
+        const nameValid = nameInput.value.trim().length > 0;
         const phoneValid = /^[0-9]+$/.test(phoneInput.value.trim()) && phoneInput.value.trim().length > 0;
         bookButton.disabled = !(nameValid && phoneValid);
     }
@@ -423,9 +428,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (path.endsWith("step-3.html") || path.endsWith("step-3")) {
         // Guard: must have a service and at least one valid selection.
         // A user typing the URL directly will have neither, so redirect them.
-        const service    = getParams().get("service") || localStorage.getItem("service");
+        const service = getParams().get("service") || localStorage.getItem("service");
         const selections = getSelections();
-        const valid      = service && selections.length > 0 && selections.every(s => s.isoKey && s.time && s.displayHTML);
+        const valid = service && selections.length > 0 && selections.every(s => s.isoKey && s.time && s.displayHTML);
 
         if (!valid) {
             // Clear any partial state and send them back to the start

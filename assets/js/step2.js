@@ -156,10 +156,12 @@
         numDiv.className = 'date-picker-date-number';
         numDiv.textContent = dayNum;
 
-        var dayDiv = document.createElement('div');
+        var dayDiv = document.createElement('p');
         dayDiv.className = 'date-picker-date-text';
         dayDiv.textContent = dayName;
-
+        // Remove margin-top
+        dayDiv.style.marginTop = "0"
+        
         a.appendChild(numDiv);
         a.appendChild(dayDiv);
         li.appendChild(a);
