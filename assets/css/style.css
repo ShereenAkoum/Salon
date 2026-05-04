@@ -33572,9 +33572,9 @@ blockquote .small:before {
 		padding: 120px 60px;
 	}
 
-	.image-wrap-right .image-wrap-inner>* {
+	/* .image-wrap-right .image-wrap-inner>* {
 		max-width: 570px;
-	}
+	} */
 }
 
 /*

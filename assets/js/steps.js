@@ -311,7 +311,7 @@ function populateBookingForm() {
         } else {
             dateBlock.innerHTML = "";
             const ul = document.createElement("ul");
-            ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: left;";
+            ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: center;";
             sorted.forEach(sel => {
                 const li = document.createElement("li");
                 li.style.cssText = "margin-bottom: 6px;";

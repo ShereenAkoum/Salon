@@ -396,3 +396,8 @@ div#date-picker-container {
 [dir="rtl"] #selection-summary {
   text-align: right !important;
 }
+
+.service-name{
+  font-size: 16px !important;
+  font-weight: bold;
+}
