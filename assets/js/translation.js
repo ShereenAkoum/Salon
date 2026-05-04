@@ -221,10 +221,6 @@
       }
 
       function doApply() {
-        // Direction + lang attribute
-        html.setAttribute('lang', lang);
-        html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-
         // Translate every keyed element
         var els = document.querySelectorAll('[data-i18n]');
         els.forEach(function (el) {

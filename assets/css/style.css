@@ -92,12 +92,6 @@ body {
 	margin: 0;
 }
 
-body[dir="rtl"] {
-	direction: rtl;
-	text-align: right;
-	font-family: "Tahoma", "Arial", sans-serif;
-}
-
 .lang-switcher {
 	margin-left: 15px;
 	padding: 5px;

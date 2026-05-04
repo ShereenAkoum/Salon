@@ -15,7 +15,8 @@
     (function () {
       var lang = localStorage.getItem('siteLang') || 'en';
       document.documentElement.setAttribute('lang', lang);
-      document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      // document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('dir', 'ltr');
       document.write('<style id="anti-flash">body{opacity:0!important;}</style>');
     })();
   </script>
