@@ -27839,7 +27839,7 @@ dt {
 .page .link-return {
 	position: relative;
 	font: 400 12px/24px "Arvo", Helvetica, Arial, sans-serif;
-	letter-spacing: .5em;
+	/* letter-spacing: .5em; */
 	padding-right: 5px;
 	padding-bottom: 5px;
 	vertical-align: baseline;
