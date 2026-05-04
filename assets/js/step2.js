@@ -161,7 +161,8 @@
         dayDiv.textContent = dayName;
         // Remove margin-top
         dayDiv.style.marginTop = "0"
-        
+        dayDiv.style.letterSpacing = "0"
+
         a.appendChild(numDiv);
         a.appendChild(dayDiv);
         li.appendChild(a);
