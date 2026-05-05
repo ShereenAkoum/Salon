@@ -13,9 +13,11 @@ function buildBackLink(currentStep) {
         targetStep = "services.html";
         localStorage.removeItem("service");
         localStorage.removeItem("serviceDisplay");
+        localStorage.removeItem("serviceCategory");
+        localStorage.removeItem("serviceCategoryDisplay");
         localStorage.removeItem("selectedDates");
     }
-    if (currentStep === "step-3") {
+    if (currentStep === "checkout") {
         targetStep = "step-2.html";
         if (service) params.push(`service=${encodeURIComponent(service)}`);
         localStorage.removeItem("selectedDates");
@@ -26,13 +28,22 @@ function buildBackLink(currentStep) {
 
 /**
  * Called by services.html when a service is selected.
- * @param {string} serviceName    English name — used as the form submission value
- * @param {string} displayName    Localized name — shown in the UI on step-3
- *                                Pass the same as serviceName if no translation available.
+ * @param {string} serviceName             English name — used as the form submission value
+ * @param {string} displayName             Localized name — shown in the UI on checkout
+ *                                         Pass the same as serviceName if no translation available.
+ * @param {string} [categoryName]          English category name — used as the form submission value
+ * @param {string} [categoryDisplayName]   Localized category name — shown in the UI on checkout
  */
-function chooseService(serviceName, displayName) {
+function chooseService(serviceName, displayName, categoryName, categoryDisplayName) {
     localStorage.setItem("service", serviceName);
     localStorage.setItem("serviceDisplay", displayName || serviceName);
+    if (categoryName) {
+        localStorage.setItem("serviceCategory", categoryName);
+        localStorage.setItem("serviceCategoryDisplay", categoryDisplayName || categoryName);
+    } else {
+        localStorage.removeItem("serviceCategory");
+        localStorage.removeItem("serviceCategoryDisplay");
+    }
     window.location.href = `step-2.html?service=${encodeURIComponent(serviceName)}`;
 }
 
@@ -57,25 +68,31 @@ function saveSelections(sel) {
 }
 
 /**
- * Builds the localized label string from config at the moment of selection.
+ * Builds both the English and Arabic label strings from config at the moment of selection.
  * Only called inside toggleDateSlot — never called again after that.
+ *
+ * @returns {{ en: string, ar: string }}
  */
-function buildLocalizedLabel(isoKey, step2Config) {
-    const lang = document.documentElement.getAttribute('lang') || 'en';
+function buildLocalizedLabels(isoKey, step2Config) {
     const date = new Date(isoKey + 'T12:00:00');
-    const months = (step2Config && step2Config.months && step2Config.months[lang])
-        || (step2Config && step2Config.months && step2Config.months['en'])
-        || [];
-    const days = (step2Config && step2Config.days && step2Config.days[lang])
-        || (step2Config && step2Config.days && step2Config.days['en'])
-        || [];
-    const monthName = months[date.getMonth()] || '';
-    const dayName = days[date.getDay()] || '';
-    const dayNum = date.getDate();
-    const year = date.getFullYear();
-    if (lang !== 'en')
-        return `${dayName} ${dayNum} ${monthName} ${year}`;
-    return `${dayName} ${monthName} ${dayNum} ${year}`;
+    const dayNum  = date.getDate();
+    const year    = date.getFullYear();
+
+    function labelFor(lang) {
+        const months = (step2Config && step2Config.months && step2Config.months[lang])
+            || (step2Config && step2Config.months && step2Config.months['en'])
+            || [];
+        const days = (step2Config && step2Config.days && step2Config.days[lang])
+            || (step2Config && step2Config.days && step2Config.days['en'])
+            || [];
+        const monthName = months[date.getMonth()] || '';
+        const dayName   = days[date.getDay()] || '';
+        return lang !== 'en'
+            ? `${dayName} ${dayNum} ${monthName} ${year}`
+            : `${dayName} ${monthName} ${dayNum} ${year}`;
+    }
+
+    return { en: labelFor('en'), ar: labelFor('ar') };
 }
 
 /**
@@ -92,9 +109,10 @@ function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
     let selections = getSelections();
     const idx = selections.findIndex(s => s.isoKey === isoKey);
 
-    // Build the display string right now, in the current language
-    const label = buildLocalizedLabel(isoKey, window._step2Config);
-    const displayHTML = `<strong>${label}</strong> &nbsp;·&nbsp; <span dir="ltr">${timeSlot}</span>`;
+    // Build display strings for both languages right now
+    const labels = buildLocalizedLabels(isoKey, window._step2Config);
+    const displayHTML_en = `<strong>${labels.en}</strong> &nbsp;·&nbsp; <span dir="ltr">${timeSlot}</span>`;
+    const displayHTML_ar = `<strong>${labels.ar}</strong> &nbsp;·&nbsp; <span dir="ltr">${timeSlot}</span>`;
 
     if (idx !== -1 && selections[idx].time === timeSlot) {
         // Clicking the same slot again → deselect
@@ -102,10 +120,11 @@ function toggleDateSlot(timeSlot, isoKey, dayNum, dayName, monthLabel) {
     } else if (idx !== -1) {
         // Different slot on same date → update time + rebuild display
         selections[idx].time = timeSlot;
-        selections[idx].displayHTML = displayHTML;
+        selections[idx].displayHTML_en = displayHTML_en;
+        selections[idx].displayHTML_ar = displayHTML_ar;
     } else {
-        // New date → add entry with pre-built display
-        selections.push({ isoKey, time: timeSlot, displayHTML });
+        // New date → add entry with pre-built displays
+        selections.push({ isoKey, time: timeSlot, displayHTML_en, displayHTML_ar });
     }
 
     saveSelections(selections);
@@ -180,8 +199,22 @@ function renderSummary() {
     panel.style.display = "block";
     panel.innerHTML = "";
 
-    const lang = localStorage.getItem('siteLang') || 'en';
-    const service = getParams().get("service") || localStorage.getItem("service") || "";
+  const lang = localStorage.getItem('siteLang') || 'en';
+const params = getParams();
+
+// Always keep the raw service reference
+const service = params.get("service") || localStorage.getItem("service") || "";
+
+// Decide which values to use for display
+let serviceDisplay, categoryDisplay;
+
+if (lang === "en") {
+  serviceDisplay = service || "Not selected";
+  categoryDisplay = localStorage.getItem("serviceCategory") || "";
+} else {
+  serviceDisplay = localStorage.getItem("serviceDisplay") || service || "غير محدد";
+  categoryDisplay = localStorage.getItem("serviceCategoryDisplay") || localStorage.getItem("serviceCategory") || "";
+}
     const h = _summaryHeadings[lang] || _summaryHeadings['en'];
 
     if (lang === 'ar') {
@@ -191,8 +224,8 @@ function renderSummary() {
 
     const heading = document.createElement("p");
     heading.textContent = selections.length === 1
-        ? `1 ${h.one} ${service}`
-        : `${selections.length} ${h.many} ${service}`;
+        ? `1 ${h.one} ${categoryDisplay + " : " + serviceDisplay}`
+        : `${selections.length} ${h.many} ${categoryDisplay + " : " + serviceDisplay}`;
     heading.style.cssText = "font-weight:600; margin:0 0 12px; color:#1a3a6b; font-size:13px; text-transform:uppercase; letter-spacing:.05em;";
     panel.appendChild(heading);
 
@@ -203,8 +236,8 @@ function renderSummary() {
 
         const text = document.createElement("span");
         text.style.cssText = "font-size:13px; color:#333;";
-        // Use the pre-built HTML string stored at selection time — no rebuild
-        text.innerHTML = sel.displayHTML;
+        // Use the language-appropriate pre-built HTML string
+        text.innerHTML = lang === 'ar' ? sel.displayHTML_ar : sel.displayHTML_en;
 
         const del = document.createElement("button");
         del.innerHTML = "&#10005;";
@@ -271,7 +304,7 @@ function injectSummaryAndContinue() {
     btn.addEventListener("click", function () {
         if (getSelections().length === 0) return;
         const service = getParams().get("service") || localStorage.getItem("service");
-        window.location.href = `step-3.html?service=${encodeURIComponent(service)}`;
+        window.location.href = `checkout.html?service=${encodeURIComponent(service)}`;
     });
 
     wrapper.appendChild(summary);
@@ -295,51 +328,56 @@ function onDatePickerReady(step2Config) {
  * Uses sel.displayHTML directly — no buildLocalizedLabel calls.
  */
 function populateBookingForm() {
+    const lang = document.documentElement.getAttribute("lang") || "en";
+
     const params = getParams();
     const service = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
 
-    // Use localized display name for UI, fall back to English service name
-    const serviceDisplay = localStorage.getItem("serviceDisplay") || service || "Not selected";
+    // Decide which values to use based on language
+    let serviceDisplay, categoryDisplay;
 
-    const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
-    if (serviceBlock) serviceBlock.textContent = serviceDisplay;
-
-    const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
-    if (dateBlock) {
-        const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
-        if (sorted.length === 0) {
-            dateBlock.textContent = "Not selected";
-        } else if (sorted.length === 1) {
-            // Render the stored HTML string directly
-            dateBlock.innerHTML = sorted[0].displayHTML;
-        } else {
-            dateBlock.innerHTML = "";
-            const ul = document.createElement("ul");
-            ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: center;";
-            sorted.forEach(sel => {
-                const li = document.createElement("li");
-                li.style.cssText = "margin-bottom: 6px;";
-                // Render the stored HTML string directly
-                li.innerHTML = sel.displayHTML;
-                ul.appendChild(li);
-            });
-            dateBlock.appendChild(ul);
-        }
+    if (lang === "en") {
+        serviceDisplay = service || "Not selected";
+        categoryDisplay = localStorage.getItem("serviceCategory") || "";
+    } else {
+        serviceDisplay = localStorage.getItem("serviceDisplay") || service || "غير محدد";
+        categoryDisplay = localStorage.getItem("serviceCategoryDisplay") || localStorage.getItem("serviceCategory") || "";
     }
 
-    const serviceField = document.querySelector("input[name='service']");
-    if (serviceField) serviceField.value = service || "";
+    // Update visible blocks
+    const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
+    if (serviceBlock) serviceBlock.textContent = categoryDisplay + " : " + serviceDisplay;
 
-    // For the hidden date field (sent to Formspree), use plain text stripped from displayHTML
+    const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
+    const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
+
+    if (sorted.length === 1) {
+        dateBlock.innerHTML = lang === "en" ? sorted[0].displayHTML_en : sorted[0].displayHTML_ar;
+    } else {
+        dateBlock.innerHTML = "";
+        const ul = document.createElement("ul");
+        ul.style.cssText = "list-style: none; padding: 0; margin: 0; text-align: center;";
+        sorted.forEach(sel => {
+            const li = document.createElement("li");
+            li.style.cssText = "margin-bottom: 6px;";
+            li.innerHTML = lang === "en" ? sel.displayHTML_en : sel.displayHTML_ar;
+            ul.appendChild(li);
+        });
+        dateBlock.appendChild(ul);
+    }
+
+    // Hidden fields for Formspree submission
+    const serviceField = document.querySelector("input[name='service']");
+    if (serviceField) serviceField.value = serviceDisplay || "";
+
     const dateField = document.querySelector("input[name='date']");
     if (dateField) {
         const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
         dateField.value = sorted
             .map(s => {
-                // Strip HTML tags to get plain text for the form submission
                 const tmp = document.createElement("span");
-                tmp.innerHTML = s.displayHTML;
+                tmp.innerHTML = lang === "en" ? s.displayHTML_en : s.displayHTML_ar;
                 return tmp.textContent || tmp.innerText || "";
             })
             .join(" | ");
@@ -385,6 +423,10 @@ function setupBookingValidation() {
                 localStorage.removeItem("selectedDates");
                 localStorage.removeItem("service");
                 localStorage.removeItem("serviceDisplay");
+                localStorage.removeItem("serviceCategory");
+                localStorage.removeItem("serviceCategoryDisplay");
+                localStorage.removeItem("selectedDate");
+                localStorage.removeItem("selectedTime");
             } else {
                 alert(getI18n("step3.errorMessage", "Oops! Something went wrong."));
             }
@@ -404,6 +446,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (path.endsWith("index.html") || path === "/") {
         localStorage.removeItem("service");
+        localStorage.removeItem("serviceCategory");
+        localStorage.removeItem("serviceCategoryDisplay");
         localStorage.removeItem("selectedDates");
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -425,12 +469,12 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("service", service);
     }
 
-    if (path.endsWith("step-3.html") || path.endsWith("step-3")) {
+    if (path.endsWith("checkout.html") || path.endsWith("checkout")) {
         // Guard: must have a service and at least one valid selection.
         // A user typing the URL directly will have neither, so redirect them.
         const service = getParams().get("service") || localStorage.getItem("service");
         const selections = getSelections();
-        const valid = service && selections.length > 0 && selections.every(s => s.isoKey && s.time && s.displayHTML);
+        const valid = service && selections.length > 0 && selections.every(s => s.isoKey && s.time && s.displayHTML_en);
 
         if (!valid) {
             // Clear any partial state and send them back to the start

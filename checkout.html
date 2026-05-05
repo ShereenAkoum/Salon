@@ -34,7 +34,7 @@
           <section class="section-xs bg-periglacial-blue one-screen-page-content text-center">
             <div class="shell">
               <a class="link link-primary link-return" href="javascript:void(0);"
-                onclick="window.location.href = buildBackLink('step-3')" data-i18n="step3.back">Back</a>
+                onclick="window.location.href = buildBackLink('checkout')" data-i18n="step3.back">Back</a>
             </div>
             <div class="shell">
               <h2 data-i18n="step3.title">ONE MORE STEP!</h2>
@@ -58,6 +58,7 @@
                 <div class="box-contacts-col box-contacts-right">
                   <div class="box-contacts-block">
                     <form action="https://formspree.io/f/mwvwzrgy" method="POST">
+                      <input type="hidden" name="category">
                       <input type="hidden" name="service">
                       <input type="hidden" name="date">
 

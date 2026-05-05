@@ -50,7 +50,7 @@
         btn.href = "javascript:void(0);";
         btn.textContent = bookLabel;
         btn.onclick = (function (s) {
-          return function () { if (typeof chooseService === 'function') chooseService(s['name-en'], s['name-' + lang] || s['name-en']); };
+          return function () { if (typeof chooseService === 'function') chooseService(s['name-en'], s['name-ar'], category['name-en'], category['name-ar']); };
         })(service);
 
         article.appendChild(priceEl);
@@ -75,7 +75,7 @@
           bookBtn.href = "javascript:void(0);";
           bookBtn.textContent = bookLabel;
           bookBtn.onclick = (function (s) {
-            return function () { if (typeof chooseService === 'function') chooseService(s['name-en'], s['name-' + lang] || s['name-en']); };
+            return function () { if (typeof chooseService === 'function') chooseService(s['name-en'], s['name-ar'], category['name-en'], category['name-ar']); };
           })(service);
 
           li.appendChild(bookBtn);
