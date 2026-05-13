@@ -242,7 +242,9 @@
             var prefix = parts[1] || '';
 
             el.setAttribute(attrName, prefix + text);
-
+            if (el.tagName.toLowerCase() !== 'img') {
+              el.textContent = text;
+            }
             // ✅ IMPORTANT: don't apply text content for elements using attributes only
             return;
           }
