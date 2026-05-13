@@ -27872,9 +27872,9 @@ dt {
 	text-align: center;
 	-webkit-background-size: cover;
 	background-size: cover;
-	background-position: center 90%;
+	background-position: center 50%;
 	background-color: #000;
-	background-image: url("../images/bg-image-title.jpg");
+	background-image: url("../images/main.PNG");
 	color: #fff;
 	display: -ms-flexbox;
 	display: -webkit-flex;
