@@ -197,7 +197,7 @@
           filePath += src;
         }
 
-        var width = item['width'] || '150';
+        var width = 'auto';
         var height = item['height'] || '62';
         var imgHtml = src
           ? '<figure class="box-icon-image"><img src="' + filePath + '" alt="' + title + '" width="' + width + '" height="' + height + '" /></figure>'

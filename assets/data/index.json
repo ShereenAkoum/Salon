@@ -25,8 +25,7 @@
                 "title-ar": "تسريحات الشعر",
                 "description-en": "Modern cuts and styling tailored for women",
                 "description-ar": "قصات وتسريحات عصرية مخصصة للسيدات",
-                "src": "hairStyles-light.png",
-                "width": 250,
+                "src": "hairStyles.png",
                 "height": 90
             },
             {
@@ -34,8 +33,7 @@
                 "title-ar": "علاجات الشعر",
                 "description-en": "Professional treatments to nourish and repair hair",
                 "description-ar": "علاجات احترافية لتغذية الشعر وإصلاحه",
-                "src": "hairTreatment-light.png",
-                "width": 100,
+                "src": "hairTreatment.png",
                 "height": 90
             }
         ]
