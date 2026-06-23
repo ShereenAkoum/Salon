@@ -6,6 +6,7 @@ function getParams() {
 
 function buildBackLink(currentStep) {
     const service = localStorage.getItem("service");
+    const voucher = localStorage.getItem("voucher");
     let targetStep = "";
     let params = [];
 
@@ -16,6 +17,8 @@ function buildBackLink(currentStep) {
         localStorage.removeItem("serviceCategory");
         localStorage.removeItem("serviceCategoryDisplay");
         localStorage.removeItem("selectedDates");
+
+        if (voucher) params.push(`voucher=${encodeURIComponent(voucher)}`);
     }
     if (currentStep === "checkout") {
         targetStep = "step-2.html";
@@ -37,6 +40,9 @@ function buildBackLink(currentStep) {
 function chooseService(serviceName, displayName, categoryName, categoryDisplayName) {
     localStorage.setItem("service", serviceName);
     localStorage.setItem("serviceDisplay", displayName || serviceName);
+
+    var voucher = localStorage.getItem('voucher');
+
     if (categoryName) {
         localStorage.setItem("serviceCategory", categoryName);
         localStorage.setItem("serviceCategoryDisplay", categoryDisplayName || categoryName);
@@ -44,7 +50,10 @@ function chooseService(serviceName, displayName, categoryName, categoryDisplayNa
         localStorage.removeItem("serviceCategory");
         localStorage.removeItem("serviceCategoryDisplay");
     }
-    window.location.href = `step-2.html?service=${encodeURIComponent(serviceName)}`;
+
+    const baseUrl = `step-2.html?service=${encodeURIComponent(serviceName)}`;
+    window.location.href = voucher ? `${baseUrl}&voucher=${encodeURIComponent(voucher)}` : baseUrl;
+
 }
 
 // ─── Step 2: Selection state ──────────────────────────────────────────────────
@@ -75,8 +84,8 @@ function saveSelections(sel) {
  */
 function buildLocalizedLabels(isoKey, step2Config) {
     const date = new Date(isoKey + 'T12:00:00');
-    const dayNum  = date.getDate();
-    const year    = date.getFullYear();
+    const dayNum = date.getDate();
+    const year = date.getFullYear();
 
     function labelFor(lang) {
         const months = (step2Config && step2Config.months && step2Config.months[lang])
@@ -86,7 +95,7 @@ function buildLocalizedLabels(isoKey, step2Config) {
             || (step2Config && step2Config.days && step2Config.days['en'])
             || [];
         const monthName = months[date.getMonth()] || '';
-        const dayName   = days[date.getDay()] || '';
+        const dayName = days[date.getDay()] || '';
         return lang !== 'en'
             ? `${dayName} ${dayNum} ${monthName} ${year}`
             : `${dayName} ${monthName} ${dayNum} ${year}`;
@@ -199,22 +208,22 @@ function renderSummary() {
     panel.style.display = "block";
     panel.innerHTML = "";
 
-  const lang = localStorage.getItem('siteLang') || 'en';
-const params = getParams();
+    const lang = localStorage.getItem('siteLang') || 'en';
+    const params = getParams();
 
-// Always keep the raw service reference
-const service = params.get("service") || localStorage.getItem("service") || "";
+    // Always keep the raw service reference
+    const service = params.get("service") || localStorage.getItem("service") || "";
 
-// Decide which values to use for display
-let serviceDisplay, categoryDisplay;
+    // Decide which values to use for display
+    let serviceDisplay, categoryDisplay;
 
-if (lang === "en") {
-  serviceDisplay = service || "Not selected";
-  categoryDisplay = localStorage.getItem("serviceCategory") || "";
-} else {
-  serviceDisplay = localStorage.getItem("serviceDisplay") || service || "غير محدد";
-  categoryDisplay = localStorage.getItem("serviceCategoryDisplay") || localStorage.getItem("serviceCategory") || "";
-}
+    if (lang === "en") {
+        serviceDisplay = service || "Not selected";
+        categoryDisplay = localStorage.getItem("serviceCategory") || "";
+    } else {
+        serviceDisplay = localStorage.getItem("serviceDisplay") || service || "غير محدد";
+        categoryDisplay = localStorage.getItem("serviceCategoryDisplay") || localStorage.getItem("serviceCategory") || "";
+    }
     const h = _summaryHeadings[lang] || _summaryHeadings['en'];
 
     if (lang === 'ar') {
@@ -333,6 +342,7 @@ function populateBookingForm() {
     const params = getParams();
     const service = params.get("service") || localStorage.getItem("service");
     const selections = getSelections();
+    const voucher = localStorage.getItem("voucher");
 
     // Decide which values to use based on language
     let serviceDisplay, categoryDisplay;
@@ -349,8 +359,18 @@ function populateBookingForm() {
     const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
     if (serviceBlock) serviceBlock.textContent = categoryDisplay + " : " + serviceDisplay;
 
+    const voucherName = document.querySelector(".voucher-name");
+    const voucherBlock = voucherName ? voucherName.closest(".box-contacts-block") : null;
+
+    if (voucher) {
+        if (voucherName) voucherName.textContent = voucher;
+        if (voucherBlock) voucherBlock.style.display = "";
+    } else {
+        if (voucherBlock) voucherBlock.style.display = "none";
+    }
+
     const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
-    const dateBlock = document.querySelector(".box-contacts-block:nth-child(2) p");
+    const dateBlock = document.querySelector(".box-contacts-block:nth-child(3) p");
 
     if (sorted.length === 1) {
         dateBlock.innerHTML = lang === "en" ? sorted[0].displayHTML_en : sorted[0].displayHTML_ar;
@@ -370,6 +390,12 @@ function populateBookingForm() {
     // Hidden fields for Formspree submission
     const serviceField = document.querySelector("input[name='service']");
     if (serviceField) serviceField.value = serviceDisplay || "";
+
+    const categoryField = document.querySelector("input[name='category']");
+    if (categoryField) categoryField.value = categoryDisplay || "";
+
+    const voucherField = document.querySelector("input[name='voucher']");
+    if (voucherField) voucherField.value = voucher || "";
 
     const dateField = document.querySelector("input[name='date']");
     if (dateField) {
@@ -427,6 +453,7 @@ function setupBookingValidation() {
                 localStorage.removeItem("serviceCategoryDisplay");
                 localStorage.removeItem("selectedDate");
                 localStorage.removeItem("selectedTime");
+                localStorage.removeItem("voucher");
             } else {
                 alert(getI18n("step3.errorMessage", "Oops! Something went wrong."));
             }
@@ -445,10 +472,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const path = window.location.pathname;
 
     if (path.endsWith("index.html") || path === "/") {
+        localStorage.removeItem("selectedDates");
         localStorage.removeItem("service");
+        localStorage.removeItem("serviceDisplay");
         localStorage.removeItem("serviceCategory");
         localStorage.removeItem("serviceCategoryDisplay");
-        localStorage.removeItem("selectedDates");
+        localStorage.removeItem("selectedDate");
+        localStorage.removeItem("selectedTime");
+        localStorage.removeItem("voucher");
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
         }

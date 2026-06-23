@@ -7,6 +7,13 @@
     "July", "August", "September", "October", "November", "December"
   ];
 
+  function toIsoKey(date) {
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
   function getLang() {
     return document.documentElement.getAttribute('lang') || localStorage.getItem('siteLang') || 'en';
   }
@@ -65,7 +72,7 @@
 
     var ms = getMonthSchedule(date);
     var override = getDateOverride(date);
-    var isoKey = date.toISOString().split('T')[0];
+    var isoKey = toIsoKey(date);
 
     // Per-date closedTime overrides month-level closedTime
     if (override && Array.isArray(override.closedTime)) {
@@ -141,7 +148,7 @@
       monthDates.forEach(function (date) {
         var closed = isClosed(date);
         var today = isToday(date);
-        var isoKey = date.toISOString().split('T')[0];
+        var isoKey = toIsoKey(date);
         var dayNum = String(date.getDate());
         var dayName = days[date.getDay()];
 

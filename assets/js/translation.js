@@ -168,7 +168,7 @@
         'serviceLabel', 'dateLabel',
         'namePlaceholder', 'phonePlaceholder',
         'submitButton', 'submitting',
-        'successMessage', 'errorMessage'
+        'successMessage', 'errorMessage','voucherLabel'
       ];
       step3Fields.forEach(function (field) {
         ['en', 'ar'].forEach(function (lang) {

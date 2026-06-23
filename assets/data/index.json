@@ -5,12 +5,18 @@
         "description-en": "Establish your new amazing look with Barbershop services! From haircuts to hot shaves, you can experience the best level of barbering in the area.",
         "description-ar": "أنشئ إطلالتك الجديدة الرائعة مع خدمات الحلاقة! من قصات الشعر إلى الحلاقة الساخنة، استمتع بأعلى مستوى من الحرفية في المنطقة."
     },
+    "voucher": {
+        "title-en": "Vouchers",
+        "title-ar": "قسائم",
+        "description-en": "Choose a voucher and redeem it on the corresponding service.",
+        "description-ar": "اختر قسيمة واستخدمها في الخدمة المناسبة."
+    },
     "whoWeAre": {
         "title-en": "WHO WE ARE",
         "title-ar": "من نحن",
-        "src1":"assets/images/about-1-300x460.jpg",
-        "src2":"assets/images/about-2-300x460.jpg",
-        "src3":"assets/images/about-3-300x460.jpg",
+        "src1": "assets/images/about-1-300x460.jpg",
+        "src2": "assets/images/about-2-300x460.jpg",
+        "src3": "assets/images/about-3-300x460.jpg",
         "description-en": "Barbershop is a team of highly qualified barbers dedicated to offering the best value. We do this by providing high quality salon services for men and boys, in a warm, friendly atmosphere.",
         "description-ar": "صالون الحلاقة هو فريق من الحلاقين المؤهلين تأهيلاً عالياً، ملتزمون بتقديم أفضل قيمة. نحقق ذلك من خلال تقديم خدمات صالون عالية الجودة للرجال والأولاد في أجواء دافئة وودية."
     },

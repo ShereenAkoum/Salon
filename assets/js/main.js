@@ -1,6 +1,28 @@
 (function () {
   const currentPage = window.location.pathname.split("/").pop() || 'index.html';
 
+  function loadVouchers() {
+    const container = document.getElementById('vouchers-grid');
+    if (!container) return;
+
+    fetch('assets/data/voucher.json')
+        .then(r => r.json())
+        .then(vouchers => {
+
+            container.innerHTML = vouchers
+                .filter(v => v.active)
+                .map(v => `
+                    <a href="services.html?voucher=${encodeURIComponent(v.title)}"
+                       class="voucher-card"
+                       onclick="localStorage.setItem('voucher','${v.title}')">
+                        <img src="${v.image}" alt="${v.title}">
+                    </a>
+                `)
+                .join('');
+        })
+        .catch(err => console.error('Error loading vouchers:', err));
+}
+
   fetch("metaHead.html")
     .then(response => response.text())
     .then(data => {
@@ -70,4 +92,9 @@
       })
       .catch(error => console.error("Error loading header/navbar:", error));
   }
+
+  if (currentPage === "index.html" || currentPage === "") {
+    loadVouchers();
+  }
 })();
+

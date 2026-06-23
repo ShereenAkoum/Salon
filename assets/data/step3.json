@@ -21,6 +21,8 @@
         "successMessage-en": "Thanks! We will contact you soon.",
         "successMessage-ar": "شكراً! سنتواصل معك قريباً.",
         "errorMessage-en": "Oops! Something went wrong.",
-        "errorMessage-ar": "عذراً! حدث خطأ ما."
+        "errorMessage-ar": "عذراً! حدث خطأ ما.",
+        "voucherLabel-en": "Voucher:",
+        "voucherLabel-ar": "قسيمة:"
     }
 }
