@@ -12,7 +12,7 @@
             container.innerHTML = vouchers
                 .filter(v => v.active)
                 .map(v => `
-                    <a href="services.html?voucher=${encodeURIComponent(v.title)}"
+                    <a href="step-2.html"
                        class="voucher-card"
                        onclick="localStorage.setItem('voucher','${v.title}')">
                         <img src="${v.image}" alt="${v.title}">
@@ -93,7 +93,7 @@
       .catch(error => console.error("Error loading header/navbar:", error));
   }
 
-  if (currentPage === "index.html" || currentPage === "") {
+  if (currentPage === "index.html" || currentPage === "vouchers.html") {
     loadVouchers();
   }
 })();

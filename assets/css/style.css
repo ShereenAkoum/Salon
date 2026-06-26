@@ -29871,11 +29871,12 @@ blockquote .small:before {
 	}
 
 	.box-contacts-vertical form .form-group {
-		max-width: 35%;
+		width: 100%;
 	}
 
 	.box-contacts-vertical form .btn {
 		max-width: 30%;
+		margin: auto;
 	}
 
 	.box-contacts-vertical .box-contacts-terms-list+.box-contacts-terms-list {

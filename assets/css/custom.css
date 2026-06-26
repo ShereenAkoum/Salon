@@ -508,3 +508,10 @@ div#date-picker-container {
     grid-template-columns: 1fr;
   }
 }
+
+
+.box-contacts-block form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* optional spacing between elements */
+}

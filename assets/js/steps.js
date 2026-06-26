@@ -356,8 +356,25 @@ function populateBookingForm() {
     }
 
     // Update visible blocks
-    const serviceBlock = document.querySelector(".box-contacts-block:nth-child(1) p");
-    if (serviceBlock) serviceBlock.textContent = categoryDisplay + " : " + serviceDisplay;
+    const serviceName = document.querySelector(".service-name");
+    const serviceBlock = serviceName ? serviceName.closest(".box-contacts-block") : null;
+
+    if (service != "null") {
+        if (serviceName) {
+            if (categoryDisplay === serviceDisplay) {
+                serviceName.textContent = serviceDisplay;
+                localStorage.removeItem("serviceCategoryDisplay");
+                localStorage.removeItem("serviceCategory");
+                categoryDisplay = "";
+            } else {
+                serviceName.textContent = categoryDisplay == "" ? serviceDisplay : categoryDisplay + " : " + serviceDisplay;
+            }
+        }
+
+        if (serviceBlock) serviceBlock.style.display = "";
+    } else {
+        if (serviceBlock) serviceBlock.style.display = "none";
+    }
 
     const voucherName = document.querySelector(".voucher-name");
     const voucherBlock = voucherName ? voucherName.closest(".box-contacts-block") : null;
@@ -398,16 +415,109 @@ function populateBookingForm() {
     if (voucherField) voucherField.value = voucher || "";
 
     const dateField = document.querySelector("input[name='date']");
+    let dateText = "";
     if (dateField) {
-        const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
-        dateField.value = sorted
+
+        dateText = sorted
             .map(s => {
                 const tmp = document.createElement("span");
                 tmp.innerHTML = lang === "en" ? s.displayHTML_en : s.displayHTML_ar;
                 return tmp.textContent || tmp.innerText || "";
             })
             .join(" | ");
+        dateField.value = dateText;
     }
+
+    // Build WhatsApp message text from the same booking data
+    window._whatsappMessage = buildWhatsAppMessage({
+        lang, categoryDisplay, serviceDisplay, voucher, dateText
+    });
+}
+
+// ─── WhatsApp checkout ─────────────────────────────────────────────────────────
+
+const SHOP_WHATSAPP_NUMBER = "96170123456"; // TODO: replace with real shop number
+
+function buildWhatsAppMessage({ lang, categoryDisplay, serviceDisplay, voucher, dateText }) {
+    const nameInput = document.getElementById("contact-full-name");
+    const phoneInput = document.getElementById("contact-phone");
+    const name = nameInput ? nameInput.value.trim() : "";
+    const phone = phoneInput ? phoneInput.value.trim() : "";
+
+    if (lang === "ar") {
+        let lines = [
+            "حجز جديد",
+            serviceDisplay && serviceDisplay !== "null"
+                ? `الخدمة: ${categoryDisplay ? categoryDisplay + " : " : ""}${serviceDisplay}`
+                : null
+        ].filter(Boolean);
+
+        if (voucher) lines.push(`القسيمة: ${voucher}`);
+        lines.push(`التاريخ: ${dateText || "غير محدد"}`);
+        if (name) lines.push(`الاسم: ${name}`);
+        if (phone) lines.push(`الهاتف: ${phone}`);
+
+        // WhatsApp supports \n for line breaks
+        return lines.join("\r\n");
+    }
+
+    let lines = [
+        "New Booking",
+        serviceDisplay !== "null"
+            ? `Service: ${categoryDisplay ? categoryDisplay + " : " : ""}${serviceDisplay}`
+            : null
+    ].filter(Boolean); // removes null entries;
+
+    if (voucher) lines.push(`Voucher: ${voucher}`);
+    lines.push(`Date: ${dateText || "Not selected"}`);
+    if (name) lines.push(`Name: ${name}`);
+    if (phone) lines.push(`Phone: ${phone}`);
+    return lines.join("\n");
+}
+
+function sendBookingViaWhatsApp() {
+    const lang = document.documentElement.getAttribute("lang") || "en";
+    const params = getParams();
+    const service = params.get("service") || localStorage.getItem("service");
+    const selections = getSelections();
+
+    const voucher = localStorage.getItem("voucher");
+
+    const serviceDisplay = lang === "en"
+        ? (service || "Not selected")
+        : (localStorage.getItem("serviceDisplay") || service || "غير محدد");
+    const categoryDisplay = lang === "en"
+        ? (localStorage.getItem("serviceCategory") || "")
+        : (localStorage.getItem("serviceCategoryDisplay") || localStorage.getItem("serviceCategory") || "");
+
+    const sorted = [...selections].sort((a, b) => a.isoKey.localeCompare(b.isoKey));
+    const dateText = sorted
+        .map(s => {
+            const tmp = document.createElement("span");
+            tmp.innerHTML = lang === "en" ? s.displayHTML_en : s.displayHTML_ar;
+            return tmp.textContent || tmp.innerText || "";
+        })
+        .join(" | ");
+
+    const message = buildWhatsAppMessage({ lang, categoryDisplay, serviceDisplay, voucher, dateText });
+    const url = `https://wa.me/${SHOP_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+}
+
+function setupWhatsAppButton() {
+    const bookButton = document.querySelector("button[type='submit']");
+    if (!bookButton || document.getElementById("whatsapp-checkout-btn")) return;
+
+    const waButton = document.createElement("button");
+    waButton.type = "button";
+    waButton.id = "whatsapp-checkout-btn";
+    waButton.textContent = (document.documentElement.getAttribute("lang") === "ar")
+        ? "إرسال عبر واتساب"
+        : "Send via WhatsApp";
+    waButton.style.cssText = "margin-top: 10px; background-color: #25D366; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%;";
+    waButton.addEventListener("click", sendBookingViaWhatsApp);
+
+    bookButton.insertAdjacentElement("afterend", waButton);
 }
 
 function setupBookingValidation() {
@@ -492,7 +602,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!service) {
             localStorage.removeItem("selectedDates");
-            window.location.replace("services.html");
+            // window.location.replace("services.html");
             return;
         }
 
@@ -517,5 +627,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         populateBookingForm();
         setupBookingValidation();
+        // setupWhatsAppButton();
     }
 });
