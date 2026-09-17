@@ -1,0 +1,378 @@
+(function () {
+  'use strict';
+
+  function parseValue(value) {
+    if (value === null || value === undefined) return value;
+    if (typeof value !== 'string') return value;
+    try { return JSON.parse(value); } catch (error) { return value; }
+  }
+
+  function requireImage(value, key) {
+    var result = parseValue(value);
+    if (!result || typeof result !== 'object' || Array.isArray(result)) {
+      throw new Error('Application setting "' + key + '" is missing or invalid.');
+    }
+    if (!result.url || typeof result.url !== 'string') {
+      throw new Error('Application setting "' + key + '" has no image URL.');
+    }
+    if (!result.width || !result.height) {
+      throw new Error('Application setting "' + key + '" is missing image dimensions.');
+    }
+    return {
+      path: String(result.path || ''),
+      url: String(result.url),
+      width: String(result.width),
+      height: String(result.height)
+    };
+  }
+
+  function optionalImage(value) {
+    if (!value) return null;
+    var result = parseValue(value);
+    if (!result || typeof result !== 'object' || Array.isArray(result) || !result.url) return null;
+    return { path: String(result.path || ''), url: String(result.url), width: String(result.width || '32px'), height: String(result.height || '32px') };
+  }
+
+  function normalizeSettings(raw) {
+    raw = raw || {};
+    var currencyOptions = raw.currency_options || raw.currencyOptions;
+    var displayCurrency = raw.display_currency || raw.displayCurrency;
+    var defaultLanguage = raw.default_language || raw.defaultLanguage;
+    var websiteName = raw.website_name || raw.websiteName;
+    var contactPhone = raw.contact_phone || raw.contactPhone;
+
+    if (!currencyOptions || typeof currencyOptions !== 'object') {
+      throw new Error('Application setting "currency_options" is missing or invalid.');
+    }
+    if (!displayCurrency) throw new Error('Application setting "display_currency" is missing.');
+    if (!defaultLanguage) throw new Error('Application setting "default_language" is missing.');
+    if (!websiteName || typeof websiteName !== 'string' || !websiteName.trim()) throw new Error('Application setting "website_name" is missing.');
+    if (!contactPhone) throw new Error('Application setting "contact_phone" is missing.');
+
+    return {
+      display_currency: String(displayCurrency).toUpperCase(),
+      currency_options: currencyOptions,
+      default_language: String(defaultLanguage).toLowerCase(),
+      website_name: String(websiteName).trim(),
+      contact_phone: String(contactPhone).trim(),
+      logo_image: optionalImage(raw.logo_image),
+      header_image: requireImage(raw.header_image || raw.headerImage, 'header_image'),
+      main_page_nav_logo_image: optionalImage(raw.main_page_nav_logo_image),
+      other_pages_nav_logo_image: optionalImage(raw.other_pages_nav_logo_image || raw.nav_logo_image),
+      banner_image: requireImage(raw.banner_image || raw.bannerImage, 'banner_image'),
+      favicon_image: optionalImage(raw.favicon_image || raw.faviconImage),
+      who_we_are_image_1: optionalImage(raw.who_we_are_image_1),
+      who_we_are_image_2: optionalImage(raw.who_we_are_image_2),
+      who_we_are_image_3: optionalImage(raw.who_we_are_image_3),
+      homepage_hero_image: optionalImage(raw.homepage_hero_image),
+      services_section_image: optionalImage(raw.services_section_image),
+      contact_section_image: optionalImage(raw.contact_section_image),
+      footer_logo_image: (function () { var shared = optionalImage(raw.other_pages_nav_logo_image || raw.nav_logo_image); var legacy = optionalImage(raw.footer_logo_image); return shared && shared.url ? Object.assign({}, shared, { width: (legacy && legacy.width) || '100%', height: (legacy && legacy.height) || 'auto' }) : legacy; })()
+    };
+  }
+
+  async function loadFromSupabase() {
+    if (!window.salonSupabase) throw new Error('Application data service is not available.');
+    var results = await Promise.all([
+      window.salonSupabase.from('application_settings').select('setting_key, setting_value').eq('active', true),
+      window.salonSupabase.from('currencies').select('id,code,en_label,ar_label,active,display_currency,sort_order').eq('active', true).order('sort_order',{ascending:true}).order('code',{ascending:true}),
+      window.salonSupabase.from('languages').select('id,code,en_label,native_label,active,is_default,sort_order').eq('active', true).order('sort_order',{ascending:true}).order('code',{ascending:true}),
+      window.salonSupabase.from('social_media').select('id,platform,slug,url,active,sort_order').eq('active', true).order('sort_order',{ascending:true}).order('platform',{ascending:true})
+    ]);
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    if (results[2].error) throw results[2].error;
+    if (results[3].error) throw results[3].error;
+
+    var settings = {};
+    (results[0].data || []).forEach(function (row) {
+      // These settings are now maintained in dedicated tables.
+      if (row.setting_key === 'currency_options' || String(row.setting_key || '').indexOf('social_') === 0) return;
+      settings[row.setting_key] = parseValue(row.setting_value);
+    });
+    settings.currency_options = {};
+    var displayCurrencyRow = (results[1].data || []).find(function(row){ return row.display_currency === true; });
+    (results[1].data || []).forEach(function (row) {
+      settings.currency_options[String(row.code).toUpperCase()] = {en:String(row.en_label || ''), ar:String(row.ar_label || '')};
+    });
+    // display_currency is now maintained by the currencies table, not application_settings.
+    settings.display_currency = displayCurrencyRow && displayCurrencyRow.code
+      ? String(displayCurrencyRow.code).toUpperCase()
+      : ((results[1].data || [])[0] && String((results[1].data || [])[0].code || '').toUpperCase());
+    var defaultLanguageRow = (results[2].data || []).find(function(row){ return row.is_default === true; });
+    settings.default_language = defaultLanguageRow && defaultLanguageRow.code
+      ? String(defaultLanguageRow.code).toLowerCase()
+      : ((results[2].data || [])[0] && String((results[2].data || [])[0].code || 'en').toLowerCase());
+    var normalized = normalizeSettings(settings);
+    normalized.__currencies = results[1].data || [];
+    normalized.__languages = results[2].data || [];
+    normalized.__social = {};
+    (results[3].data || []).forEach(function (row) {
+      var slug = String(row.slug || '').toLowerCase();
+      if (!slug) return;
+      normalized.__social['social_' + slug] = { setting_value: {url:String(row.url || '')}, active: row.active !== false };
+    });
+    return normalized;
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function clearBranding() {
+    document.querySelectorAll('.brand-desktop img, .rd-navbar-brand img, .site-brand-logo').forEach(function (img) {
+      img.removeAttribute('src');
+      img.hidden = true;
+    });
+    document.querySelectorAll('.page-title').forEach(function (banner) {
+      banner.style.backgroundImage = 'none';
+    });
+    var oldFavicon = document.querySelector('link[data-supabase-favicon]');
+    if (oldFavicon) oldFavicon.remove();
+  }
+
+  function applySocialLinks(settings) {
+    var social = {};
+    Object.keys(settings || {}).forEach(function (key) {
+      if (key.indexOf('social_') !== 0) return;
+      var slug = key.slice(7);
+      if (['whatsapp', 'facebook', 'instagram'].indexOf(slug) === -1) return;
+      var row = settings[key];
+      if (!row || row.active === false) return;
+      var value = parseValue(row.setting_value);
+      if (!value || !String(value.url || '').trim()) {
+        console.warn('[Application settings] ' + slug + ' is active but has no public URL; the channel will remain hidden.');
+        return;
+      }
+      social[slug] = { url: String(value.url).trim() };
+    });
+    document.querySelectorAll('.site-social-link[data-social]').forEach(function (link) {
+      var slug = link.getAttribute('data-social');
+      var item = social[slug];
+      var visible = !!item;
+      var li = link.closest('li');
+      if (li) {
+        li.hidden = !visible;
+        li.style.display = visible ? '' : 'none';
+        li.classList.toggle('site-social-hidden', !visible);
+      }
+      link.hidden = !visible;
+      link.style.display = visible ? '' : 'none';
+      link.classList.toggle('site-social-hidden', !visible);
+      if (!visible) {
+        link.removeAttribute('href');
+        link.removeAttribute('target');
+        link.removeAttribute('rel');
+        return;
+      }
+      link.href = String(item.url);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    });
+  }
+
+  function optionalWebsiteImage(settings, key) {
+    var value = settings && settings[key];
+    if (!value || typeof value !== 'object' || !value.url) return null;
+    return {
+      url: String(value.url),
+      width: String(value.width || 'auto'),
+      height: String(value.height || 'auto')
+    };
+  }
+
+  function applyLandscapeImages(settings) {
+    // Landscape image manager was removed from CRM. Kept as a no-op for
+    // compatibility with older cached site-loader.js files.
+  }
+
+  function applyWebsiteImages(settings) {
+    var imageKeys = ['who_we_are_image_1', 'who_we_are_image_2', 'who_we_are_image_3'];
+    imageKeys.forEach(function (key, index) {
+      var image = optionalWebsiteImage(settings, key);
+      document.querySelectorAll('[data-site-image="who-we-are-' + (index + 1) + '"]').forEach(function (img) {
+        if (!image) {
+          img.removeAttribute('src');
+          img.hidden = true;
+          return;
+        }
+        img.src = image.url;
+        function cssDimension(value) {
+          var v = String(value == null ? '' : value).trim();
+          if (!v || v === 'auto') return '';
+          return /^-?\d+(?:\.\d+)?$/.test(v) ? v + 'px' : v;
+        }
+        var cssWidth = cssDimension(image.width);
+        var cssHeight = cssDimension(image.height);
+        if (cssWidth) img.style.width = cssWidth; else img.style.removeProperty('width');
+        if (cssHeight) img.style.height = cssHeight; else img.style.removeProperty('height');
+        img.hidden = false;
+      });
+    });
+
+    var hero = optionalWebsiteImage(settings, 'homepage_hero_image');
+    document.querySelectorAll('[data-site-background="homepage-hero"]').forEach(function (el) {
+      el.style.backgroundImage = hero ? 'url("' + hero.url.replace(/"/g, '\\"') + '")' : 'none';
+    });
+
+    var services = optionalWebsiteImage(settings, 'services_section_image');
+    document.querySelectorAll('[data-site-background="services-section"]').forEach(function (el) {
+      el.style.backgroundImage = services ? 'url("' + services.url.replace(/"/g, '\\"') + '")' : 'none';
+    });
+
+    var contact = optionalWebsiteImage(settings, 'contact_section_image');
+    document.querySelectorAll('[data-site-background="contact-section"]').forEach(function (el) {
+      el.style.backgroundImage = contact ? 'url("' + contact.url.replace(/"/g, '\\"') + '")' : 'none';
+    });
+  }
+
+  function applyBranding(settings) {
+    document.title = settings.website_name;
+    var favicon = settings.favicon_image;
+    var oldFavicon = document.querySelector('link[data-supabase-favicon]');
+    if (oldFavicon) oldFavicon.remove();
+    if (favicon && favicon.url) {
+      var link = document.createElement('link');
+      link.rel = 'icon';
+      link.href = favicon.url;
+      link.dataset.supabaseFavicon = 'true';
+      document.head.appendChild(link);
+    }
+    document.querySelectorAll('[data-website-name]').forEach(function (el) {
+      el.textContent = settings.website_name;
+      el.setAttribute('aria-label', settings.website_name);
+    });
+
+    // Keep SEO/social metadata in sync with the CRM website name. The SEO
+    // fragment is injected dynamically by site-loader.js, so this is safe to
+    // run whenever branding is applied or re-applied.
+    var websiteName = settings.website_name;
+    var titleSuffix = ' – Luxury Hair & Beauty Salon';
+    document.querySelectorAll('meta[data-website-meta="description"]').forEach(function (meta) {
+      meta.setAttribute('content', websiteName + ' – Professional hair, beauty, styling and salon services.');
+    });
+    document.querySelectorAll('meta[data-website-meta="keywords"]').forEach(function (meta) {
+      var content = meta.getAttribute('content') || '';
+      var keywordList = content.split(',').map(function (item) { return item.trim(); }).filter(Boolean);
+      if (keywordList.map(function (item) { return item.toLowerCase(); }).indexOf(websiteName.toLowerCase()) === -1) {
+        keywordList.splice(2, 0, websiteName);
+      }
+      meta.setAttribute('content', keywordList.join(', '));
+    });
+    document.querySelectorAll('meta[data-website-meta="og-title"]').forEach(function (meta) {
+      meta.setAttribute('content', websiteName + titleSuffix);
+    });
+    document.querySelectorAll('meta[data-website-meta="og-description"]').forEach(function (meta) {
+      meta.setAttribute('content', websiteName + ' offers professional hair, beauty, styling and salon services.');
+    });
+    document.querySelectorAll('meta[data-website-meta="og-site-name"]').forEach(function (meta) {
+      meta.setAttribute('content', websiteName);
+    });
+    document.querySelectorAll('meta[data-website-meta="item-name"]').forEach(function (meta) {
+      meta.setAttribute('content', websiteName + ' – Hair & Beauty Salon');
+    });
+    var header = settings.header_image;
+    // Navigation branding is loaded from Application Settings instead of a
+    // hard-coded storage URL. Home can use its dedicated logo; all other
+    // public pages use the CRM's Other Pages Nav Logo.
+    var isHomePage = document.documentElement.classList.contains('jas-home') || document.body.classList.contains('jas-home');
+    var otherNavLogo = settings.other_pages_nav_logo_image;
+    // var navLogo = isHomePage ? (settings.main_page_nav_logo_image || otherNavLogo) : otherNavLogo;
+    var navLogo = otherNavLogo;
+    var bannerImage = settings.banner_image;
+
+    // Footer is injected dynamically by site-loader.js, so apply the footer
+    // logo whenever branding is (re)applied. This also fixes the case where
+    // the image element starts hidden before the footer fragment loads.
+    // The CRM's Other Pages Nav Logo is also the shared public footer logo.
+    var footerLogo = settings.footer_logo_image || otherNavLogo;
+    document.querySelectorAll('[data-site-footer-logo]').forEach(function (img) {
+      if (!footerLogo || !footerLogo.url) {
+        img.removeAttribute('src');
+        img.hidden = true;
+        return;
+      }
+      img.src = footerLogo.url;
+      img.style.setProperty('width', footerLogo.width || '100%', 'important');
+      img.style.setProperty('height', footerLogo.height || 'auto', 'important');
+      img.style.setProperty('max-width', '100%', 'important');
+      img.style.setProperty('object-fit', 'contain', 'important');
+      img.hidden = false;
+    });
+
+    document.querySelectorAll('.brand-desktop img, .rd-navbar-brand img, .site-brand-logo').forEach(function (img) {
+      if (!navLogo || !navLogo.url) {
+        img.removeAttribute('src');
+        img.hidden = true;
+        return;
+      }
+      img.src = navLogo.url;
+      // Apply CRM dimensions as CSS, including values such as `auto`, without
+      // writing invalid/zero HTML width/height attributes that can override
+      // the intended sizing behavior.
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.hidden = false;
+    });
+    const mq = window.matchMedia("(max-width: 768px)");
+    function updateLogo(e) {
+      if (e.matches) {
+        if (window.matchMedia("(max-width: 768px)").matches) {
+          document.querySelectorAll(
+            ".site-brand-logo.site-brand-logo-mobile"
+          ).forEach(function (img) {
+            if (!navLogo || !navLogo.url) {
+              img.removeAttribute("src");
+              img.hidden = true;
+              return;
+            }
+            img.src = navLogo.url;
+            img.removeAttribute("width");
+            img.removeAttribute("height");
+            img.style.setProperty("width", navLogo.width || "125px", "important");
+            img.style.setProperty("height", navLogo.height || "auto", "important");
+            img.style.setProperty("max-width", "100px", "important");
+            img.style.setProperty("object-fit", "contain", "important");
+            img.hidden = false;
+          });
+        }
+      }
+    }
+    mq.addListener(updateLogo);
+    updateLogo(mq); // run once on load
+
+    document.querySelectorAll('.page-title').forEach(function (banner) {
+      banner.style.backgroundImage = 'url("' + bannerImage.url.replace(/"/g, '\\"') + '")';
+      banner.style.width = bannerImage.width;
+      banner.style.minHeight = bannerImage.height;
+    });
+  }
+
+  window.applyApplicationBranding = applyBranding;
+  window.applyWebsiteImages = applyWebsiteImages;
+  window.applyLandscapeImages = applyLandscapeImages;
+  window.applySocialLinks = applySocialLinks;
+
+  window.applicationSettingsReady = (async function () {
+    clearBranding();
+    try {
+      var settings = await loadFromSupabase();
+      applyBranding(settings);
+      applyWebsiteImages(settings);
+      applyLandscapeImages(settings);
+      applySocialLinks(settings.__social || {});
+      document.dispatchEvent(new CustomEvent('applicationSettingsLoaded', { detail: settings }));
+      console.info('[Application settings] Loaded.', settings.website_name, settings.header_image.url, settings.banner_image.url);
+      return settings;
+    } catch (error) {
+      clearBranding();
+      document.dispatchEvent(new CustomEvent('applicationSettingsError', { detail: error }));
+      console.error('[Application settings] Branding load failed. No local image fallback is used.', error);
+      throw error;
+    }
+  })();
+
+  window.getApplicationSettings = function () {
+    return window.applicationSettingsReady;
+  };
+})();

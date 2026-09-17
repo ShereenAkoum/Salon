@@ -1,237 +1,257 @@
 <!DOCTYPE html>
-<html class="wide wow-animation" lang="en" dir="ltr">
+<html class="wide wow-animation jas-home" lang="en" dir="ltr">
 
 <head>
-  <!-- Site Title-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home</title>
+  <link rel="icon" href="data:," data-favicon-bootstrap="true">
 
-  <!-- Stylesheets-->
+  <!-- Typography: clean sans-serif + editorial luxury serif -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" type="text/css"
     href="//fonts.googleapis.com/css?family=Roboto+Mono:300,300italic,400,700%7CArvo:400,700">
   <link rel="stylesheet" href="assets/fonts/telma/css/telma.css">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel="stylesheet" href="assets/css/custom.css?v=luxury-home-v5">
 
   <script>
     (function () {
       var lang = localStorage.getItem('siteLang') || 'en';
       document.documentElement.setAttribute('lang', lang);
       document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-      document.write('<style id="anti-flash">body{opacity:0!important;}</style>');
     })();
   </script>
+  
 </head>
 
 <body>
-  <div class="page">
-    <header class="page-header">
-      <div class="rd-navbar-wrap">
-        <nav class="rd-navbar" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed"
-          data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-fullwidth"
-          data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-fixed"
-          data-lg-layout="rd-navbar-fullwidth" data-stick-up-clone="true" data-md-stick-up-offset="140px"
-          data-lg-stick-up-offset="140px">
-          <div class="rd-navbar-inner">
-            <div class="rd-navbar-panel">
-              <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap">
-                <span></span>
-              </button>
-              <div class="rd-navbar-brand">
-                <a class="brand-name" href="index.html">
-                  <div class="brand-mobile">
-                    <div class="logo-name">
-                      <span class="logo-glow">Glow</span>
-                      <span class="logo-and">&</span>
-                      <span class="logo-glam">Glam</span>
-                      <span class="logo-by">by Sara</span>
-                    </div>
-                  </div>
-                  <div class="brand-desktop">
-                    <img src="assets/images/logo.jpeg" alt="" width="125" height="100" />
-                  </div>
-                </a>
-              </div>
+  <div class="page jas-luxury-page">
+
+    <!-- Shared luxury navigation — injected from site-header.html (single source for every page) -->
+    <div id="page-header"></div>
+
+    <main>
+      <!-- Hero -->
+      <section class="jas-hero" data-site-background="homepage-hero">
+        <div class="jas-hero-overlay"></div>
+        <div class="jas-hero-content">
+          <div class="jas-eyebrow">
+            <span></span>
+            <span data-i18n="mainSection.kicker">BEAUTY • CARE • CONFIDENCE</span>
+            <span></span>
+          </div>
+          <h1 data-i18n="mainSection.title">Your Beauty<br><em>Our Passion</em></h1>
+          <p data-i18n="mainSection.description">
+            Premium beauty services designed to bring out the best in you.
+          </p>
+          <div class="jas-hero-actions">
+            <a class="jas-btn jas-btn-gold" href="booking.html" data-i18n="common.bookNow">Book Now</a>
+            <a class="jas-text-link" href="#ourServices">
+              <span data-i18n="common.readMorebutton">Explore Services</span>
+              <b>↗</b>
+            </a>
+          </div>
+        </div>
+        <div class="jas-hero-scroll">
+          <span>01</span><i></i><span>SCROLL TO DISCOVER</span>
+        </div>
+        <div class="jas-hero-badge">
+          <span class="jas-badge-mark">✦</span>
+          <strong>JAS</strong>
+          <small>PREMIUM<br>WOMEN'S SALON</small>
+        </div>
+      </section>
+
+      <!-- Who We Are -->
+      <section id="whoWeAre" class="jas-intro jas-who-we-are">
+        <div class="jas-container">
+          <div class="jas-who-heading">
+            <div>
+              <span data-i18n="whoWeAre.title" class="jas-kicker">WHO WE ARE</span>
+              <h2 data-i18n="whoWeAre.title">A refined beauty experience.</h2>
             </div>
-            <div class="rd-navbar-nav-wrap">
-              <div class="rd-navbar-nav-inner">
-                <ul class="rd-navbar-nav">
-                  <li class="active">
-                    <a href="index.html" data-i18n="nav.home">Home</a>
-                  </li>
-                  <li>
-                    <a href="services.html" data-i18n="nav.services">Services</a>
-                  </li>
-                  <li>
-                    <a href="vouchers.html" data-i18n="nav.vouchers">Vouchers</a>
-                  </li>
-                  <li>
-                    <a href="about.html" data-i18n="nav.about">About</a>
-                  </li>
-                  <li>
-                    <a href="faq.html" data-i18n="nav.faq">FAQ</a>
-                  </li>
-                  <li>
-                    <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
-                  </li>
-                  <li class="lang-item" id="langToggle">
-                    <a href="javascript:void(0)" class="lang-switcher" aria-label="Switch language">
-                      <span class="lang-icon">文A</span>
-                      <span class="lang-label">العربية</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+            <div class="jas-intro-copy">
+              <p data-i18n="whoWeAre.description">
+                A premium destination where beauty, confidence and care come together.
+              </p>
             </div>
           </div>
-        </nav>
-      </div>
-    </header>
-
-    <section class="jumbotron-custom jumbotron-custom-3 bg-white bg-image bg-image-custom bg-image-center"
-      style="background-image: url(assets/images/home-three-1-1920x800.jpg);">
-      <div class="jumbotron-custom-content text-center">
-        <div class="shell">
-          <div class="range range-sm-center">
-            <div class="cell-sm-9 cell-md-8 cell-lg-7">
-              <h1 style="line-height: 80px;" data-i18n="mainSection.title"></h1>
-              <p class="large">
-                <span data-i18n="mainSection.description"></span>
-              </p>
-              <a class="btn btn-style-1 btn-primary" href="services.html" data-i18n="common.bookNow"></a>
+          <div class="jas-who-images" aria-label="Who We Are">
+            <div class="cell-xs-6">
+              <article class="box-icon">
+                <figure class="box-icon-image">
+                  <img data-site-image="who-we-are-1" alt="Hair Styles-1" loading="lazy">
+                </figure>
+              </article>
+            </div>
+            <div class="cell-xs-6">
+              <article class="box-icon">
+                <figure class="box-icon-image">
+                  <img data-site-image="who-we-are-2" alt="Hair Styles-2" loading="lazy">
+                </figure>
+              </article>
+            </div>
+            <div class="cell-xs-6">
+              <article class="box-icon">
+                <figure class="box-icon-image">
+                  <img data-site-image="who-we-are-3" alt="Hair Styles-3" loading="lazy">
+                </figure>
+              </article>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Vouchers Section -->
-    <section id="vouchers" class="section-xl bg-white text-center">
-      <div class="shell">
-        <h1 data-i18n="voucher.title"></h1>
-        <p class="big" data-i18n="voucher.description"></p>
-        <div id="vouchers-grid" class="vouchers-grid"></div>
-      </div>
-    </section>
-
-    <section class="section-xl bg-periglacial-blue text-center text-md-left">
-      <div class="shell-fluid shell-condensed">
-        <div class="range range-md-reverse range-xs-middle range-md-right range-50">
-          <div class="cell-md-5 cell-lg-4">
-            <div class="inset-1">
-              <h1 data-i18n="whoWeAre.title"></h1>
-              <p class="large">
-                <span data-i18n="whoWeAre.description"></span>
-              </p>
-              <a class="btn btn-sm btn-style-1 btn-primary" href="about.html" data-i18n="common.readMorebutton"></a>
+      <!-- Services -->
+      <section id="ourServices" class="jas-services-section">
+        <div class="jas-container">
+          <div class="jas-section-head">
+            <div>
+              <span data-i18n="ourServices.kicker" class="jas-kicker">THE JAS EDIT</span>
+              <h2 data-i18n="ourServices.title">Our Services</h2>
+            </div>
+            <div class="jas-section-head-copy">
+              <p data-i18n="ourServices.description">Thoughtfully selected treatments for your natural beauty.</p>
+              <a href="booking.html" class="jas-btn jas-btn-dark" data-i18n="mainSection.MoreServices">Explore all <b>↗</b></a>
             </div>
           </div>
-          <div class="cell-md-7 cell-lg-6">
-            <div class="row row-gutter-custom range-15">
-              <div class="col-xs-4">
-                <figure class="figure-fullwidth">
-                  <img data-i18n="whoWeAre.src1" data-i18n-attr="src" alt="" width="300" height="460" />
-                </figure>
+
+          <div id="services-grid" class="jas-service-grid"></div>
+        </div>
+      </section>
+
+      <!-- Vouchers -->
+      <section id="vouchers" class="jas-vouchers-section">
+        <div class="jas-voucher-glow"></div>
+        <div class="jas-container">
+          <div class="jas-voucher-heading">
+            <div>
+              <span data-i18n="voucher.kicker" class="jas-kicker jas-kicker-light">A LITTLE LUXURY</span>
+              <h2 data-i18n="voucher.title">Beauty Gift Vouchers</h2>
+              <p data-i18n="voucher.description">The perfect gift for someone special.</p>
+            </div>
+            <a class="jas-btn jas-btn-light" href="vouchers.html" data-i18n="mainSection.MoreVouchers">View Vouchers</a>
+          </div>
+          <div id="vouchers-grid" class="vouchers-grid jas-voucher-grid"></div>
+        </div>
+      </section>
+
+      <!-- Experience / brand promise -->
+      <section class="jas-experience">
+        <div class="jas-container jas-experience-grid">
+          <div class="jas-experience-image" data-site-background="services-section"></div>
+          <div class="jas-experience-content">
+            <span class="jas-kicker" data-i18n="experience.kicker">THE JAS EXPERIENCE</span>
+            <h2 data-i18n="experience.title">Your beauty is our priority.</h2>
+            <p data-i18n="experience.description">
+              Every detail is designed to make your visit feel effortless, personal and beautifully yours.
+            </p>
+            <div class="jas-feature-list">
+              <div>
+                <span>01</span>
+                <strong data-i18n="experience.step1Title">Premium care</strong>
+                <small data-i18n="experience.step1Description">Thoughtful service from start to finish.</small>
               </div>
-              <div class="col-xs-4">
-                <figure class="figure-fullwidth">
-                  <img data-i18n="whoWeAre.src2" data-i18n-attr="src" alt="" width="300" height="460" />
-                </figure>
+              <div>
+                <span>02</span>
+                <strong data-i18n="experience.step2Title">Expert team</strong>
+                <small data-i18n="experience.step2Description">Professional beauty specialists.</small>
               </div>
-              <div class="col-xs-4">
-                <figure class="figure-fullwidth">
-                  <img data-i18n="whoWeAre.src3" data-i18n-attr="src" alt="" width="300" height="460" />
-                </figure>
+              <div>
+                <span>03</span>
+                <strong data-i18n="experience.step3Title">Refined environment</strong>
+                <small data-i18n="experience.step3Description">A calm space made for you.</small>
               </div>
             </div>
+            <a class="jas-btn jas-btn-dark" href="booking.html" data-i18n="common.bookNow">Book an appointment</a>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="ourServices" class="bg-image"
-      style="background-image: url(assets/images/services-banner.png); background-repeat: no-repeat; background-position: center;background-size: cover;">
-      <div class="shell-fluid shell-condensed">
-        <div class="range range-condensed">
-          <div class="cell-md-6 cell-md-6-mod-1 image-wrap-left white-border">
-            <div class="image-wrap-inner">
-              <h1 data-i18n="ourServices.title"></h1>
-              <p class="big">
-                <span data-i18n="ourServices.description"></span>
-              </p>
-              <a class="btn btn-style-1 btn-primary" href="services.html" data-i18n="common.readMorebutton"></a>
-            </div>
-          </div>
-          <div class="cell-md-6 cell-md-6-mod-2 image-wrap-right">
-            <div class="ourServicesP2 image-wrap-inner">
-              <div class="range range-condensed range-inner-bordered" id="services-grid"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      <!-- Contact -->
+      <section id="contacts" class="jas-contact-section">
+        <div class="jas-container jas-contact-grid">
+          <div class="jas-contact-copy">
+            <span data-i18n="contactSection.title" class="jas-kicker">GET IN TOUCH</span>
+            <h2 data-i18n="contactSection.title">We'd love to hear from you.</h2>
+            <p data-i18n="contactSection.description">Questions, appointments or simply want to say hello?</p>
 
-    <section id="contacts" class="section-xl bg-image text-center"
-      style="background-image: url(assets/images/bg-image-1.jpg);">
-      <div class="box-wrap-content">
-        <div class="shell">
-          <div class="range">
-            <div class="cell-xs-12">
-              <div class="box-contacts box-contacts-horizontal box-wrap-content-interactive block-auto">
-                <div class="box-contacts-col">
-                  <div class="box-contacts-block">
-                    <h3 data-i18n="contactSection.title"></h3>
-                    <p data-i18n="contactSection.description"></p>
-                    <p class="phone-number">
-                      <!-- <a href="tel:+1234567890" data-i18n="common.phone"></a> -->
-                      <a data-i18n="common.phone" data-i18n-attr="href-tel:"></a>
-                    </p>
-                    <form class="rd-mailform" action="https://formspree.io/f/xdaylqjz" method="POST">
-                      <div class="form-group">
-                        <label class="form-label-outside" for="contact-full-name"
-                          data-i18n="contactSection.namePlaceholder"></label>
-                        <input class="form-control" id="contact-full-name" type="text" name="name"
-                          data-constraints="@Required">
-                      </div>
-                      <div class="form-group">
-                        <label class="form-label-outside" for="contact-phone"
-                          data-i18n="contactSection.phonePlaceholder"></label>
-                        <input class="form-control" id="contact-phone" type="text" name="phone"
-                          data-constraints="@Required @Numeric">
-                      </div>
-                      <button class="btn btn-sm btn-primary btn-block btn-circle" type="submit"
-                        data-i18n="common.submitButton"></button>
-                    </form>
-                  </div>
-                </div>
-                <div class="box-contacts-col box-contacts-right">
-                  <div class="box-contacts-block">
-                    <h3 data-i18n="openingHours.title"></h3>
-                    <dl class="box-contacts-terms-list">
-                      <dt data-i18n="openingHours.days.label-1"></dt>
-                      <dd data-i18n="openingHours.days.hours-1"></dd>
-                      <dt data-i18n="openingHours.days.label-2"></dt>
-                      <dd data-i18n="openingHours.days.hours-2"></dd>
-                    </dl>
-                  </div>
+            <div class="jas-contact-details">
+              <div>
+                <span class="fa-solid fa-location-dot" aria-hidden="true"></span>
+                <div><small data-i18n="contactSection.location">Location</small>
+                  <strong>Doha, Qatar</strong>
                 </div>
               </div>
+              <div>
+                <span class="fa-solid fa-phone" aria-hidden="true"></span>
+                <div>
+                  <small data-i18n="contactSection.phonePlaceholder">Phone</small>
+                  <strong class="phone-number">
+                    <a data-i18n="common.phone" data-i18n-attr="href-tel:" href="#"></a></strong>
+                </div>
+              </div>
+              <div>
+                <span class="fa-solid fa-envelope" aria-hidden="true"></span>
+                <div><small data-i18n="booking.email">Email</small><strong
+                    data-i18n="contactSection.email">jaspremiumqa@gmail.com</strong></div>
+              </div>
             </div>
           </div>
+
+          <div class="jas-contact-card">
+            <div class="jas-card-topline"></div>
+            <h3 data-i18n="contactSection.Message">Send us a message</h3>
+            <form id="contact-form" class="jas-contact-form" action="https://formspree.io/f/xaeynyqp" method="POST">
+              <label>
+                <span data-i18n="contactSection.namePlaceholder">Full Name</span>
+                <input id="contact-full-name" type="text" name="name" data-constraints="@Required">
+              </label>
+              <label>
+                <span data-i18n="contactSection.phonePlaceholder">Telephone</span>
+                <input id="contact-phone" type="text" name="phone" data-constraints="@Required @Numeric">
+              </label>
+              <label>
+                <span data-i18n="booking.email">Email (optional)</span>
+                <input id="contact-email" type="email" name="email">
+              </label>
+              <label>
+                <span data-i18n="contactSection.MessagePlaceholder">Message</span>
+                <textarea id="contact-message" name="message" rows="4" required aria-required="true"></textarea>
+              <div id="contact-message-error" class="jas-contact-field-error" role="alert" hidden></div>
+              </label>
+              <button class="jas-btn jas-btn-burgundy" type="submit" data-i18n="common.submitButton">Send
+                Message</button>
+            </form>
+            <iframe name="contact-formspree-frame" id="contact-formspree-frame" title="Contact form submission"
+              style="display:none" aria-hidden="true"></iframe>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <footer class="page-footer page-footer-default" id="footer-placeholder"></footer>
-
+    <footer class="page-footer jas-home-footer" id="footer-placeholder"></footer>
   </div>
 
-  <script src="assets/js/main.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/config/application-settings.js?v=currency-table-v1"></script>
+  <script src="assets/js/database-test.js"></script>
+  <script src="assets/js/site-loader.js?v=shared-header-v4"></script>
   <script src="assets/js/core.min.js"></script>
-  <script src="assets/js/script.js"></script>
-  <script src="assets/js/steps.js"></script>
-  <script src="assets/js/contacts.js"></script>
-  <script src="assets/js/translation.js"></script>
+  <script src="assets/js/site-ui.js"></script>
+  <script src="assets/js/booking-flow.js?v=booking-session-cleanup-1"></script>
+  <script src="assets/js/contact-form.js"></script>
+  <script src="assets/js/language.js?v=weekly-hours-phone-1"></script>
+
+  <!-- Mobile-menu wiring is handled by site-loader.js once the shared header is injected. -->
+  <script src="assets/js/color-lock.js?v=consistent-light-3"></script>
 </body>
 
 </html>

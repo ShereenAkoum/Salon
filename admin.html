@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html class="crm-auth-pending" lang="en" dir="ltr">
+<head>
+  <style>
+    .crm-inline-field{display:flex;gap:8px;align-items:stretch}
+    .crm-inline-field input{flex:1;min-width:0}
+  </style>
+  <meta charset="UTF-8">
+  <meta name="color-scheme" content="only light">
+  <meta name="supported-color-schemes" content="light">
+  <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: dark)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Prevent browser fallback requests to /favicon.ico. -->
+  <link rel="icon" href="data:," data-favicon-bootstrap="true">
+  <title>CRM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/admin-crm.css">
+<style>
+    .crm-badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.2}
+    .crm-badge-warning{background:#fff3cd;color:#856404}
+    .crm-badge-neutral{background:#eef1f5;color:#586174}
+    </style>  <script>
+    (function () {
+      // Android browsers and the in-app browsers built on Android WebView
+      // (Chrome Auto Dark Theme, Samsung Internet Force Dark, the WebView
+      // used by Facebook/Instagram/Gmail) can re-colour a light page when
+      // the phone is in dark mode. iOS and desktop do not. Mark the
+      // document before first paint so color-scheme-lock.css can pin the
+      // same light palette on every page and every platform.
+      (function () {
+        var root = document.documentElement;
+        var ua = navigator.userAgent || '';
+        var prefersDark = false;
+        try { prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) { }
+        if (/SamsungBrowser/i.test(ua)) { root.classList.add('jas-samsung-browser'); }
+        if (prefersDark && /Android/i.test(ua)) { root.classList.add('jas-forced-dark'); }
+        // Force dark cannot be feature-detected. The browser repaints the
+        // page after its CSS has been computed, so getComputedStyle still
+        // reports the light colours and prefers-color-scheme can still say
+        // "light" while the screen shows dark. So do not try to guess:
+        // paint from images on every Android browser and on Samsung
+        // Internet. The painted colours are the ones the stylesheets
+        // already declare, so this is invisible wherever the browser is
+        // not darkening anything.
+        if (/Android|SamsungBrowser/i.test(ua)) { root.classList.add('jas-paint-lock'); }
+        root.style.setProperty('color-scheme', 'only light');
+      })();
+    })();
+  </script>
+  <!-- Colour lock: must stay last so it overrides every earlier stylesheet. -->
+  <link rel="stylesheet" href="assets/css/color-scheme-lock.css?v=hero-overlay-lock-1">
+  <link rel="stylesheet" href="assets/css/color-lock-generated.css?v=near-opaque-lock-1">
+</head>
+<body class="crm-page">
+  <div id="crm-toast" class="crm-toast" aria-live="polite" aria-atomic="true"></div>
+  <div id="crm-login" class="crm-login crm-card">
+    <div class="crm-login-mark crm-login-logo-mark"><img id="crm-login-logo" alt="CRM logo" hidden><span id="crm-login-logo-fallback">S</span></div>
+    <div class="crm-section-label">Salon management</div>
+    <h1 class="crm-title">Welcome back</h1>
+    <p class="crm-subtitle">Sign in to manage your salon.</p>
+    <div id="login-message" class="crm-message"></div>
+    <form id="login-form">
+      <div class="crm-field"><label for="login-email">Username or email</label><input id="login-email" type="text" required autocomplete="username"></div>
+      <div class="crm-field"><label for="login-password">Password</label><input id="login-password" type="password" required autocomplete="current-password"></div>
+      <button class="crm-btn crm-btn-primary crm-btn-wide" type="submit">Sign in <span>→</span></button>
+    </form>
+  </div>
+
+  <section id="crm-password-setup" class="crm-card crm-login crm-hidden" aria-labelledby="password-setup-title">
+    <div class="crm-login-mark crm-login-logo-mark"><img id="crm-password-setup-logo" alt="CRM logo" hidden><span id="crm-password-setup-logo-fallback">✓</span></div>
+    <div class="crm-section-label">Welcome to the salon CRM</div>
+    <h1 id="password-setup-title" class="crm-title">Create your password</h1>
+    <p id="password-setup-subtitle" class="crm-subtitle">Your invitation is confirmed. Choose a password to finish setting up your CRM account.</p>
+    <div id="password-setup-message" class="crm-message"></div>
+    <form id="password-setup-form">
+      <div class="crm-field">
+        <label for="setup-password">New password</label>
+        <input id="setup-password" type="password" minlength="8" autocomplete="new-password" required>
+        <span class="crm-small">Use at least 8 characters.</span>
+      </div>
+      <div class="crm-field" style="margin-top:16px">
+        <label for="setup-password-confirm">Confirm password</label>
+        <input id="setup-password-confirm" type="password" minlength="8" autocomplete="new-password" required>
+      </div>
+      <button id="password-setup-submit" class="crm-btn crm-btn-primary crm-btn-wide" type="submit">Create password <span>→</span></button>
+    </form>
+  </section>
+
+  <main id="crm-app" class="crm-hidden">
+    <div class="crm-layout">
+      <div class="crm-sidebar-backdrop" id="crm-sidebar-backdrop"></div>
+      <aside class="crm-sidebar" id="crm-sidebar">
+        <button type="button" class="crm-sidebar-toggle" id="crm-sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+        <div class="crm-side-brand"><div class="crm-brand-mark crm-brand-mark-image"><img id="crm-sidebar-logo" alt="Website logo" hidden></div><div><strong id="crm-sidebar-website-name">Loading…</strong><span>Management</span></div></div>
+        <nav class="crm-nav">
+          <button class="crm-nav-item active" data-view="dashboard"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8v-8h-8zM13 3h8v6h-8zM3 21h8v-6H3z"/></svg></span> Dashboard</button>
+          <button class="crm-nav-item" data-view="services"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v5H6zM8 8v13M16 8v13M5 21h14"/></svg></span> Services</button>
+          <button class="crm-nav-item" data-view="vouchers"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4z"/><path d="M8 7v10M16 7v10"/></svg></span> Vouchers</button>
+          <button class="crm-nav-item" data-view="faqs" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.4 1.6c-.9 1.1-1.9 1.4-1.9 3"/><path d="M12 17h.01"/></svg></span> FAQs</button>
+          <button class="crm-nav-item" data-view="bookings"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span> Bookings</button>
+          <button class="crm-nav-item" data-view="booking-config" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/></svg></span> Booking Setup</button>           <button class="crm-nav-item" data-view="translations" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7M4 9h5M4 13h7M15 5h5M17.5 5v14M14 19h7"/></svg></span> Translation</button>
+          <button class="crm-nav-item" data-view="contact-messages"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span> Contact Us</button>
+          <button class="crm-nav-item" data-view="customers"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 19c.5-3.2 2.5-5 6-5s5.5 1.8 6 5"/><path d="M16 11c3 0 4.5 1.5 5 4"/></svg></span> Customers</button>
+<button type="button" class="crm-nav-item" data-view="settings" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/></svg></span><span>Settings</span></button>
+          <button class="crm-nav-item" data-view="users"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20c.5-3.2 2.5-5 6-5s5.5 1.8 6 5M15 15c3 .2 4.7 1.7 5 4"/></svg></span> Users & Access</button>
+          <button class="crm-nav-item" data-view="roles"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span> Roles & Permissions</button>
+          <div class="crm-nav-group-label">Finance</div>
+          <button class="crm-nav-item" data-view="chart-of-accounts" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span> Chart of Accounts</button>
+          <button class="crm-nav-item" data-view="journal-entries" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/><path d="m16 4 3 3-3 3"/></svg></span> Journal Entries</button>
+          <button class="crm-nav-item" data-view="general-ledger" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span> General Ledger</button>
+          <button class="crm-nav-item" data-view="trial-balance" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V8M12 20V4M19 20v-9"/><path d="M3 20h18"/></svg></span> Trial Balance</button>
+          <button class="crm-nav-item" data-view="financial-statements" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/><path d="M3 20h18"/></svg></span> Financial Statements</button>
+          <button class="crm-nav-item" data-view="statement-mapping" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h10M7 17h10"/><path d="m4 7 2-2 2 2M16 17l2 2 2-2"/></svg></span> Statement Mapping</button>
+          <button class="crm-nav-item" data-view="accounting-periods" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span> Accounting Periods</button>
+          <button class="crm-nav-item" data-view="audit-trail" data-admin-only><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span> Audit Trail</button>
+        </nav>
+        <div class="crm-side-bottom">
+          <a href="index.html" class="crm-nav-link"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></span><span class="crm-nav-label">View website</span></a>
+          <button id="logout" class="crm-nav-link crm-nav-logout"><span class="crm-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M13 5h6v14h-6"/></svg></span><span class="crm-nav-label">Sign out</span></button>
+        </div>
+      </aside>
+
+      <div class="crm-main">
+        <header class="crm-topbar">
+          <button id="mobile-menu" class="crm-mobile-menu" aria-label="Open menu">☰</button>
+          <div class="crm-user-pill"><span class="crm-user-dot"></span><span id="current-user-email">Admin</span></div>
+        </header>
+        <div id="app-message" class="crm-message"></div>
+
+        <section id="view-dashboard" class="crm-view">
+          <div class="crm-welcome"><div><span class="crm-section-label">Good to see you</span><h2>Salon overview</h2><p>Manage your services today and get ready for bookings, vouchers and customers.</p></div><a href="booking.html" class="crm-btn crm-btn-primary">Open booking ↗</a></div>
+          <div class="crm-stats">
+            <button class="crm-stat" data-view-target="services"><span class="crm-stat-icon">✂</span><span class="crm-stat-label">Active services</span><strong id="stat-services">—</strong><small id="stat-categories">— categories</small></button>
+            <button class="crm-stat" data-view-target="vouchers"><span class="crm-stat-icon">◇</span><span class="crm-stat-label">Active vouchers</span><strong id="stat-vouchers">—</strong><small>Ready for customers</small></button>
+            <button class="crm-stat" data-view-target="bookings"><span class="crm-stat-icon">◷</span><span class="crm-stat-label">Bookings</span><strong id="stat-bookings">—</strong><small>Booking module</small></button>
+            <button class="crm-stat" data-view-target="customers"><span class="crm-stat-icon">♙</span><span class="crm-stat-label">Customers</span><strong id="stat-customers">—</strong><small>Customer records</small></button>
+          </div>
+          <div class="crm-dashboard-bookings">
+            <div class="crm-card crm-dashboard-booking-card-wrap">
+              <div class="crm-card-head"><div><div class="crm-section-label">Appointments</div><h2>Bookings by status</h2><p class="crm-small">Open a status to review those appointments.</p></div></div>
+              <div class="crm-booking-status-grid">
+                <button type="button" class="crm-booking-status-card crm-status-pending" data-booking-filter="pending"><span class="crm-booking-status-icon">◷</span><span><b>Pending</b><small>Awaiting confirmation</small></span><strong id="dash-bookings-pending">0</strong></button>
+                <button type="button" class="crm-booking-status-card crm-status-confirmed" data-booking-filter="confirmed"><span class="crm-booking-status-icon">✓</span><span><b>Confirmed</b><small>Confirmed appointments</small></span><strong id="dash-bookings-confirmed">0</strong></button>
+                <button type="button" class="crm-booking-status-card crm-status-completed" data-booking-filter="completed"><span class="crm-booking-status-icon">✓</span><span><b>Completed</b><small>Completed appointments</small></span><strong id="dash-bookings-completed">0</strong></button>
+                <button type="button" class="crm-booking-status-card crm-status-cancelled" data-booking-filter="cancelled"><span class="crm-booking-status-icon">×</span><span><b>Cancelled</b><small>Cancelled appointments</small></span><strong id="dash-bookings-cancelled">0</strong></button>
+              </div>
+            </div>
+          </div>
+          <div class="crm-dashboard-grid">
+            <div class="crm-card"><div class="crm-card-head"><div><div class="crm-section-label">Quick access</div><h2>Manage your salon</h2></div></div>
+              <div class="crm-quick-grid crm-quick-grid-full">
+                <button class="crm-quick" data-view-target="services"><b>Services</b><span>Edit categories, prices, durations and visibility →</span></button>
+                <button class="crm-quick" data-view-target="users"><b>Users & Access</b><span>Create staff accounts and control CRM roles →</span></button>
+                <button class="crm-quick" data-view-target="vouchers"><b>Vouchers</b><span>Manage customer offers and promotions →</span></button>
+                <button class="crm-quick" data-view-target="bookings"><b>Bookings</b><span>Review and manage customer appointments →</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-services" class="crm-view crm-hidden">
+          <div class="crm-page-heading">
+            <div><div class="crm-section-label">Catalog</div><h2>Services</h2><p>Manage categories and services shown on the public website.</p></div>
+          </div>
+
+          <div class="crm-tabs" role="tablist" aria-label="Services catalog">
+            <button type="button" class="crm-tab is-active" data-services-tab="categories" role="tab" aria-selected="true">Categories</button>
+            <button type="button" class="crm-tab" data-services-tab="services" role="tab" aria-selected="false">Services</button>
+          </div>
+
+          <div id="services-tab-categories" class="crm-services-tab-panel" role="tabpanel">
+            <div class="crm-card">
+              <div class="crm-toolbar">
+                <div><div class="crm-section-label">Categories</div><h2>Service categories</h2><p class="crm-small">Search, filter and manage your service categories.</p></div>
+                <button id="new-category-top" type="button" class="crm-btn crm-btn-primary" >Add category</button>
+              </div>
+              <div class="crm-list-filters">
+                <div class="crm-search-box"><span>⌕</span><input id="category-search" type="search" placeholder="Search categories" aria-label="Search service categories"></div>
+                <select id="category-status-filter" class="crm-filter-select" aria-label="Filter categories by status">
+                  <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Category</th><th>Image</th><th>Size</th><th>Sort order</th><th>Status</th><th>Actions</th></tr></thead><tbody id="category-table-body"></tbody></table></div>
+            </div>
+          </div>
+
+          <div id="services-tab-services" class="crm-services-tab-panel crm-hidden" role="tabpanel">
+            <div class="crm-card">
+              <div class="crm-toolbar">
+                <div><div class="crm-section-label">Services</div><h2>All services</h2><p class="crm-small">Search, filter and manage your services.</p></div>
+                <button id="new-service-top" type="button" class="crm-btn crm-btn-primary" >Add service</button>
+              </div>
+              <div class="crm-list-filters">
+                <div class="crm-search-box"><span>⌕</span><input id="service-search" type="search" placeholder="Search service, SKU or category" aria-label="Search services"></div>
+                <select id="service-category-filter" class="crm-filter-select" aria-label="Filter services by category"><option value="all">All categories</option></select>
+                <select id="service-status-filter" class="crm-filter-select" aria-label="Filter services by status">
+                  <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>SKU</th><th>Service</th><th>Category</th><th>Prices</th><th>Duration</th><th>Status</th><th></th></tr></thead><tbody id="service-table-body"></tbody></table></div>
+            </div>
+          </div>
+
+          <div id="category-form-modal" class="crm-modal crm-hidden" aria-hidden="true">
+            <div class="crm-modal-backdrop" data-close-category-form></div>
+            <aside class="crm-modal-panel crm-form-modal-panel" role="dialog" aria-modal="true" aria-labelledby="category-form-title">
+              <button type="button" class="crm-modal-close" data-close-category-form aria-label="Close">×</button>
+              <div class="crm-section-label">Category</div><h2 id="category-form-title">Add Category</h2><p class="crm-small">Names, descriptions, image and display dimensions.</p>
+              <form id="category-form" class="crm-standard-form"><div class="crm-form-grid">
+                <div class="crm-field"><label>English name</label><input id="category-name-en" required></div><div class="crm-field"><label>Arabic name</label><input id="category-name-ar" required dir="rtl"></div>
+                <div class="crm-field"><label>English description</label><textarea id="category-description-en"></textarea></div><div class="crm-field"><label>Arabic description</label><textarea id="category-description-ar" dir="rtl"></textarea></div>
+                <div class="crm-field full"><label for="category-image-file">Category image</label><div class="crm-category-image-editor"><div class="crm-category-image-preview" id="category-image-preview-wrap"><img id="category-image-preview" alt="Category image preview" hidden></div><div class="crm-category-image-controls"><input id="category-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"><small>Choose an image. Maximum 5 MB.</small></div></div></div>
+                <div class="crm-field"><label>Image width</label><input id="category-width" type="number" min="1"></div><div class="crm-field"><label>Image height</label><input id="category-height" type="number" min="1"></div>
+                <div class="crm-field"><label>Sort order</label><input id="category-sort" type="number" value="0"></div><label class="crm-check"><input id="category-active" type="checkbox" checked> Active</label>
+              </div><div class="crm-form-actions"><button id="category-reset" type="button" class="crm-btn crm-btn-secondary">Cancel</button><button id="category-save" type="submit" class="crm-btn crm-btn-primary">Save Category</button></div></form>
+            </aside>
+          </div>
+
+          <div id="service-form-modal" class="crm-modal crm-hidden" aria-hidden="true">
+            <div class="crm-modal-backdrop" data-close-service-form></div>
+            <aside class="crm-modal-panel crm-form-modal-panel" role="dialog" aria-modal="true" aria-labelledby="service-form-title">
+              <button type="button" class="crm-modal-close" data-close-service-form aria-label="Close">×</button>
+              <div class="crm-section-label">Service</div><h2 id="service-form-title">Add Service</h2><p class="crm-small">Use real USD/QAR prices. Duration can stay empty.</p>
+              <form id="service-form" class="crm-standard-form"><div class="crm-form-grid">
+                <div class="crm-field"><label>Category</label><select id="service-category" required></select></div><div class="crm-field"><label>SKU</label><input id="service-sku" placeholder="HS-001" required readonly aria-readonly="true"><small>Generated automatically from the category name and next available global number.</small></div>
+                <div class="crm-field"><label>English name</label><input id="service-name-en" required></div><div class="crm-field"><label>Arabic name</label><input id="service-name-ar" required dir="rtl"></div>
+                <div class="crm-field"><label>English description</label><textarea id="service-description-en"></textarea></div><div class="crm-field"><label>Arabic description</label><textarea id="service-description-ar" dir="rtl"></textarea></div>
+                <div class="crm-field"><label>USD price</label><input id="service-price-usd" type="number" min="0" step="0.01"></div><div class="crm-field"><label>QAR price</label><input id="service-price-qar" type="number" min="0" step="0.01"></div>
+                <div class="crm-field"><label>Duration (minutes)</label><input id="service-duration" type="number" min="1" placeholder="Leave empty for now"></div><div class="crm-field"><label>Sort order</label><input id="service-sort" type="number" value="0"></div>
+                <label class="crm-check full"><input id="service-active" type="checkbox" checked> Active</label>
+              </div><div class="crm-form-actions"><button id="service-reset" type="button" class="crm-btn crm-btn-secondary">Cancel</button><button id="service-save" type="submit" class="crm-btn crm-btn-primary">Save Service</button></div></form>
+            </aside>
+          </div>
+        </section>
+        <section id="view-users" class="crm-view crm-hidden" data-admin-only>
+          <div class="crm-page-heading"><div><div class="crm-section-label">Access control</div><h2>Users & access</h2><p>Create and manage CRM access directly.</p></div><button id="invite-user-btn" class="crm-btn crm-btn-primary" >Create user</button></div>
+          <div class="crm-card"><div class="crm-info-banner"><b>Direct account setup</b><span>Administrators create users and set their passwords directly. No invitation or password-reset emails are sent.</span></div></div>
+          <div class="crm-card">
+            <div class="crm-list-filters crm-users-filters">
+              <div class="crm-search-box"><span>⌕</span><input id="user-search" type="search" placeholder="Search name, username or email" aria-label="Search users"></div>
+              <select id="user-role-filter" class="crm-filter-select" aria-label="Filter users by role"><option value="all">All roles</option></select>
+              <select id="user-status-filter" class="crm-filter-select" aria-label="Filter users by status"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+            </div>
+            <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>User</th><th>Username</th><th>Email</th><th>Role</th><th>Status & sign-in</th><th>Created</th><th>Actions</th></tr></thead><tbody id="users-table-body"></tbody></table></div>
+          </div>
+          <div id="user-form-card" class="crm-card crm-hidden">
+            <div class="crm-section-label">New CRM user</div><h2>Create team member</h2><p class="crm-small">Create the account immediately and set the password yourself. No invitation email is sent.</p>
+            <form id="user-form"><div class="crm-form-grid">
+              <div class="crm-field"><label for="user-name">Full name</label><input id="user-name" required></div>
+              <div class="crm-field"><label for="user-username">Username</label><input id="user-username" type="text" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]+" autocomplete="username" required><small>Used to sign in. Letters, numbers, dot, underscore and hyphen only.</small></div>
+              <div class="crm-field"><label for="user-email">Email <span class="crm-small">(optional)</span></label><input id="user-email" type="email" autocomplete="email"></div>
+              <div class="crm-field"><label for="user-password">Password</label><input id="user-password" type="password" minlength="8" autocomplete="new-password" required></div>
+              <div class="crm-field"><label for="user-password-confirm">Confirm password</label><input id="user-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div>
+              <div class="crm-field"><label for="user-role">Role</label><select id="user-role"><option value="manager">Manager</option><option value="staff">Staff</option><option value="admin">Administrator</option></select></div>
+            </div><div class="crm-form-actions"><button id="user-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" class="crm-btn crm-btn-primary">Create user</button></div></form>
+          </div>
+          <div id="user-edit-card" class="crm-card crm-hidden">
+            <div class="crm-section-label">Manage access</div><h2>Edit CRM user</h2><p class="crm-small" id="user-edit-email"></p>
+            <form id="user-edit-form"><div class="crm-form-grid">
+              <div class="crm-field"><label for="edit-user-name">Display name</label><input id="edit-user-name" required></div>
+              <div class="crm-field"><label for="edit-user-username">Username</label><input id="edit-user-username" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]+" required></div>
+              <div class="crm-field"><label for="edit-user-role">Role</label><select id="edit-user-role"></select></div>
+              <label class="crm-field crm-check"><input id="edit-user-active" type="checkbox"> <span>Account active</span></label>
+            </div><div class="crm-form-actions"><button id="user-edit-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" class="crm-btn crm-btn-primary">Save changes</button></div></form>
+            <div id="temporary-password-card" class="crm-subcard crm-hidden" style="margin-top:24px">
+              <div class="crm-section-label">Security</div>
+              <h3>Change password</h3>
+              <p class="crm-small">Administrator only. Set a new password directly; no reset email is sent.</p>
+              <div class="crm-form-grid">
+                <div class="crm-field"><label for="temporary-password">New password</label><input id="temporary-password" type="password" minlength="8" autocomplete="new-password"></div>
+                <div class="crm-field"><label for="temporary-password-confirm">Confirm new password</label><input id="temporary-password-confirm" type="password" minlength="8" autocomplete="new-password"></div>
+              </div>
+              <div class="crm-form-actions">
+                <button id="generate-temporary-password" type="button" class="crm-btn crm-btn-secondary">Generate password</button>
+                <button id="set-temporary-password" type="button" class="crm-btn crm-btn-primary">Change password</button>
+              </div>
+              <div id="temporary-password-message" class="crm-message"></div>
+            </div>
+          </div>
+          <div id="reset-user-password-card" class="crm-card crm-hidden">
+            <div class="crm-section-label">Security</div><h2>Reset user password</h2><p class="crm-small" id="reset-user-password-email"></p>
+            <form id="reset-user-password-form"><div class="crm-form-grid">
+              <div class="crm-field"><label for="reset-user-password">New password</label><input id="reset-user-password" type="password" minlength="8" autocomplete="new-password" required></div>
+              <div class="crm-field"><label for="reset-user-password-confirm">Confirm new password</label><input id="reset-user-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div>
+            </div><div class="crm-form-actions"><button id="reset-user-password-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" class="crm-btn crm-btn-primary">Reset password</button></div>
+            <div id="reset-user-password-message" class="crm-message"></div></form>
+          </div>
+</section>
+
+        <section id="view-vouchers" class="crm-view crm-hidden">
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Marketing</div>
+      <h2>Vouchers</h2>
+      <p>Manage the offers shown on the website.</p>
+    </div>
+    <button id="new-voucher-top" class="crm-btn crm-btn-primary" type="button" >Add voucher</button>
+  </div>
+
+  <div id="voucher-form-card" class="crm-card crm-hidden">
+    <div class="crm-section-label">Voucher catalogue</div>
+    <h2 id="voucher-form-title">Add Voucher</h2>
+    <p class="crm-small">Set the voucher details, prices, duration and website image.</p>
+
+    <form id="voucher-form" class="crm-standard-form">
+      <div class="crm-voucher-editor">
+        <div class="crm-form-grid">
+          <div class="crm-field">
+            <label for="voucher-sku">SKU</label>
+            <input id="voucher-sku" placeholder="V-001" required readonly aria-readonly="true"><small>Generated automatically.</small>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-title-en">English title</label>
+            <input id="voucher-title-en" required>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-title-ar">Arabic title</label>
+            <input id="voucher-title-ar" dir="rtl">
+          </div>
+          <div class="crm-field">
+            <label for="voucher-price-usd">USD price</label>
+            <input id="voucher-price-usd" type="number" min="0" step="0.01">
+            <small>Voucher purchase price in USD.</small>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-price-qar">QAR price</label>
+            <input id="voucher-price-qar" type="number" min="0" step="0.01">
+            <small>Voucher purchase price in QAR.</small>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-discount-type">Discount type</label>
+            <select id="voucher-discount-type">
+              <option value="percentage">Percentage (%)</option>
+              <option value="fixed">Fixed amount</option>
+            </select>
+            <small id="voucher-discount-type-help">Percentage discounts use Discount value.</small>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-discount-value">Discount value</label>
+            <input id="voucher-discount-value" type="number" min="0" step="0.01" value="0">
+            <small id="voucher-discount-value-help">Enter the percentage, from 0% to 100%.</small>
+          </div>
+          <div class="crm-field">
+            <label for="voucher-duration">Duration (minutes)</label>
+            <input id="voucher-duration" type="number" min="1" value="30">
+            <small>Defaults to 30 minutes.</small>
+          </div>
+          <label class="crm-check">
+            <input id="voucher-active" type="checkbox" checked>
+            <span>Active on website</span>
+          </label>
+        </div>
+
+        <div class="crm-voucher-image-editor">
+          <div class="crm-field">
+            <label for="voucher-image-file">Voucher image</label>
+            <input id="voucher-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif">
+            <small>JPG, PNG, WebP, GIF or AVIF · max 5 MB.</small>
+          </div>
+          <div id="voucher-current-image" class="crm-voucher-image-preview">
+            <div class="crm-image-empty">No image uploaded</div>
+          </div>
+          <button id="voucher-image-delete" type="button" class="crm-btn crm-btn-danger crm-btn-small crm-hidden">Delete image</button>
+        </div>
+      </div>
+
+      <div class="crm-form-actions">
+        <button id="voucher-reset" type="button" class="crm-btn crm-btn-secondary">Clear</button>
+        <button id="voucher-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+        <button id="voucher-save" type="submit" class="crm-btn crm-btn-primary">Add Voucher</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crm-card">
+    <div class="crm-toolbar">
+      <div>
+        <div class="crm-section-label">Website catalogue</div>
+        <h2>All vouchers</h2>
+      </div>
+      <button id="vouchers-refresh" type="button" class="crm-btn crm-btn-secondary crm-btn-small">↻ Refresh</button>
+    </div>
+    <div class="crm-list-filters crm-list-filters-vouchers">
+      <div class="crm-search-box"><span>⌕</span><input id="voucher-search" type="search" placeholder="Search voucher or SKU" aria-label="Search vouchers"></div>
+      <select id="voucher-status-filter" class="crm-filter-select" aria-label="Filter vouchers by status">
+        <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table crm-vouchers-table">
+        <thead>
+          <tr><th>Image</th><th>SKU</th><th>Voucher</th><th>Prices</th><th>Discount</th><th>Duration</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="voucher-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+        
+<section id="view-faqs" class="crm-view crm-hidden" data-admin-only>
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Website content</div>
+      <h2>FAQs</h2>
+      <p>Manage the frequently asked questions shown on the website.</p>
+    </div>
+    <button id="new-faq-top" class="crm-btn crm-btn-primary" type="button" >Add FAQ</button>
+  </div>
+
+  <div id="faq-form-card" class="crm-card crm-hidden">
+    <div class="crm-section-label">FAQ item</div>
+    <h3 id="faq-form-title">Add FAQ</h3>
+    <form id="faq-form" class="crm-standard-form">
+      <div class="crm-form-grid">
+        <div class="crm-field">
+          <label for="faq-question-en">English question</label>
+          <input id="faq-question-en" required>
+        </div>
+        <div class="crm-field">
+          <label for="faq-question-ar">Arabic question</label>
+          <input id="faq-question-ar" dir="rtl">
+        </div>
+        <div class="crm-field full">
+          <label for="faq-answer-en">English answer</label>
+          <textarea id="faq-answer-en" rows="5" required></textarea>
+        </div>
+        <div class="crm-field full">
+          <label for="faq-answer-ar">Arabic answer</label>
+          <textarea id="faq-answer-ar" rows="5" dir="rtl"></textarea>
+        </div>
+        <div class="crm-field">
+          <label for="faq-sort-order">Sort order</label>
+          <input id="faq-sort-order" type="number" min="0" step="1" value="0">
+          <small>Lower numbers appear first.</small>
+        </div>
+        <label class="crm-check">
+          <input id="faq-active" type="checkbox" checked>
+          <span>Active on website</span>
+        </label>
+      </div>
+      <div class="crm-form-actions">
+        <button id="faq-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+        <button type="submit" class="crm-btn crm-btn-primary">Save FAQ</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crm-card">
+    <div class="crm-toolbar">
+      <div>
+        <div class="crm-section-label">FAQ catalogue</div>
+        <h3>Questions &amp; answers</h3>
+      </div>
+      <button id="faqs-refresh" type="button" class="crm-btn crm-btn-secondary crm-btn-small">↻ Refresh</button>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead><tr><th>Question</th><th>Answer</th><th>Order</th><th>Status</th><th></th></tr></thead>
+        <tbody id="faq-table-body"><tr><td colspan="5">Loading FAQs…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+        <section id="view-bookings" class="crm-view crm-hidden">
+          <div class="crm-page-heading">
+            <div><div class="crm-section-label">Appointments</div><h2>Bookings</h2><p>Review customer requests, manage appointment status and see the full appointment details.</p></div>
+            <div class="crm-actions"><button id="booking-walkin-top" class="crm-btn crm-btn-primary" type="button" >Walk-in booking</button> <button id="bookings-refresh" class="crm-btn crm-btn-secondary" type="button">↻ Refresh</button></div>
+          </div>
+          <div class="crm-booking-stats">
+            <button class="crm-booking-stat is-active" data-booking-filter="all"><span>All</span><strong id="booking-count-all">0</strong></button>
+            <button class="crm-booking-stat" data-booking-filter="pending"><span>Pending</span><strong id="booking-count-pending">0</strong></button>
+            <button class="crm-booking-stat" data-booking-filter="confirmed"><span>Confirmed</span><strong id="booking-count-confirmed">0</strong></button>
+            <button class="crm-booking-stat" data-booking-filter="completed"><span>Completed</span><strong id="booking-count-completed">0</strong></button>
+            <button class="crm-booking-stat" data-booking-filter="cancelled"><span>Cancelled</span><strong id="booking-count-cancelled">0</strong></button>
+          </div>
+
+          <div id="walkin-booking-card" class="crm-card crm-hidden">
+            <div class="crm-card-header">
+              <div>
+                <div class="crm-section-label">Front desk</div>
+                <h3>Walk-in booking <span id="walkin-booking-flag" class="crm-badge crm-badge-warning">WALK-IN</span></h3>
+                <p class="crm-small">Find an existing customer, choose the service and appointment time, then save it directly as a confirmed booking.</p>
+              </div>
+            </div>
+            <form id="walkin-booking-form" class="crm-standard-form">
+              <div class="crm-form-grid">
+                <div class="crm-field">
+                  <label for="walkin-customer-number">Customer number / name / phone</label>
+                  <div class="crm-inline-field">
+                    <input id="walkin-customer-number" type="text" placeholder="Customer number, name or phone" autocomplete="off" required>
+                    <button id="walkin-customer-search" type="button" class="crm-btn crm-btn-secondary">Search</button>
+                  </div>
+                  <small>Search an existing CRM customer. If names match, select the correct customer by phone number.</small>
+                  <div id="walkin-customer-results" class="crm-walkin-results" aria-live="polite"></div>
+                  <div id="walkin-new-customer" class="crm-walkin-new-customer crm-hidden">
+                    <div class="crm-walkin-new-customer-title">Customer not found</div>
+                    <p class="crm-small">Create a new customer here and use the same customer for this walk-in booking.</p>
+                    <div class="crm-form-grid crm-walkin-new-customer-grid">
+                      <div class="crm-field"><label for="walkin-new-customer-name">Customer name</label><input id="walkin-new-customer-name" type="text" autocomplete="name" placeholder="Full name"></div>
+                      <div class="crm-field"><label for="walkin-new-customer-phone">Phone</label><input id="walkin-new-customer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+97450123456"></div>
+                      <div class="crm-field"><label for="walkin-new-customer-email">Email</label><input id="walkin-new-customer-email" type="email" autocomplete="email" placeholder="Optional"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-customer-name">Customer</label>
+                  <input id="walkin-customer-name" type="text" readonly placeholder="Search for a customer first">
+                  <input id="walkin-customer-id" type="hidden">
+                </div>
+                <div class="crm-field">
+                  <label>Services</label>
+                  <div id="walkin-services" class="crm-walkin-services"></div>
+                  <small>Select multiple services. They will be booked consecutively in the selected order.</small>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-date">Date</label>
+                  <input id="walkin-date" type="date" required>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-start">Start time</label>
+                  <input id="walkin-start" type="time" required>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-end">End time</label>
+                  <input id="walkin-end" type="time" readonly>
+                  <small id="walkin-service-summary">Select a service to calculate duration and price.</small>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-price">Original price (<span data-walkin-currency-label>—</span>)</label>
+                  <input id="walkin-price" type="number" min="0" step="0.01" readonly>
+                </div>
+                <div class="crm-field">
+                  <label>Discount</label>
+                  <div class="crm-inline-field crm-walkin-discount-row">
+                    <select id="walkin-discount-type" aria-label="Discount type">
+                      <option value="percent">%</option>
+                      <option value="amount">Fixed amount</option>
+                    </select>
+                    <input id="walkin-discount-value" type="number" min="0" step="0.01" placeholder="0" aria-label="Discount value">
+                  </div>
+                  <small>Enter a percentage or a fixed discount in the booking currency.</small>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-final-price">Final price (<span data-walkin-currency-label>—</span>)</label>
+                  <input id="walkin-final-price" type="number" min="0" step="0.01" readonly>
+                </div>
+                <div class="crm-field">
+                  <label for="walkin-notes">Booking note</label>
+                  <input id="walkin-notes" type="text" placeholder="Optional note for this appointment">
+                </div>
+              </div>
+              <div id="walkin-booking-message" class="crm-message"></div>
+              <div class="crm-form-actions">
+                <button id="walkin-booking-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+                <button id="walkin-booking-save" type="submit" class="crm-btn crm-btn-primary">Save booking</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="crm-card crm-bookings-card">
+            <div class="crm-bookings-toolbar">
+              <div class="crm-search-box"><span>⌕</span><input id="booking-search" type="search" placeholder="Search customer, phone, email or booking reference"></div>
+              <select id="booking-status-filter" class="crm-booking-filter" aria-label="Filter bookings by status">
+                <option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option>
+              </select>
+              <select id="booking-type-filter" class="crm-booking-filter" aria-label="Filter bookings by type">
+                <option value="all">All bookings</option><option value="service">Services</option><option value="voucher">Vouchers</option>
+              </select>
+              <select id="booking-date-filter" class="crm-booking-filter"><option value="all">All dates</option><option value="today">Today</option><option value="upcoming">Upcoming</option><option value="past">Past</option></select>
+              <div class="crm-view-toggle" role="group" aria-label="Booking view">
+                <button type="button" data-booking-view="schedule">Schedule</button>
+                <button type="button" class="is-active" data-booking-view="list">List</button>
+              </div>
+            </div>
+            <div id="bookings-message" class="crm-small crm-bookings-message"></div>
+            <div id="booking-schedule" class="crm-booking-schedule crm-hidden">
+              <div class="crm-schedule-toolbar">
+                <button id="schedule-prev" type="button" class="crm-btn crm-btn-secondary">←</button>
+                <button id="schedule-today" type="button" class="crm-btn crm-btn-secondary">Today</button>
+                <div class="crm-schedule-heading"><strong id="schedule-range-label">Week</strong><span id="schedule-summary"></span></div><div class="crm-schedule-legend"><span><i class="free"></i> Available</span><span><i class="conflict"></i> Overlap</span></div>
+                <button id="schedule-next" type="button" class="crm-btn crm-btn-secondary">→</button>
+              </div>
+              <div class="crm-schedule-scroll">
+                <div id="booking-schedule-grid" class="crm-schedule-grid"></div>
+              </div>
+            </div>
+            <div id="booking-list" class="crm-booking-list-view">
+              <div class="crm-table-wrap">
+              <table class="crm-table crm-bookings-table">
+                <thead><tr><th>Date & time</th><th>Booking ref</th><th>Customer</th><th>Service</th><th>Voucher</th><th>Contact</th><th>Total</th><th>Status</th><th></th></tr></thead>
+                <tbody id="bookings-table-body"></tbody>
+              </table>
+              </div>
+            </div>
+            <div id="bookings-empty" class="crm-bookings-empty crm-hidden"><div class="crm-bookings-empty-icon">◷</div><h3>No bookings found</h3><p>New test bookings made on this browser will appear here.</p></div>
+          </div>
+        </section>
+        <div id="booking-detail-modal" class="crm-modal crm-hidden" aria-hidden="true">
+          <div class="crm-modal-backdrop" data-close-booking></div>
+          <aside class="crm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="booking-detail-title">
+            <button class="crm-modal-close" type="button" data-close-booking aria-label="Close">×</button>
+            <div class="crm-section-label">Appointment</div>
+            <h2 id="booking-detail-title">Booking</h2>
+            <div id="booking-detail-content"></div>
+          </aside>
+        </div>
+
+        
+
+        <section id="view-booking-config" class="crm-view crm-hidden" data-admin-only>
+          <div class="crm-page-heading">
+            <div>
+              <div class="crm-section-label">Booking</div>
+              <h2>Booking Setup</h2>
+              <p>Manage the schedule and availability used by the public booking flow.</p>
+            </div>
+            <button id="booking-config-refresh" type="button" class="crm-btn crm-btn-secondary">↻ Refresh</button>
+          </div>
+
+          <div class="crm-tabs crm-booking-config-tabs" role="tablist" aria-label="Booking Setup tabs">
+            <button type="button" class="crm-tab is-active" data-booking-config-tab="settings" role="tab" aria-selected="true">Booking settings</button>
+            <button type="button" class="crm-tab" data-booking-config-tab="closures" role="tab" aria-selected="false">Closures &amp; blocked times</button>
+          </div>
+
+          <div class="crm-grid crm-booking-config-panels">
+            <div id="booking-config-tab-settings" class="crm-card crm-booking-config-panel" data-booking-config-panel="settings">
+              <div class="crm-section-label">Schedule</div>
+              <h2>Booking settings</h2>
+              <form id="booking-settings-form" class="crm-standard-form">
+                <div class="crm-form-grid">
+                  <div class="crm-field" style="grid-column:1/-1;">
+                    <div class="crm-section-label">Monday – Friday</div>
+                    <p class="crm-small">Weekday booking hours and the interval used to generate start times.</p>
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekday-slot-minutes">Slot interval</label>
+                    <input id="booking-weekday-slot-minutes" type="number" min="1" step="1" value="30">
+                    <small class="crm-small">Minutes between available start times.</small>
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekday-opening-time">Opening time</label>
+                    <input id="booking-weekday-opening-time" type="time" value="09:00">
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekday-closing-time">Closing time</label>
+                    <input id="booking-weekday-closing-time" type="time" value="18:00">
+                  </div>
+
+                  <div class="crm-field" style="grid-column:1/-1;margin-top:8px;">
+                    <div class="crm-section-label">Saturday – Sunday</div>
+                    <p class="crm-small">Weekend booking hours and the interval used to generate start times.</p>
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekend-slot-minutes">Slot interval</label>
+                    <input id="booking-weekend-slot-minutes" type="number" min="1" step="1" value="30">
+                    <small class="crm-small">Minutes between available start times.</small>
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekend-opening-time">Opening time</label>
+                    <input id="booking-weekend-opening-time" type="time" value="10:00">
+                  </div>
+                  <div class="crm-field">
+                    <label for="booking-weekend-closing-time">Closing time</label>
+                    <input id="booking-weekend-closing-time" type="time" value="16:00">
+                  </div>
+
+                  <div class="crm-field">
+                    <label for="booking-advance-months">Booking window</label>
+                    <input id="booking-advance-months" type="number" min="1" step="1" value="3">
+                    <small class="crm-small">How many months ahead customers can book.</small>
+                  </div>
+                </div>
+                <div class="crm-form-actions">
+                  <button type="submit" class="crm-btn crm-btn-primary">Save booking settings</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="booking-config-tab-closures" class="crm-card crm-booking-config-panel crm-hidden" data-booking-config-panel="closures">
+              <div class="crm-page-heading crm-booking-block-heading">
+                <div>
+                  <div class="crm-section-label">Booking calendar blocks</div>
+                  <h2>Closures &amp; blocked times</h2>
+                  <p class="crm-small">Use the calendar to choose an exact start and end date/time. This replaces the old month/weekday rule system.</p>
+                </div>
+                <button id="new-booking-rule" type="button" class="crm-btn crm-btn-primary">Add block</button>
+              </div>
+
+              <div id="booking-rule-form-card" class="crm-card crm-hidden" style="margin:16px 0 0;">
+                <div class="crm-section-label">Calendar block</div>
+                <h3 id="booking-rule-form-title">Add booking block</h3>
+                <form id="booking-rule-form" class="crm-standard-form">
+                  <div class="crm-form-grid">
+                    <div class="crm-field">
+                      <label for="booking-rule-start">From</label>
+                      <input id="booking-rule-start" type="datetime-local" required>
+                      <small class="crm-small">Start date and time.</small>
+                    </div>
+                    <div class="crm-field">
+                      <label for="booking-rule-end">To</label>
+                      <input id="booking-rule-end" type="datetime-local" required>
+                      <small class="crm-small">End date and time. The end must be after the start.</small>
+                    </div>
+                  </div>
+                  <div class="crm-form-actions">
+                    <button type="submit" class="crm-btn crm-btn-primary">Save block</button>
+                    <button id="cancel-booking-rule" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="crm-table-wrap" style="margin-top:16px;">
+                <table class="crm-table">
+                  <thead><tr><th>From → To</th><th></th></tr></thead>
+                  <tbody id="booking-rules-body"><tr><td colspan="5" class="crm-empty">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+<section id="view-translations" class="crm-view crm-hidden" data-admin-only>
+          <div class="crm-page-heading">
+            <div>
+              <div class="crm-section-label">Content</div>
+              <h2>Translation</h2>
+              <p>Manage all website English and Arabic copy from one catalogue.</p>
+            </div>
+          </div>
+          <div class="crm-card">
+            <div class="crm-toolbar">
+              <div>
+                <div class="crm-section-label">Translation catalogue</div>
+                <h2>Website translations</h2>
+              </div>
+              <div class="crm-toolbar-actions">
+                <input id="translation-search" class="crm-input" type="search" placeholder="Search key, English or Arabic">
+                <button id="translation-add-btn" type="button" class="crm-btn crm-btn-secondary" >Add key</button>
+              </div>
+            </div>
+            <div id="translation-form-card" class="crm-subcard crm-hidden" style="margin-top:16px">
+              <form id="translation-form" class="crm-standard-form">
+                <div class="crm-form-grid">
+                  <div class="crm-field"><label for="translation-key">Key</label><input id="translation-key" required placeholder="booking.confirm"></div>
+                  <div class="crm-field"><label for="translation-en">English</label><textarea id="translation-en" rows="3" required></textarea></div>
+                  <div class="crm-field"><label for="translation-ar">Arabic</label><textarea id="translation-ar" rows="3" required dir="rtl"></textarea></div>
+                </div>
+                <div class="crm-form-actions">
+                  <button id="translation-cancel-btn" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+                  <button id="translation-save" type="submit" class="crm-btn crm-btn-primary">Save translation</button>
+                </div>
+              </form>
+            </div>
+            <div class="crm-table-wrap">
+              <table class="crm-table">
+                <thead><tr><th>Key</th><th>English</th><th>Arabic</th><th></th></tr></thead>
+                <tbody id="translation-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-settings" class="crm-view crm-hidden" data-admin-only>
+  <div class="crm-settings-shell">
+    <div class="crm-settings-intro">
+      <div>
+        <div class="crm-section-label">Configuration</div>
+        <h2>Application Settings</h2>
+        <p>Control the website defaults from one place.</p>
+      </div>
+      <div class="crm-settings-status" id="app-settings-status">Live configuration</div>
+    </div>
+
+    <div class="crm-tabs crm-settings-tabs" role="tablist" aria-label="Application Settings tabs">
+      <button type="button" class="crm-tab is-active" data-settings-tab="language-currency" role="tab" aria-selected="true">Language &amp; Currency</button>
+      <button type="button" class="crm-tab" data-settings-tab="rewards" role="tab" aria-selected="false">Rewards &amp; redemption rules</button>
+      <button type="button" class="crm-tab" data-settings-tab="social" role="tab" aria-selected="false">Website social links</button>
+      <button type="button" class="crm-tab" data-settings-tab="media" role="tab" aria-selected="false">Website media</button>
+      <button type="button" class="crm-tab" data-settings-tab="url-qr" role="tab" aria-selected="false">URL QR Codes</button>
+    </div>
+
+    <form id="application-settings-form">
+      <div class="crm-settings-grid">
+        <div class="crm-card crm-settings-card" data-settings-panel="language-currency">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Website defaults</div>
+            </div>
+          </div>
+
+          <div class="crm-form-grid">
+            <div class="crm-field">
+              <label for="app-setting-website-name">Website name</label>
+              <input id="app-setting-website-name" type="text" placeholder="Your website name" autocomplete="organization" maxlength="120">
+              <small>Displayed across the public website and used for the browser page title.</small>
+            </div>
+            <div class="crm-field">
+              <label for="app-setting-contact-phone">Contact phone number</label>
+              <input id="app-setting-contact-phone" type="tel" placeholder="+1 234 567 890" autocomplete="tel">
+              <small>Used for the website contact section and the navigation phone link.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-language-settings-card" data-settings-panel="language-currency">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Languages</div>
+              <h3>Website languages</h3>
+              <p>Add the languages visitors can use, edit their labels, activate or deactivate them, and select exactly one as the <strong>Default language</strong>.</p>
+            </div>
+            <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="add-language-option">Add language</button>
+          </div>
+          <div class="crm-language-table-wrap">
+            <div class="crm-language-table-head" aria-hidden="true"><span>Language</span><span>English label</span><span>Native label</span><span>Active</span><span>Default language</span><span>Actions</span></div>
+            <div id="language-options-list" class="crm-language-list"></div>
+          </div>
+          <div class="crm-settings-help">At least one language must remain configured. The default language must be active.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card" data-settings-panel="language-currency">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Currency</div>
+              <h3>What visitors see</h3>
+              <p>Manage currencies directly in the database. Select exactly one active currency as the website display currency.</p>
+            </div>
+            <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="add-currency-option" >Add currency</button>
+          </div>
+
+          <div id="currency-options-list" class="crm-currency-list"></div>
+          <div class="crm-settings-help">Tip: keep the currency code short, such as <strong>USD</strong> or <strong>QAR</strong>.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-loyalty-settings-card" data-settings-panel="rewards">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Customer loyalty</div>
+              <h3>Booking loyalty points</h3>
+              <p>Set the points earned for each currency. Points are awarded only for completed bookings.</p>
+            </div>
+          </div>
+          <div class="crm-loyalty-booking-table-wrap">
+            <div class="crm-loyalty-booking-table-head" aria-hidden="true"><span>Currency</span><span>Points per 1 currency unit</span></div>
+            <div id="loyalty-booking-points-rates-list" class="crm-loyalty-booking-rates-list"></div>
+          </div>
+          <div class="crm-settings-help">Use <strong>0</strong> to disable points for a currency. Only bookings with status <strong>Completed</strong> can earn points.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-loyalty-settings-card" data-settings-panel="rewards">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Customer loyalty</div>
+              <h3>Rewards &amp; redemption rules</h3>
+              <p>Choose how many points a customer spends and what reward they receive. These rules appear automatically in the customer profile.</p>
+            </div>
+            <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="add-loyalty-reward" >Add reward</button>
+          </div>
+          <div id="loyalty-reward-settings-list" class="crm-loyalty-reward-settings-list"></div>
+          <div class="crm-settings-help">Example: <strong>100</strong> points → <strong>$10 reward</strong>. Changes take effect for all customer profiles after you save settings.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-loyalty-settings-card" data-settings-panel="rewards">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Customer loyalty</div>
+              <h3>Loyalty tiers</h3>
+              <p>Manage customer loyalty tiers directly in the database. Set the tier name, minimum lifetime points, sort order and whether the tier is active. The highest active matching threshold determines the customer tier.</p>
+            </div>
+            <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="add-loyalty-tier">Add tier</button>
+          </div>
+          <div id="loyalty-tier-settings-list" class="crm-loyalty-tier-settings-list"></div>
+          <div class="crm-settings-help">Use <strong>0</strong> for the starting tier. Example: Member 0, Silver 100, Gold 300, Platinum 600. Save Settings writes these tiers to the <strong>loyalty_tiers</strong> database table and synchronizes existing customers.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-social-settings-card" data-settings-panel="social">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Social &amp; messaging</div>
+              <h3>Website social links</h3>
+              <p>Manage your social channels directly from the CRM. Set the public URL, display order and whether each channel is active.</p>
+            </div>
+            <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="add-social-media">Add social media</button>
+          </div>
+          <div class="crm-social-table-wrap">
+            <div class="crm-social-table-head" aria-hidden="true"><span>Channel</span><span>Public URL</span><span>Sort order</span><span>Active</span><span></span></div>
+            <div id="social-settings-list" class="crm-social-list"></div>
+          </div>
+          <div class="crm-settings-help">The website already contains the social icons. The CRM only controls their links and visibility.</div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-website-images-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Website media</div>
+              <h3>Website images</h3>
+              <p>Upload the images used by the public website. Changes are applied immediately.</p>
+            </div>
+          </div>
+          <div class="crm-website-images-grid">
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview"><img id="who-we-are-image-1-preview" alt="Who We Are image 1"></div>
+              <div class="crm-site-image-content"><strong>Who We Are — Image 1</strong><small>First image in the Who We Are section.</small><input id="who-we-are-image-1-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-who-we-are-image-1">Upload / Replace</button></div></div>
+            </div>
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview"><img id="who-we-are-image-2-preview" alt="Who We Are image 2"></div>
+              <div class="crm-site-image-content"><strong>Who We Are — Image 2</strong><small>Second image in the Who We Are section.</small><input id="who-we-are-image-2-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-who-we-are-image-2">Upload / Replace</button></div></div>
+            </div>
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview"><img id="who-we-are-image-3-preview" alt="Who We Are image 3"></div>
+              <div class="crm-site-image-content"><strong>Who We Are — Image 3</strong><small>Third image in the Who We Are section.</small><input id="who-we-are-image-3-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-who-we-are-image-3">Upload / Replace</button></div></div>
+            </div>
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview crm-site-image-preview-wide"><img id="homepage-hero-image-preview" alt="Homepage hero image"></div>
+              <div class="crm-site-image-content"><strong>Homepage hero</strong><small>Main image behind the homepage headline.</small><input id="homepage-hero-image-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-homepage-hero-image">Upload / Replace</button></div></div>
+            </div>
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview crm-site-image-preview-wide"><img id="services-section-image-preview" alt="Services section image"></div>
+              <div class="crm-site-image-content"><strong>Services section</strong><small>Background image behind the services section on the homepage.</small><input id="services-section-image-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-services-section-image">Upload / Replace</button></div></div>
+            </div>
+            <div class="crm-site-image-card">
+              <div class="crm-site-image-preview crm-site-image-preview-wide"><img id="contact-section-image-preview" alt="Contact section image"></div>
+              <div class="crm-site-image-content"><strong>Contact section</strong><small>Background image behind the contact form.</small><input id="contact-section-image-file" type="file" accept="image/*"><div class="crm-branding-actions"><button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-contact-section-image">Upload / Replace</button></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-settings-actions">
+          <button type="submit" class="crm-btn crm-btn-primary" id="save-application-settings">Save Settings</button>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-branding-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Application branding</div>
+              <h3>Logo</h3>
+              <p>Upload the main application logo used by the CRM. This logo is independent from the website navigation logos.</p>
+            </div>
+          </div>
+          <div class="crm-branding-editor">
+            <div class="crm-branding-preview" id="application-logo-image-preview-wrap">
+              <img id="application-logo-image-preview" alt="Application logo preview">
+            </div>
+            <div class="crm-branding-controls">
+              <div class="crm-field">
+                <label for="application-logo-image-file">Upload image</label>
+                <input id="application-logo-image-file" type="file" accept="image/*">
+                <small>JPG, PNG, WEBP or GIF. Maximum 5 MB.</small>
+              </div>
+              <div class="crm-form-grid crm-branding-size-grid">
+                <div class="crm-field"><label for="application-logo-image-width">Width</label><input id="application-logo-image-width" type="text" placeholder="125px"></div>
+                <div class="crm-field"><label for="application-logo-image-height">Height</label><input id="application-logo-image-height" type="text" placeholder="auto"></div>
+              </div>
+              <div class="crm-branding-actions">
+                <button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-application-logo-image">Upload / Replace</button>
+                <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="delete-application-logo-image">Delete image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-branding-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Website branding</div>
+              <h3>Main page Nav logo</h3>
+              <p>This logo is used only on the <strong>main Home page</strong> navigation. It is completely independent from the logo used on the other pages.</p>
+            </div>
+          </div>
+          <div class="crm-branding-editor">
+            <div class="crm-branding-preview" id="main-page-nav-logo-image-preview-wrap">
+              <img id="main-page-nav-logo-image-preview" alt="Main page Nav logo preview">
+            </div>
+            <div class="crm-branding-controls">
+              <div class="crm-field">
+                <label for="main-page-nav-logo-image-file">Upload image</label>
+                <input id="main-page-nav-logo-image-file" type="file" accept="image/*">
+                <small>JPG, PNG, WEBP or GIF. Maximum 5 MB.</small>
+              </div>
+              <div class="crm-form-grid crm-branding-size-grid">
+                <div class="crm-field"><label for="main-page-nav-logo-image-width">Width</label><input id="main-page-nav-logo-image-width" type="text" placeholder="125px"></div>
+                <div class="crm-field"><label for="main-page-nav-logo-image-height">Height</label><input id="main-page-nav-logo-image-height" type="text" placeholder="auto"></div>
+              </div>
+              <div class="crm-branding-actions">
+                <button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-main-page-nav-logo-image">Upload / Replace</button>
+                <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="delete-main-page-nav-logo-image">Delete image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-branding-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Website branding</div>
+              <h3>Other pages Nav &amp; Footer logo</h3>
+              <p>One uploaded image is used for both the <strong>Other pages navigation</strong> and the <strong>website footer</strong>. Each location has its own display size.</p>
+            </div>
+          </div>
+          <div class="crm-branding-editor">
+            <div class="crm-branding-preview" id="other-pages-nav-logo-image-preview-wrap">
+              <img id="other-pages-nav-logo-image-preview" alt="Other pages Nav and Footer logo preview">
+            </div>
+            <div class="crm-branding-controls">
+              <div class="crm-field">
+                <label for="other-pages-nav-logo-image-file">Upload image</label>
+                <input id="other-pages-nav-logo-image-file" type="file" accept="image/*">
+                <small>This single image is shared by Other pages Nav and Footer. JPG, PNG, WEBP or GIF. Maximum 5 MB.</small>
+              </div>
+              <div class="crm-section-label" style="margin-top:4px;">Other pages Nav size</div>
+              <div class="crm-form-grid crm-branding-size-grid">
+                <div class="crm-field"><label for="other-pages-nav-logo-image-width">Width</label><input id="other-pages-nav-logo-image-width" type="text" placeholder="125px"></div>
+                <div class="crm-field"><label for="other-pages-nav-logo-image-height">Height</label><input id="other-pages-nav-logo-image-height" type="text" placeholder="auto"></div>
+              </div>
+              <div class="crm-section-label" style="margin-top:14px;">Footer size</div>
+              <div class="crm-form-grid crm-branding-size-grid">
+                <div class="crm-field"><label for="footer-logo-image-width">Width</label><input id="footer-logo-image-width" type="text" placeholder="100%"></div>
+                <div class="crm-field"><label for="footer-logo-image-height">Height</label><input id="footer-logo-image-height" type="text" placeholder="auto"></div>
+              </div>
+              <div class="crm-branding-actions">
+                <button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-other-pages-nav-logo-image">Upload / Replace</button>
+                <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="delete-other-pages-nav-logo-image">Delete image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-branding-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Browser branding</div>
+              <h3>Favicon</h3>
+              <p>Upload the small icon shown in the browser tab for your website.</p>
+            </div>
+          </div>
+          <div class="crm-branding-editor crm-favicon-editor">
+            <div class="crm-branding-preview crm-favicon-preview" id="favicon-image-preview-wrap">
+              <img id="favicon-image-preview" alt="Favicon preview">
+            </div>
+            <div class="crm-branding-controls">
+              <div class="crm-field">
+                <label for="favicon-image-file">Upload favicon</label>
+                <input id="favicon-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/x-icon,image/vnd.microsoft.icon">
+                <small>PNG, ICO, JPG or WEBP. A square image is recommended; 31×31 or 32×32 works. Maximum 2 MB.</small>
+              </div>
+              <div class="crm-branding-actions">
+                <button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-favicon-image">Upload / Replace</button>
+                <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="delete-favicon-image">Delete favicon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-card crm-settings-card crm-branding-card" data-settings-panel="media">
+          <div class="crm-settings-card-head">
+            <div>
+              <div class="crm-settings-kicker">Website branding</div>
+              <h3>Page banner image</h3>
+              <p>Control the background image used by the page-title banner across Services, Vouchers, About and FAQ.</p>
+            </div>
+          </div>
+          <div class="crm-branding-editor">
+            <div class="crm-branding-preview crm-banner-preview" id="banner-image-preview-wrap">
+              <div id="banner-image-preview" aria-label="Page banner preview"></div>
+            </div>
+            <div class="crm-branding-controls">
+              <div class="crm-field">
+                <label for="banner-image-file">Upload image</label>
+                <input id="banner-image-file" type="file" accept="image/*">
+                <small>JPG, PNG, WEBP or GIF. Maximum 5 MB.</small>
+              </div>
+              <div class="crm-form-grid crm-branding-size-grid">
+                <div class="crm-field"><label for="banner-image-width">Width</label><input id="banner-image-width" type="text" placeholder="100%"></div>
+                <div class="crm-field"><label for="banner-image-height">Height</label><input id="banner-image-height" type="text" placeholder="20.833vw"></div>
+              </div>
+              <div class="crm-branding-actions">
+                <button type="button" class="crm-btn crm-btn-primary crm-btn-small" id="upload-banner-image">Upload / Replace</button>
+                <button type="button" class="crm-btn crm-btn-secondary crm-btn-small" id="delete-banner-image">Delete image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+
+    <div id="settings-tab-url-qr" class="crm-settings-qr-panel crm-hidden" data-settings-panel="url-qr">
+ <div class="crm-page-heading"><div><div class="crm-section-label">Tools</div><h2>URL QR Codes</h2><p>Create a permanent QR code for any website or URL. The QR always uses the JAS Premium public resolver, so changing the destination later does not change the printed QR code.</p></div><button id="url-qr-add" class="crm-btn crm-btn-primary" >Create QR code</button></div>
+ <div id="url-qr-form-card" class="crm-card crm-hidden">
+  <form id="url-qr-form" class="crm-standard-form">
+   <div class="crm-form-grid">
+    <div class="crm-field"><label for="url-qr-name">Name / label</label><input id="url-qr-name" maxlength="120" required placeholder="e.g. Website menu, Booking page, Instagram"></div>
+    <div class="crm-field full"><label for="url-qr-destination">Destination URL</label><input id="url-qr-destination" type="url" inputmode="url" maxlength="2000" required placeholder="https://example.com/page"><small>The QR code points to the permanent JAS Premium public resolver. Changing this URL later will not change the QR code.</small></div>
+   </div>
+   <div class="crm-form-actions"><button type="button" id="url-qr-cancel" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" id="url-qr-save" class="crm-btn crm-btn-primary">Save QR code</button></div>
+  </form>
+ </div>
+ <div class="crm-card">
+  <div class="crm-list-filters crm-url-qr-filters"><div class="crm-search-box"><span>⌕</span><input id="url-qr-search" type="search" placeholder="Search name, code or URL" aria-label="Search URL QR codes"></div></div>
+  <div class="crm-table-wrap"><table class="crm-table crm-url-qr-table"><thead><tr><th>QR Code</th><th>Name</th><th>Current destination</th><th>QR</th><th>Created</th><th>Actions</th></tr></thead><tbody id="url-qr-body"><tr><td colspan="6" class="crm-empty">Loading QR codes…</td></tr></tbody></table></div>
+ </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+
+<section id="view-roles" class="crm-view crm-hidden">
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Access control</div>
+      <h2>Roles &amp; Permissions</h2>
+      <p>Create roles and decide exactly which CRM sections they can read, create, update and delete.</p>
+    </div>
+    <button id="new-role-top" class="crm-btn crm-btn-primary" type="button" >Create role</button>
+  </div>
+
+  <div id="role-form-card" class="crm-card crm-hidden">
+    <div class="crm-card-head">
+      <div>
+        <div class="crm-section-label">Role configuration</div>
+        <h2 id="role-form-title">Create role</h2>
+        <p class="crm-small">Choose the permissions this role should have. Write means Create, Update and Delete.</p>
+      </div>
+    </div>
+    <form id="role-form" class="crm-standard-form">
+      <div class="crm-form-grid">
+        <div class="crm-field">
+          <label for="role-name">Role name</label>
+          <input id="role-name" type="text" required maxlength="80" placeholder="e.g. Receptionist">
+        </div>
+        <div class="crm-field">
+          <label for="role-description">Description</label>
+          <input id="role-description" type="text" maxlength="200" placeholder="What this role is responsible for">
+        </div>
+      </div>
+
+      <div class="crm-role-permission-toolbar">
+        <div>
+          <strong>Permissions</strong>
+          <p class="crm-small">Read controls access to a section. Create, Update and Delete control the corresponding actions.</p>
+        </div>
+        <label class="crm-check">
+          <input id="role-select-all" type="checkbox">
+          <span>Select all</span>
+        </label>
+      </div>
+
+      <div id="role-permissions-grid" class="crm-role-permissions-grid"></div>
+
+      <div class="crm-form-actions">
+        <button id="role-cancel" type="button" class="crm-btn crm-btn-secondary">Cancel</button>
+        <button id="role-save" type="submit" class="crm-btn crm-btn-primary">Create role</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crm-card">
+    <div class="crm-list-filters crm-roles-filters">
+      <div class="crm-search-box"><span>⌕</span><input id="role-search" type="search" placeholder="Search role or description" aria-label="Search roles"></div>
+      <select id="role-type-filter" class="crm-filter-select" aria-label="Filter roles by type"><option value="all">All types</option><option value="system">System</option><option value="custom">Custom</option></select>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead>
+          <tr><th>Role</th><th>Description</th><th>Type</th><th>Permissions</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="roles-table-body">
+          <tr><td colspan="5" class="crm-empty">Loading roles…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="view-chart-of-accounts" class="crm-view crm-hidden" data-admin-only>
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Finance</div>
+      <h2>Chart of Accounts</h2>
+      <p>Manage account codes and classifications stored in Supabase.</p>
+    </div>
+    <button type="button" id="chart-account-add" class="crm-btn crm-btn-primary" >Add account</button>
+  </div>
+  <div id="chart-account-form-card" class="crm-card crm-hidden">
+    <div class="crm-card-header"><div><div class="crm-eyebrow">Account</div><h3 id="chart-account-form-title">Add account</h3></div></div>
+    <form id="chart-account-form" class="crm-standard-form">
+      <div class="crm-form-grid">
+        <div class="crm-field"><label for="chart-account-code">Account code</label><input id="chart-account-code" required maxlength="50"></div>
+        <div class="crm-field"><label for="chart-account-type">Account type</label><input id="chart-account-type" required maxlength="100"></div>
+        <div class="crm-field"><label for="chart-account-major">Major account</label><input id="chart-account-major" maxlength="200"></div>
+        <div class="crm-field"><label for="chart-account-name">Account name</label><input id="chart-account-name" maxlength="255"></div>
+        <div class="crm-field"><label for="chart-account-financial-statement">Financial statement</label><input id="chart-account-financial-statement" required maxlength="100"></div>
+        <div class="crm-field"><label for="chart-account-balance">Typical balance</label><input id="chart-account-balance" maxlength="100"></div>
+        <div class="crm-field full"><label for="chart-account-notes">Notes</label><textarea id="chart-account-notes" rows="3"></textarea></div>
+        <div class="crm-field"><label class="crm-check"><input id="chart-account-active" type="checkbox" checked> Active</label></div>
+      </div>
+      <div class="crm-form-actions"><button type="button" id="chart-account-cancel-2" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" id="chart-account-save" class="crm-btn crm-btn-primary">Add account</button></div>
+    </form>
+  </div>
+  <div class="crm-card">
+    <div class="crm-list-filters crm-chart-filters">
+      <div class="crm-search-box"><span>⌕</span><input id="chart-account-search" type="search" placeholder="Search account code, name or notes" aria-label="Search chart of accounts"></div>
+      <select id="chart-statement-filter" class="crm-filter-select" aria-label="Filter by financial statement"><option value="all">All statements</option></select>
+      <select id="chart-type-filter" class="crm-filter-select" aria-label="Filter by account type"><option value="all">All account types</option></select>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead><tr><th>Code</th><th>Account name</th><th>Type</th><th>Statement</th><th>Balance</th><th>Notes</th><th>Actions</th></tr></thead>
+        <tbody id="chart-of-accounts-table-body"><tr><td colspan="7" class="crm-empty">Loading chart of accounts…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="view-financial-statements" class="crm-view crm-hidden" data-admin-only>
+  <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>Financial Statements</h2><p>Generated from posted journal entries and your statement mappings.</p></div><div class="crm-report-actions"><button id="report-export-csv" class="crm-btn crm-btn-secondary">Export CSV</button><button id="report-print-pdf" class="crm-btn crm-btn-primary">Download PDF</button></div></div>
+  <div class="crm-card"><div class="crm-list-filters crm-financial-report-filters"><select id="report-statement-select" class="crm-filter-select"><option value="Profit & Loss">Profit & Loss</option><option value="Balance Sheet">Balance Sheet</option><option value="Cash Flow">Cash Flow</option><option value="Statement of Changes in Equity">Statement of Changes in Equity</option><option value="Trial Balance">Trial Balance</option></select><input id="report-date-from" class="crm-date-filter" type="date" aria-label="Report start date"><input id="report-date-to" class="crm-date-filter" type="date" aria-label="Report end date"><button id="report-refresh" class="crm-btn crm-btn-secondary">Generate</button></div><div id="financial-report-summary" class="crm-finance-summary"></div><div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Section</th><th>Account</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody id="financial-report-body"></tbody></table></div></div>
+</section>
+
+
+<section id="view-journal-entries" class="crm-view crm-hidden" data-admin-only>
+  <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>Journal Entries</h2><p>Record and post balanced accounting transactions.</p></div><button id="journal-entry-add" class="crm-btn crm-btn-primary" >New journal entry</button></div>
+  <div id="journal-entry-form-card" class="crm-card crm-hidden">
+    <div class="crm-card-header"><div><div class="crm-eyebrow">Accounting transaction</div><h3 id="journal-entry-form-title">New journal entry</h3></div></div>
+    <form id="journal-entry-form" class="crm-standard-form">
+      <div class="crm-form-grid">
+        <div class="crm-field"><label for="journal-entry-date">Date</label><input id="journal-entry-date" type="date" required></div>
+        <div class="crm-field"><label for="journal-entry-reference">Reference</label><input id="journal-entry-reference" maxlength="100" placeholder="INV-001 / Receipt"></div>
+        <div class="crm-field full"><label for="journal-entry-description">Description</label><input id="journal-entry-description" maxlength="255" placeholder="Describe the transaction"></div>
+      </div>
+      <div class="crm-card-inner"><div class="crm-card-header crm-journal-lines-header"><h3>Lines</h3><button type="button" id="journal-line-add" class="crm-btn crm-btn-secondary" >Add line</button></div><div class="crm-table-wrap crm-journal-lines-wrap"><table class="crm-table crm-journal-lines-table"><thead><tr><th>Account</th><th>Description</th><th>Debit</th><th>Credit</th><th></th></tr></thead><tbody id="journal-lines-body"></tbody></table></div><div id="journal-balance-summary" class="crm-finance-balance">Debits: 0.00 · Credits: 0.00 · Difference: 0.00</div></div>
+      <div class="crm-form-actions"><button type="button" id="journal-entry-cancel" class="crm-btn crm-btn-secondary">Cancel</button><button type="submit" id="journal-entry-save" class="crm-btn crm-btn-primary">Save draft</button><button type="button" id="journal-entry-post" class="crm-btn crm-btn-primary">Save & post</button></div>
+    </form>
+  </div>
+  <div id="journal-entry-view-card" class="crm-card crm-hidden" aria-hidden="true">
+    <div class="crm-card-header"><div><div class="crm-eyebrow">Accounting transaction</div><h3>View journal entry</h3></div></div>
+    <div id="journal-entry-view-body"></div>
+  </div>
+  <div class="crm-card"><div class="crm-list-filters crm-journal-filters"><div class="crm-search-box"><span>⌕</span><input id="journal-search" type="search" placeholder="Search entry no., reference, description, account code or account name"></div><select id="journal-status-filter" class="crm-filter-select"><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="void">Void</option></select><input id="journal-date-from" class="crm-date-filter" type="date"><input id="journal-date-to" class="crm-date-filter" type="date"><button id="journal-export-csv" class="crm-btn crm-btn-secondary">Export CSV</button><button id="journal-print-pdf" class="crm-btn crm-btn-primary">Download PDF</button></div>
+    <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Entry</th><th>Date</th><th>Reference</th><th>Description</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="journal-entries-body"></tbody></table></div></div>
+</section>
+
+<section id="view-general-ledger" class="crm-view crm-hidden" data-admin-only>
+ <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>General Ledger</h2><p>Account-by-account activity from posted journal entries.</p></div></div>
+ <div class="crm-card"><div class="crm-list-filters"><div class="crm-search-box"><span>⌕</span><input id="ledger-search" type="search" placeholder="Search account, entry or description"></div><select id="ledger-account-filter" class="crm-filter-select"><option value="all">All accounts</option></select><input id="ledger-date-from" class="crm-date-filter" type="date"><input id="ledger-date-to" class="crm-date-filter" type="date"><button id="ledger-export-csv" class="crm-btn crm-btn-secondary">Export CSV</button><button id="ledger-print-pdf" class="crm-btn crm-btn-primary">Download PDF</button></div>
+ <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Date</th><th>Entry</th><th>Account</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody id="general-ledger-body"></tbody></table></div></div>
+</section>
+
+<section id="view-trial-balance" class="crm-view crm-hidden" data-admin-only>
+ <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>Trial Balance</h2><p>Verify that posted debits equal posted credits.</p></div></div>
+ <div class="crm-card"><div class="crm-list-filters"><input id="trial-date-from" class="crm-date-filter" type="date"><input id="trial-date-to" class="crm-date-filter" type="date"><button id="trial-refresh" class="crm-btn crm-btn-secondary">Refresh</button><button id="trial-export-csv" class="crm-btn crm-btn-secondary">Export CSV</button><button id="trial-print-pdf" class="crm-btn crm-btn-primary">Download PDF</button></div><div id="trial-balance-status" class="crm-finance-balance">Loading…</div>
+ <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Code</th><th>Account</th><th>Type</th><th>Debit</th><th>Credit</th><th>Net balance</th></tr></thead><tbody id="trial-balance-body"></tbody></table></div></div>
+</section>
+
+<section id="view-statement-mapping" class="crm-view crm-hidden" data-admin-only>
+ <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>Statement Mapping</h2><p>Control where accounts appear in generated financial statements.</p></div><button id="statement-map-add" class="crm-btn crm-btn-primary" >Add mapping</button></div>
+ <div id="statement-map-form-card" class="crm-card crm-hidden"><form id="statement-map-form" class="crm-standard-form"><div class="crm-form-grid">
+ <div class="crm-field"><label>Statement</label><select id="map-statement"><option>Balance Sheet</option><option>Profit & Loss</option><option>Cash Flow</option><option>Statement of Changes in Equity</option><option>Trial Balance</option></select></div>
+ <div class="crm-field"><label>Account</label><select id="map-account"></select></div><div class="crm-field"><label>Section / line</label><input id="map-section" required></div><div class="crm-field"><label>Display order</label><input id="map-order" type="number" min="1" value="1"></div><div class="crm-field"><label class="crm-check"><input id="map-active" type="checkbox" checked> Active</label></div>
+ </div><div class="crm-form-actions"><button type="button" id="statement-map-cancel" class="crm-btn crm-btn-secondary">Cancel</button><button class="crm-btn crm-btn-primary">Save mapping</button></div></form></div>
+ <div class="crm-card"><div class="crm-list-filters"><div class="crm-search-box"><span>⌕</span><input id="statement-map-search" type="search" placeholder="Search mapping"></div><select id="statement-map-filter" class="crm-filter-select"><option value="all">All statements</option></select></div><div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Statement</th><th>Account</th><th>Section / line</th><th>Order</th><th>Active</th><th>Actions</th></tr></thead><tbody id="statement-map-body"></tbody></table></div></div>
+</section>
+
+<section id="view-audit-trail" class="crm-view crm-hidden" data-admin-only>
+ <div class="crm-page-heading"><div><div class="crm-section-label">Finance / Control</div><h2>Audit Trail</h2><p>Immutable history of accounting changes, posting actions and report exports.</p></div><div class="crm-report-actions"><button id="audit-export-csv" class="crm-btn crm-btn-secondary">Export CSV</button><button id="audit-print-pdf" class="crm-btn crm-btn-primary">Download PDF</button></div></div>
+ <div class="crm-card"><div class="crm-list-filters crm-audit-filters"><div class="crm-search-box"><span>⌕</span><input id="audit-search" type="search" placeholder="Search user, action, table or record"></div><select id="audit-action-filter" class="crm-filter-select"><option value="all">All actions</option></select><input id="audit-date-from" class="crm-date-filter" type="date"><input id="audit-date-to" class="crm-date-filter" type="date"></div>
+ <div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Date / Time</th><th>User</th><th>Action</th><th>Table</th><th>Record</th><th>Details</th></tr></thead><tbody id="audit-trail-body"></tbody></table></div></div>
+</section>
+
+<section id="view-accounting-periods" class="crm-view crm-hidden" data-admin-only>
+ <div class="crm-page-heading"><div><div class="crm-section-label">Finance</div><h2>Accounting Periods</h2><p>Open and close reporting periods to protect finalized accounts.</p></div><button id="period-add" class="crm-btn crm-btn-primary" >Add period</button></div>
+ <div id="period-form-card" class="crm-card crm-hidden"><form id="period-form" class="crm-standard-form"><div class="crm-form-grid"><div class="crm-field"><label>Period name</label><input id="period-name" required placeholder="August 2026"></div><div class="crm-field"><label>Start date</label><input id="period-start" type="date" required></div><div class="crm-field"><label>End date</label><input id="period-end" type="date" required></div><div class="crm-field"><label>Status</label><select id="period-status"><option value="open">Open</option><option value="closed">Closed</option></select></div></div><div class="crm-form-actions"><button type="button" id="period-cancel" class="crm-btn crm-btn-secondary">Cancel</button><button class="crm-btn crm-btn-primary">Save period</button></div></form></div>
+ <div class="crm-card"><div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Period</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead><tbody id="periods-body"></tbody></table></div></div>
+</section>
+
+<section id="view-contact-messages" class="crm-view crm-hidden">
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Website enquiries</div>
+      <h2>Contact Us</h2>
+      <p>View the contact requests submitted through the website.</p>
+    </div>
+    <button id="contact-messages-refresh" type="button" class="crm-btn crm-btn-secondary">↻ Refresh</button>
+  </div>
+  <div class="crm-card">
+    <div class="crm-list-filters">
+      <div class="crm-search-box"><span>⌕</span><input id="contact-message-search" type="search" placeholder="Search name or phone" aria-label="Search contact messages"></div>
+      <select id="contact-message-status-filter" class="crm-filter-select" aria-label="Filter contact messages by status">
+        <option value="all">All statuses</option><option value="new">New</option><option value="contacted">Contacted</option>
+      </select>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="contact-messages-table-body"><tr><td colspan="5" class="crm-empty">Loading contact requests…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div id="contact-detail-modal" class="crm-modal crm-hidden" aria-hidden="true">
+  <div class="crm-modal-backdrop" data-close-contact></div>
+  <aside class="crm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="contact-detail-title">
+    <button class="crm-modal-close" type="button" data-close-contact aria-label="Close">×</button>
+    <div class="crm-section-label">Website enquiry</div>
+    <h2 id="contact-detail-title">Contact request</h2>
+    <div id="contact-detail-content"></div>
+  </aside>
+</div>
+
+<section id="view-customers" class="crm-view crm-hidden">
+  <div class="crm-page-heading">
+    <div>
+      <div class="crm-section-label">Customer management</div>
+      <h2>Customers</h2>
+      <p>Manage customer details and see their booking history.</p>
+    </div>
+    <div class="crm-actions"><button type="button" class="crm-btn crm-btn-primary" onclick="startCustomerCreate()" >Add customer</button></div>
+  </div>
+
+  <div id="customer-form-card" class="crm-card crm-hidden">
+    <div class="crm-card-header">
+      <h3 id="customer-form-title">Add customer</h3>
+    </div>
+    <form id="customer-form" class="crm-standard-form">
+      <div class="crm-form-grid">
+        <div class="crm-field"><label for="customer-name">Name</label><input id="customer-name" required autocomplete="name"></div>
+        <div class="crm-field"><label for="customer-phone">Phone</label><input id="customer-phone" type="tel" inputmode="tel" pattern="\+?[0-9]+" autocomplete="tel" placeholder="+97450123456"></div>
+        <div class="crm-field"><label for="customer-email">Email</label><input id="customer-email" type="email" autocomplete="email"></div>
+        <div class="crm-field full"><label for="customer-notes">Internal CRM notes</label><textarea id="customer-notes" rows="3" placeholder="Internal notes for CRM staff only"></textarea></div>
+      </div>
+      <div class="crm-form-actions">
+        <button type="button" id="customer-cancel" class="crm-btn crm-btn-secondary">Cancel</button>
+        <button type="submit" class="crm-btn crm-btn-primary">Save customer</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crm-card">
+    <div class="crm-list-filters crm-customers-filters">
+      <div class="crm-search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="customer-search" type="search" placeholder="Search customer, phone or email" aria-label="Search customers">
+      </div>
+      <select id="customer-loyalty-filter" class="crm-filter-select" aria-label="Filter customers by loyalty tier">
+        <option value="all">All loyalty tiers</option>
+      </select>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Loyalty</th><th>Internal CRM notes</th><th></th></tr></thead>
+        <tbody id="customers-table-body"><tr><td colspan="6">Loading customers…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="customer-detail-card" class="crm-card crm-hidden">
+    <div class="crm-card-header">
+      <div>
+        <div class="crm-eyebrow">Customer profile</div>
+        <h3 id="customer-detail-name">Customer</h3>
+        <p id="customer-detail-contact" class="crm-small"></p>
+      </div>
+      <button type="button" class="crm-modal-close" data-close-customer-detail aria-label="Close">×</button>
+    </div>
+    <p id="customer-detail-notes" class="crm-small"></p>
+    <div class="crm-stats-grid">
+      <div class="crm-stat"><span>Bookings</span><strong id="customer-booking-count">0</strong></div>
+      <div class="crm-stat"><span>Total spent</span><strong id="customer-total-spent">0.00</strong></div>
+      <div class="crm-stat crm-loyalty-stat"><span>Loyalty points</span><strong id="customer-loyalty-points">0</strong><small id="customer-loyalty-tier">Member</small></div>
+    </div>
+    <div class="crm-detail-section crm-loyalty-panel">
+      <div class="crm-card-header crm-loyalty-header"><div><div class="crm-eyebrow">Customer rewards</div><h4>Rewards & loyalty</h4><p class="crm-small">Earn 1 point for every whole currency unit spent on a completed booking.</p></div><span id="customer-loyalty-badge" class="crm-role-badge">Member</span></div>
+      <div id="customer-loyalty-rewards" class="crm-loyalty-rewards"></div>
+      <form id="customer-loyalty-adjust-form" class="crm-loyalty-adjust">
+        <div class="crm-field"><label for="customer-loyalty-adjust-points">Adjust points</label><input id="customer-loyalty-adjust-points" type="number" step="1" placeholder="e.g. 25 or -25"></div>
+        <div class="crm-field"><label for="customer-loyalty-adjust-note">Reason</label><input id="customer-loyalty-adjust-note" required placeholder="Manual loyalty adjustment"></div>
+        <button type="submit" class="crm-btn crm-btn-primary">Apply points</button>
+      </form>
+    </div>
+    <div class="crm-detail-section crm-loyalty-history-panel">
+      <div class="crm-card-header">
+        <div><div class="crm-eyebrow">Loyalty activity</div><h4>Points history</h4><p class="crm-small">See when points were earned, adjusted, or redeemed, including what each redemption was used for.</p></div>
+      </div>
+      <div class="crm-table-wrap">
+        <table class="crm-table">
+          <thead><tr><th>Date</th><th>Activity / Used for</th><th>Points</th><th>Balance after</th></tr></thead>
+          <tbody id="customer-loyalty-history"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="crm-table-wrap">
+      <table class="crm-table">
+        <thead><tr><th>Date</th><th>Time</th><th>Services</th><th>Status</th><th>Total</th></tr></thead>
+        <tbody id="customer-booking-history"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/crm/admin-crm.js?v=crm-v57-language-currency-ui"></script>
+
+<div id="crm-confirm-modal" class="crm-confirm-modal crm-hidden" role="dialog" aria-modal="true" aria-labelledby="crm-confirm-title">
+  <div class="crm-confirm-card">
+    <div class="crm-confirm-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 20H3z"/><path d="M12 9v5M12 17h.01"/></svg></div>
+    <div class="crm-confirm-content"><h3 id="crm-confirm-title">Confirm deletion</h3><p id="crm-confirm-message">Are you sure you want to delete this item?</p></div>
+    <div class="crm-confirm-actions"><button type="button" class="crm-btn crm-btn-secondary" id="crm-confirm-cancel">Cancel</button><button type="button" class="crm-btn crm-btn-danger" id="crm-confirm-ok">Delete</button></div>
+  </div>
+</div>
+  <script src="assets/js/color-lock.js?v=consistent-light-3"></script>
+</body>
+</html>

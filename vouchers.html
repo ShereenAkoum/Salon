@@ -2,64 +2,95 @@
 <html class="wide wow-animation" lang="en" dir="ltr">
 
 <head>
+  <meta name="color-scheme" content="only light">
+  <meta name="supported-color-schemes" content="light">
+  <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: dark)">
   <!-- Site Title-->
   <title>Vouchers</title>
+
+  <!-- Prevent browser fallback requests to /favicon.ico; CRM/Supabase favicon is applied after settings load. -->
+  <link rel="icon" href="data:," data-favicon-bootstrap="true">
 
   <!-- Stylesheets-->
   <link rel="stylesheet" type="text/css"
     href="//fonts.googleapis.com/css?family=Roboto+Mono:300,300italic,400,700%7CArvo:400,700">
   <link rel="stylesheet" href="assets/fonts/telma/css/telma.css">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel="stylesheet" href="assets/css/custom.css?v=mobile-light-v5">
   <script>
     (function () {
       var lang = localStorage.getItem('siteLang') || 'en';
       document.documentElement.setAttribute('lang', lang);
       document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      // Android browsers and the in-app browsers built on Android WebView
+      // (Chrome Auto Dark Theme, Samsung Internet Force Dark, the WebView
+      // used by Facebook/Instagram/Gmail) can re-colour a light page when
+      // the phone is in dark mode. iOS and desktop do not. Mark the
+      // document before first paint so color-scheme-lock.css can pin the
+      // same light palette on every page and every platform.
+      (function () {
+        var root = document.documentElement;
+        var ua = navigator.userAgent || '';
+        var prefersDark = false;
+        try { prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) { }
+        if (/SamsungBrowser/i.test(ua)) { root.classList.add('jas-samsung-browser'); }
+        if (prefersDark && /Android/i.test(ua)) { root.classList.add('jas-forced-dark'); }
+        // Force dark cannot be feature-detected. The browser repaints the
+        // page after its CSS has been computed, so getComputedStyle still
+        // reports the light colours and prefers-color-scheme can still say
+        // "light" while the screen shows dark. So do not try to guess:
+        // paint from images on every Android browser and on Samsung
+        // Internet. The painted colours are the ones the stylesheets
+        // already declare, so this is invisible wherever the browser is
+        // not darkening anything.
+        if (/Android|SamsungBrowser/i.test(ua)) { root.classList.add('jas-paint-lock'); }
+        root.style.setProperty('color-scheme', 'only light');
+      })();
       document.write('<style id="anti-flash">body{opacity:0!important;}</style>');
     })();
   </script>
+  <!-- Colour lock: must stay last so it overrides every earlier stylesheet. -->
+  <link rel="stylesheet" href="assets/css/color-scheme-lock.css?v=hero-overlay-lock-1">
+  <link rel="stylesheet" href="assets/css/color-lock-generated.css?v=near-opaque-lock-1">
 </head>
 
 <body>
-  <div class="page">
-    <main class="page-content" id="perspective">
-      <div class="content-wrapper">
-        <div id="page-header"></div>
-        <div id="wrapper">
-          <div class="page-title">
-            <div class="page-title-content">
-              <div class="shell">
-                <p class="page-title-header" data-i18n="nav.vouchers"></p>
-              </div>
+  <div class="page jas-luxury-page">
+    <div id="page-header"></div>
+
+    <main>
+      <div id="wrapper">
+        <div class="page-title">
+          <div class="page-title-content">
+            <div class="shell">
+              <p class="page-title-header" data-i18n="nav.vouchers"></p>
             </div>
           </div>
-          <!-- Vouchers Section -->
-          <section id="vouchers" class="section-xl bg-white text-center">
-            <div class="shell">
-              <h1 data-i18n="voucher.title"></h1>
-              <p class="big" data-i18n="voucher.description"></p>
-              <div id="vouchers-grid" class="vouchers-grid"></div>
-            </div>
-          </section>
-
-          <footer class="page-footer page-footer-default" id="footer-placeholder"></footer>
-
         </div>
-        <div id="perspective-content-overlay"></div>
+        <!-- Vouchers Section -->
+        <section id="vouchers" class="section-sm bg-white text-center">
+          <div class="shell">
+            <p class="big primary-font" data-i18n="voucher.description"></p>
+            <div id="vouchers-grid" class="vouchers-grid"></div>
+          </div>
+        </section>
       </div>
-      <!-- RD Navbar-->
-      <div class="rd-navbar-wrap" id="rdNavBar"></div>
-
     </main>
+    <footer class="page-footer jas-home-footer" id="footer-placeholder"></footer>
+
   </div>
 
-  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/config/application-settings.js?v=currency-table-v1"></script>
+  <script src="assets/js/database-test.js"></script>
+  <script src="assets/js/site-loader.js?v=shared-header-v4"></script>
   <script src="assets/js/core.min.js"></script>
-  <script src="assets/js/script.js"></script>
-  <script src="assets/js/steps.js"></script>
-  <script src="assets/js/services.js"></script>
-  <script src="assets/js/translation.js"></script>
+  <script src="assets/js/site-ui.js"></script>
+  <script src="assets/js/booking-flow.js?v=booking-session-cleanup-1"></script>
+  <script src="assets/js/language.js?v=weekly-hours-phone-1"></script>
+  <script src="assets/js/color-lock.js?v=consistent-light-3"></script>
 </body>
 
 </html>
